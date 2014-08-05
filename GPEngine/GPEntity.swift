@@ -85,4 +85,41 @@ class GPEntity: NSObject
         
         return false;
     }
+    
+    // Gets a list of components that match a given component class type
+    func getComponentsWithType(type: AnyClass) -> [GPComponent]
+    {
+        var ret: [GPComponent] = [];
+        
+        for comp in self.components
+        {
+            if(comp.isKindOfClass(type))
+            {
+                ret += comp;
+            }
+        }
+        
+        return ret;
+    }
+    
+    // Removes all components that match the given class type
+    func removeComponentsWithType(type: AnyClass)
+    {
+        var i:Int = 0;
+        
+        while(i < self.components.count)
+        {
+            if(self.components[i].isKindOfClass(type))
+            {
+                self.components.removeAtIndex(i);
+            }
+            else
+            {
+                i++;
+            }
+        }
+        
+        // Notify the game scene this entity has been modified
+        self.gameScene?.entityModified(self);
+    }
 }
