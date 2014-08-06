@@ -63,6 +63,13 @@ class GPEventDispatcher: NSObject
         }
     }
     
+    // Removes all the events currently registered on this event dispatcher
+    func removeAllEvents()
+    {
+        // Clear the event list
+        self.events.removeAll(keepCapacity: false)
+    }
+    
     // Internal method that removes an event listener bonded to a given event type hash
     private func internalRemoveEventListener<T: GPEventListener where T: Equatable>(listener: T, _ hashEventType: String)
     {

@@ -107,6 +107,20 @@ class EventingTests: XCTestCase
         
         XCTAssert(receiv1.received && receiv2.received, "All listeners must receive events dispatched from the dispatcher")
     }
+    
+    func testRemoveAllListeners()
+    {
+        var skNode = SKNode();
+        var receiv1 = EventReceiverTestClass(skNode);
+        var receiv2 = EventReceiverTestClass(skNode);
+        
+        disp.addEventListener(receiv1, eventType: GPEvent.self);
+        disp.addEventListener(receiv2, eventType: GPEvent.self);
+        
+        disp.removeAllEvents();
+        
+        XCTAssert(disp.eventCount == 0, "The event dispatcher must be clear after a removeAllEvents() call");
+    }
 }
 
 class EventReceiverTestClass: GPEntity, GPEventListener, Equatable
