@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A064D1FA1991CB3900B31697 /* GPEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1F91991CB3900B31697 /* GPEvent.swift */; };
+		A064D1FC1991CB5B00B31697 /* GPEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FB1991CB5B00B31697 /* GPEventListener.swift */; };
+		A064D1FE1991CC9F00B31697 /* GPEventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FD1991CC9F00B31697 /* GPEventDispatcher.swift */; };
 		A092738D198F1E3C00E8212E /* GPSelectorRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738C198F1E3C00E8212E /* GPSelectorRule.swift */; };
 		A092738F198F1E9000E8212E /* GPEntitySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738E198F1E9000E8212E /* GPEntitySelector.swift */; };
 		A0927391198F23D400E8212E /* GPGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927390198F23D400E8212E /* GPGameScene.swift */; };
@@ -25,6 +28,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		A064D1FF199270E500B31697 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A099BC04198EF1440071C581 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A099BC0B198EF1440071C581;
+			remoteInfo = GPEngine;
+		};
 		A099BC23198EF1440071C581 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A099BC04198EF1440071C581 /* Project object */;
@@ -49,6 +59,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A064D1F91991CB3900B31697 /* GPEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEvent.swift; sourceTree = "<group>"; };
+		A064D1FB1991CB5B00B31697 /* GPEventListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEventListener.swift; sourceTree = "<group>"; };
+		A064D1FD1991CC9F00B31697 /* GPEventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEventDispatcher.swift; sourceTree = "<group>"; };
 		A092738C198F1E3C00E8212E /* GPSelectorRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPSelectorRule.swift; sourceTree = "<group>"; };
 		A092738E198F1E9000E8212E /* GPEntitySelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEntitySelector.swift; sourceTree = "<group>"; };
 		A0927390198F23D400E8212E /* GPGameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPGameScene.swift; sourceTree = "<group>"; };
@@ -88,6 +101,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A064D1F81991CB1B00B31697 /* Eventing */ = {
+			isa = PBXGroup;
+			children = (
+				A064D1F91991CB3900B31697 /* GPEvent.swift */,
+				A064D1FB1991CB5B00B31697 /* GPEventListener.swift */,
+				A064D1FD1991CC9F00B31697 /* GPEventDispatcher.swift */,
+			);
+			name = Eventing;
+			sourceTree = "<group>";
+		};
 		A099BC03198EF1440071C581 = {
 			isa = PBXGroup;
 			children = (
@@ -149,6 +172,7 @@
 		A099BC36198EF1B70071C581 /* GamePrototype */ = {
 			isa = PBXGroup;
 			children = (
+				A064D1F81991CB1B00B31697 /* Eventing */,
 				A0927396198F306B00E8212E /* GPEntityBag.swift */,
 				A0927392198F244100E8212E /* GPSystem.swift */,
 				A099BC37198EF57D0071C581 /* GPComponent.swift */,
@@ -195,6 +219,7 @@
 				A099BC24198EF1440071C581 /* PBXTargetDependency */,
 				A099BC33198EF1460071C581 /* PBXTargetDependency */,
 				A099BC35198EF1460071C581 /* PBXTargetDependency */,
+				A064D200199270E500B31697 /* PBXTargetDependency */,
 			);
 			name = GPEngineTests;
 			productName = GPEngineTests;
@@ -268,11 +293,14 @@
 				A0927397198F306B00E8212E /* GPEntityBag.swift in Sources */,
 				A099BC18198EF1440071C581 /* GameViewController.swift in Sources */,
 				A099BC38198EF57D0071C581 /* GPComponent.swift in Sources */,
+				A064D1FC1991CB5B00B31697 /* GPEventListener.swift in Sources */,
+				A064D1FA1991CB3900B31697 /* GPEvent.swift in Sources */,
 				A099BC3A198EF5A10071C581 /* GPEntity.swift in Sources */,
 				A099BC12198EF1440071C581 /* AppDelegate.swift in Sources */,
 				A092738F198F1E9000E8212E /* GPEntitySelector.swift in Sources */,
 				A0927393198F244100E8212E /* GPSystem.swift in Sources */,
 				A099BC3C198EF7FA0071C581 /* Utils.swift in Sources */,
+				A064D1FE1991CC9F00B31697 /* GPEventDispatcher.swift in Sources */,
 				A0927391198F23D400E8212E /* GPGameScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -288,6 +316,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		A064D200199270E500B31697 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A099BC0B198EF1440071C581 /* GPEngine */;
+			targetProxy = A064D1FF199270E500B31697 /* PBXContainerItemProxy */;
+		};
 		A099BC24198EF1440071C581 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = A099BC0B198EF1440071C581 /* GPEngine */;
