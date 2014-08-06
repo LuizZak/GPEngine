@@ -37,18 +37,37 @@ class EventingTests: XCTestCase
         disp.addEventListener(receiv, eventType: CustomEvent.self);
         
         XCTAssert(disp.eventCount == 2, "The event count should match the two events added to the receiver")
+        
+        disp.removeAllEvents(receiv);
+        
+        disp.addEventListener(receiv, eventType: GPEvent.self);
+        disp.addEventListener(receiv, eventType: GPEvent.self);
+        
+        disp.dispatchEvent(GPEvent());
+        
+        XCTAssert(receiv.hitCount == 1, "Listeners must only be called once per dispatch to an event they are listening to, no mare how many times they are added as listeners to that event")
     }
     
     func testEventRemove()
     {
         var skNode = SKNode();
-        var receiv = EventReceiverTestClass(skNode);
+        var receiv1 = EventReceiverTestClass(skNode);
+        var receiv2 = EventReceiverTestClass(skNode);
         
-        disp.addEventListener(receiv, eventType: GPEvent.self);
+        disp.addEventListener(receiv1, eventType: GPEvent.self);
         
-        disp.removeAllEvents(receiv);
+        disp.removeAllEvents(receiv1);
         
         XCTAssert(disp.eventCount == 0, "The event count should reset to 0 once the receiver was removed as a sole listener to a single event")
+        
+        disp.addEventListener(receiv1, eventType: GPEvent.self);
+        disp.addEventListener(receiv2, eventType: GPEvent.self);
+        
+        XCTAssert(disp.eventCount == 1, "There should be only one event count per event type currently on the event dispatcher, ignoring multiple listeners from the same event")
+        
+        disp.removeAllEvents(receiv1);
+        
+        XCTAssert(disp.eventCount == 1, "The event count should only go down once an event hits 0 listeners")
     }
     
     func testEventRemoveAll()
@@ -93,10 +112,12 @@ class EventingTests: XCTestCase
 class EventReceiverTestClass: GPEntity, GPEventListener, Equatable
 {
     var received = false;
+    var hitCount = 0;
     
     func receiveEvent(event: GPEvent)
     {
         received = true;
+        hitCount++;
     }
 }
 
