@@ -38,7 +38,7 @@ class EventingTests: XCTestCase
         
         XCTAssert(disp.eventCount == 2, "The event count should match the two events added to the receiver")
         
-        disp.removeAllEvents(receiv);
+        disp.removeAllEventsForListener(receiv);
         
         disp.addEventListener(receiv, eventType: GPEvent.self);
         disp.addEventListener(receiv, eventType: GPEvent.self);
@@ -56,7 +56,7 @@ class EventingTests: XCTestCase
         
         disp.addEventListener(receiv1, eventType: GPEvent.self);
         
-        disp.removeAllEvents(receiv1);
+        disp.removeAllEventsForListener(receiv1);
         
         XCTAssert(disp.eventCount == 0, "The event count should reset to 0 once the receiver was removed as a sole listener to a single event")
         
@@ -65,7 +65,7 @@ class EventingTests: XCTestCase
         
         XCTAssert(disp.eventCount == 1, "There should be only one event count per event type currently on the event dispatcher, ignoring multiple listeners from the same event")
         
-        disp.removeAllEvents(receiv1);
+        disp.removeAllEventsForListener(receiv1);
         
         XCTAssert(disp.eventCount == 1, "The event count should only go down once an event hits 0 listeners")
     }
@@ -78,7 +78,7 @@ class EventingTests: XCTestCase
         disp.addEventListener(receiv, eventType: GPEvent.self);
         disp.addEventListener(receiv, eventType: CustomEvent.self);
         
-        disp.removeAllEvents(receiv);
+        disp.removeAllEventsForListener(receiv);
         
         XCTAssert(disp.eventCount == 0, "The event count should reset to 0 once the receiver was removed as a sole listener to multiple events")
     }

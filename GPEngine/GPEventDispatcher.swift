@@ -47,7 +47,7 @@ class GPEventDispatcher: NSObject
     }
     
     // Removes a given event listener from all events it is currently listening to
-    func removeAllEvents<T: GPEventListener where T: Equatable>(listener: T)
+    func removeAllEventsForListener<T: GPEventListener where T: Equatable>(listener: T)
     {
         var i: Int = 0;
         while(i < self.events.keys.array.count)
