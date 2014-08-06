@@ -25,6 +25,19 @@
 		A099BC38198EF57D0071C581 /* GPComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC37198EF57D0071C581 /* GPComponent.swift */; };
 		A099BC3A198EF5A10071C581 /* GPEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC39198EF5A10071C581 /* GPEntity.swift */; };
 		A099BC3C198EF7FA0071C581 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC3B198EF7FA0071C581 /* Utils.swift */; };
+		A0C95470199285B10066F88F /* EntityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C9546E199285B10066F88F /* EntityTests.swift */; };
+		A0C95471199285B10066F88F /* EventingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C9546F199285B10066F88F /* EventingTests.swift */; };
+		A0C95472199285CF0066F88F /* GPEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1F91991CB3900B31697 /* GPEvent.swift */; };
+		A0C95473199285CF0066F88F /* GPEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FB1991CB5B00B31697 /* GPEventListener.swift */; };
+		A0C95474199285CF0066F88F /* GPEventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FD1991CC9F00B31697 /* GPEventDispatcher.swift */; };
+		A0C95475199285CF0066F88F /* GPEntityBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927396198F306B00E8212E /* GPEntityBag.swift */; };
+		A0C95476199285CF0066F88F /* GPSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927392198F244100E8212E /* GPSystem.swift */; };
+		A0C95477199285CF0066F88F /* GPComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC37198EF57D0071C581 /* GPComponent.swift */; };
+		A0C95478199285CF0066F88F /* GPEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC39198EF5A10071C581 /* GPEntity.swift */; };
+		A0C95479199285CF0066F88F /* GPGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927390198F23D400E8212E /* GPGameScene.swift */; };
+		A0C9547A199285CF0066F88F /* GPEntitySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738E198F1E9000E8212E /* GPEntitySelector.swift */; };
+		A0C9547B199285CF0066F88F /* GPSelectorRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738C198F1E3C00E8212E /* GPSelectorRule.swift */; };
+		A0C9547C199285CF0066F88F /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC3B198EF7FA0071C581 /* Utils.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -81,6 +94,8 @@
 		A099BC37198EF57D0071C581 /* GPComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPComponent.swift; sourceTree = "<group>"; };
 		A099BC39198EF5A10071C581 /* GPEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEntity.swift; sourceTree = "<group>"; };
 		A099BC3B198EF7FA0071C581 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		A0C9546E199285B10066F88F /* EntityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityTests.swift; sourceTree = "<group>"; };
+		A0C9546F199285B10066F88F /* EventingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventingTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +171,8 @@
 			isa = PBXGroup;
 			children = (
 				A099BC28198EF1440071C581 /* GPEngineTests.swift */,
+				A0C9546F199285B10066F88F /* EventingTests.swift */,
+				A0C9546E199285B10066F88F /* EntityTests.swift */,
 				A099BC26198EF1440071C581 /* Supporting Files */,
 			);
 			path = GPEngineTests;
@@ -309,6 +326,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A0C95472199285CF0066F88F /* GPEvent.swift in Sources */,
+				A0C95473199285CF0066F88F /* GPEventListener.swift in Sources */,
+				A0C95474199285CF0066F88F /* GPEventDispatcher.swift in Sources */,
+				A0C95475199285CF0066F88F /* GPEntityBag.swift in Sources */,
+				A0C95476199285CF0066F88F /* GPSystem.swift in Sources */,
+				A0C95477199285CF0066F88F /* GPComponent.swift in Sources */,
+				A0C95478199285CF0066F88F /* GPEntity.swift in Sources */,
+				A0C95479199285CF0066F88F /* GPGameScene.swift in Sources */,
+				A0C9547A199285CF0066F88F /* GPEntitySelector.swift in Sources */,
+				A0C9547B199285CF0066F88F /* GPSelectorRule.swift in Sources */,
+				A0C9547C199285CF0066F88F /* Utils.swift in Sources */,
+				A0C95470199285B10066F88F /* EntityTests.swift in Sources */,
+				A0C95471199285B10066F88F /* EventingTests.swift in Sources */,
 				A099BC29198EF1440071C581 /* GPEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
