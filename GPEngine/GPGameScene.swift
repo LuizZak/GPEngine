@@ -53,43 +53,51 @@ class GPGameSceneNotifier: NSObject, Equatable
 class GPGameScene: SKScene, SKPhysicsContactDelegate
 {
     // The intenral list of systems
-    var systems: [GPSystem] = [];
+    private var _systems: [GPSystem] = [];
     // The internal list of entities
-    var entities: [GPEntity] = [];
+    private var _entities: [GPEntity] = [];
     // A list of notifier objects
-    var notifiers: [GPGameSceneNotifier] = [];
+    private var _notifiers: [GPGameSceneNotifier] = [];
     // The world node
-    var worldNode: SKNode;
+    private var _worldNode: SKNode;
     // The last update time interval tick. Used to calculate a delta time (time difference) between frames
-    var lastUpdateTimeInterval: NSTimeInterval = 0;
+    private var _lastUpdateTimeInterval: NSTimeInterval = 0;
+    
+    // Gets the world node of this game scene.
+    //
+    // World nodes are nodes that are one level above the game screen, and are utilized to make
+    // transformation modifications to properties such as position, scale and rotation, and are
+    // useful when making camera objects etc., since the SKScene node cannot have transformations
+    // applied to them.
+    var worldNode: SKNode { get { return _worldNode; } }
     
     init(coder aDecoder: NSCoder!)
     {
-        self.worldNode = SKNode();
+        self._worldNode = SKNode();
         super.init(coder: aDecoder);
     }
     
     init()
     {
-        self.worldNode = SKNode();
+        self._worldNode = SKNode();
         super.init();
     }
     
     // Adds a notifier to this game scene
     func addNotifier(notifier: GPGameSceneNotifier)
     {
-        notifiers += notifier;
+        _notifiers += notifier;
     }
     
     // Removes a notifier from this game scene
     func removeNotifier(notifier: GPGameSceneNotifier)
     {
-        notifiers.remove(notifier);
+        _notifiers.remove(notifier);
     }
     
     func updateWithTimeSinceLastUpdate(timeSinceLast: CFTimeInterval)
     {
-        for system in systems
+        for system in _systems
         {
             system.update(timeSinceLast);
         }
@@ -99,14 +107,14 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     {
         // Handle time delta.
         // If we drop below 60fps, we still want everything to move the same distance.
-        var timeSinceLast = currentTime - self.lastUpdateTimeInterval;
-        self.lastUpdateTimeInterval = currentTime;
+        var timeSinceLast = currentTime - self._lastUpdateTimeInterval;
+        self._lastUpdateTimeInterval = currentTime;
         
         if (timeSinceLast > 1)
         {
             // more than a second since last update
             timeSinceLast = 1.0 / 60.0;
-            self.lastUpdateTimeInterval = currentTime;
+            self._lastUpdateTimeInterval = currentTime;
         }
     
         self.updateWithTimeSinceLastUpdate(timeSinceLast);
@@ -116,7 +124,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     {
         super.didEvaluateActions();
     
-        for system in systems
+        for system in _systems
         {
             system.didEvaluateActions();
         }
@@ -126,7 +134,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     {
         super.didSimulatePhysics();
     
-        for system in systems
+        for system in _systems
         {
             system.didSimulatePhysics();
         }
@@ -136,34 +144,34 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     func clearScene()
     {
         // Remove todos os sistemas
-        while(systems.count > 0)
+        while(_systems.count > 0)
         {
-            self.removeSystem(self.systems[0]);
+            self.removeSystem(self._systems[0]);
         }
     
         // Remove todas as entides
-        while(entities.count > 0)
+        while(_entities.count > 0)
         {
-            self.removeEntity(self.entities[0]);
+            self.removeEntity(self._entities[0]);
         }
     }
     
     // Adds an entity to this scene
     func addEntity(entity: GPEntity)
     {
-        self.addEntity(entity, toNode: worldNode);
+        self.addEntity(entity, toNode: _worldNode);
     }
     // Adds an entity to this scene, adding it as a child of another node
     func addEntity(entity: GPEntity, toNode node:SKNode)
     {
-        self.entities += entity;
+        self._entities += entity;
     
         node.addChild(entity.node);
         
         entity.gameScene = self;
     
         // Fire the notifiers
-        for notifier in self.notifiers
+        for notifier in self._notifiers
         {
             notifier.gameSceneDidAddEntity(entity);
         }
@@ -172,7 +180,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // Removes an entity from this scene
     func removeEntity(entity: GPEntity)
     {
-        self.entities.remove(entity);
+        self._entities.remove(entity);
     
         entity.node.removeFromParent();
     
@@ -182,7 +190,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
         }
     
         // Fire the notifiers
-        for notifier in self.notifiers
+        for notifier in self._notifiers
         {
             notifier.gameSceneDidRemoveEntity(entity);
         }
@@ -190,7 +198,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // Returns an entity in this scene that matches the given ID
     func getEntityByID(id: Int) -> GPEntity?
     {
-        for entity in entities
+        for entity in _entities
         {
             if(entity.id == id)
             {
@@ -209,7 +217,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
         {
             if((entity.type & type) != 0)
             {
-                array += entities;
+                array += _entities;
             }
         }
     
@@ -219,7 +227,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // Returns a list of enttiies in this game scene that were filtered with the given entity selector
     func getEntitiesWithSelector(selector: GPEntitySelector) -> [GPEntity]
     {
-        return selector.applyRuleToArray(entities);
+        return selector.applyRuleToArray(_entities);
     }
     
     
@@ -233,7 +241,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // Notifies that the given entity was structurally modified (components, id or type were modified)
     func entityModified(entity: GPEntity)
     {
-        for system in systems
+        for system in _systems
         {
             system.entityModified(entity);
         }
@@ -244,13 +252,13 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     {
         system.willAddToScene(self);
     
-        self.systems += system;
+        self._systems += system;
     
         // Forces the system to load the relevant entities from this scene now
-        system.reloadEntities(entities);
+        system.reloadEntities(_entities);
     
         // Adds the system as a notifier for this game scene
-        notifiers += system;
+        _notifiers += system;
     
         system.didAddToScene();
     }
@@ -259,17 +267,17 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     {
         system.willRemoveFromScene();
     
-        self.systems -= system;
+        self._systems -= system;
     
         // Remove the system as a notifier
-        self.notifiers -= system;
+        self._notifiers -= system;
     
         system.didRemoveFromScene();
     }
     // Returns a system in this game scene that derives from a specific class
     func getSystemWithType(systemClass: AnyClass) -> GPSystem?
     {
-        for system in systems
+        for system in _systems
         {
             if(system.isKindOfClass(systemClass))
             {
@@ -285,7 +293,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneDidReceiveTouchesBegan(touches, withEvent:event);
         }
@@ -293,7 +301,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneDidReceiveTouchesEnded(touches, withEvent:event);
         }
@@ -301,7 +309,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneDidReceiveTouchesMoved(touches, withEvent:event);
         }
@@ -309,7 +317,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     override func touchesCancelled(touches: NSSet!, withEvent event: UIEvent!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneDidReceiveTouchesCancelled(touches, withEvent:event);
         }
@@ -317,7 +325,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     override func didMoveToView(view: SKView!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneDidAddToView();
         }
@@ -325,7 +333,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     override func willMoveFromView(view: SKView!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneWillBeMovedFromView();
         }
@@ -334,7 +342,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     func didBeginContact(contact: SKPhysicsContact!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneDidBeginContact(contact);
         }
@@ -342,7 +350,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     func didEndContact(contact: SKPhysicsContact!)
     {
         // Fire the notifiers
-        for notifier in notifiers
+        for notifier in _notifiers
         {
             notifier.gameSceneDidEndContact(contact);
         }
