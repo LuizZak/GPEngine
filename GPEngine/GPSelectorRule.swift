@@ -21,9 +21,9 @@ class GPSelectorRule
 // Describes a selector rule that filter entities by components
 class GPSRComponentSelector : GPSelectorRule
 {
-    var componentClass: AnyClass;
+    var componentClass: GPComponent.Type;
     
-    init(_ componentClass: AnyClass)
+    init(_ componentClass: GPComponent.Type)
     {
         self.componentClass = componentClass;
     }

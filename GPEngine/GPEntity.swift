@@ -73,7 +73,7 @@ class GPEntity: NSObject
     }
     
     // Returns whether the entity has the given component type inside of it
-    func hasComponentType(type: AnyClass) -> Bool
+    func hasComponentType(type: GPComponent.Type) -> Bool
     {
         for comp in self.components
         {
@@ -87,7 +87,7 @@ class GPEntity: NSObject
     }
     
     // Gets a list of components that match a given component class type
-    func getComponentsWithType(type: AnyClass) -> [GPComponent]
+    func getComponentsWithType(type: GPComponent.Type) -> [GPComponent]
     {
         var ret: [GPComponent] = [];
         
@@ -103,7 +103,7 @@ class GPEntity: NSObject
     }
     
     // Removes all components that match the given class type
-    func removeComponentsWithType(type: AnyClass)
+    func removeComponentsWithType(type: GPComponent.Type)
     {
         var i:Int = 0;
         

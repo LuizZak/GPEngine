@@ -275,7 +275,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
         system.didRemoveFromScene();
     }
     // Returns a system in this game scene that derives from a specific class
-    func getSystemWithType(systemClass: AnyClass) -> GPSystem?
+    func getSystemWithType(systemClass: GPSystem.Type) -> GPSystem?
     {
         for system in _systems
         {
