@@ -38,6 +38,7 @@
 		A0C9547A199285CF0066F88F /* GPEntitySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738E198F1E9000E8212E /* GPEntitySelector.swift */; };
 		A0C9547B199285CF0066F88F /* GPSelectorRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738C198F1E3C00E8212E /* GPSelectorRule.swift */; };
 		A0C9547C199285CF0066F88F /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC3B198EF7FA0071C581 /* Utils.swift */; };
+		A0C9547E19930B520066F88F /* SystemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C9547D19930B520066F88F /* SystemTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +97,7 @@
 		A099BC3B198EF7FA0071C581 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		A0C9546E199285B10066F88F /* EntityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityTests.swift; sourceTree = "<group>"; };
 		A0C9546F199285B10066F88F /* EventingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventingTests.swift; sourceTree = "<group>"; };
+		A0C9547D19930B520066F88F /* SystemTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +175,7 @@
 				A099BC28198EF1440071C581 /* GPEngineTests.swift */,
 				A0C9546F199285B10066F88F /* EventingTests.swift */,
 				A0C9546E199285B10066F88F /* EntityTests.swift */,
+				A0C9547D19930B520066F88F /* SystemTests.swift */,
 				A099BC26198EF1440071C581 /* Supporting Files */,
 			);
 			path = GPEngineTests;
@@ -330,6 +333,7 @@
 				A0C95473199285CF0066F88F /* GPEventListener.swift in Sources */,
 				A0C95474199285CF0066F88F /* GPEventDispatcher.swift in Sources */,
 				A0C95475199285CF0066F88F /* GPEntityBag.swift in Sources */,
+				A0C9547E19930B520066F88F /* SystemTests.swift in Sources */,
 				A0C95476199285CF0066F88F /* GPSystem.swift in Sources */,
 				A0C95477199285CF0066F88F /* GPComponent.swift in Sources */,
 				A0C95478199285CF0066F88F /* GPEntity.swift in Sources */,
