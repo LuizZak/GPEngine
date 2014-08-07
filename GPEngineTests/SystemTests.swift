@@ -44,9 +44,66 @@ class SystemTests: XCTestCase
         // Test system add
         XCTAssert(scene?.getSystemWithType(GPSystem) != nil, "Systems must be added after a call to GPGameScene.addSystem()")
     }
+    
+    func testRemoveSystem()
+    {
+        var system = CustomSystem();
+        
+        scene?.addSystem(system)
+        scene?.removeSystem(system)
+        
+        // Test system add
+        XCTAssert(scene?.getSystemWithType(GPSystem) == nil, "Systems must be removed after a call to GPGameScene.removeSystem()")
+    }
+    
+    func testAddEntityNotify()
+    {
+        var system = CustomSystem();
+        
+        scene?.addSystem(system)
+        
+        scene?.addEntity(GPEntity(SKNode()));
+        
+        // Test system add
+        XCTAssert(system.receivedAddEntity, "Systems must be notified of entity insertion via the gameSceneDidAddEntity() method")
+    }
+    
+    func testRemoveEntityNotify()
+    {
+        var system = CustomSystem();
+        var entity = GPEntity(SKNode());
+        
+        scene?.addSystem(system)
+        
+        scene?.addEntity(entity);
+        scene?.removeEntity(entity);
+        
+        // Test system add
+        XCTAssert(system.receivedRemoveEntity, "System must be notified of entity removal via the gameSceneDidRemoveEntity() method")
+    }
+    
+    func testEntityModifyNotify()
+    {
+        
+    }
 }
 
 class CustomSystem: GPSystem
 {
+    var receivedAddEntity = false;
+    var receivedRemoveEntity = false;
     
+    override func gameSceneDidAddEntity(entity: GPEntity) -> Bool
+    {
+        receivedAddEntity = true;
+        
+        return self.testEntityToAdd(entity);
+    }
+    
+    override func gameSceneDidRemoveEntity(entity: GPEntity) -> Bool
+    {
+        receivedRemoveEntity = true;
+        
+        return self.testEntityToRemove(entity);
+    }
 }
