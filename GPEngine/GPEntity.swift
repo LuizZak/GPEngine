@@ -13,22 +13,30 @@ import SpriteKit
 class GPEntity: NSObject
 {
     // The internal list of components for this entity
-    private var components : [GPComponent] = [];
+    private var _components : [GPComponent] = [];
     
     // The unique identifier for this entity
-    var id = 0;
+    private var _id = 0;
     // A bitmask field used to quickly describe the type of this entity
-    var type = 0;
+    private var _type = 0;
     
     // A node that is associated with this entity
-    var node : SKNode;
+    private var _node : SKNode;
     
     // The game scene that owns this GPEntity instance
     var gameScene : GPGameScene?;
     
+    // Gets or sets the ID of this entity
+    var id: Int { get { return _id; } set { _id = newValue; self.gameScene?.entityModified(self); } }
+    // Gets or sets the type of this entity
+    var type: Int { get { return _type; } set { _type = newValue; self.gameScene?.entityModified(self); } }
+    
+    // Gets this entity's node
+    var node: SKNode { get { return _node; } }
+    
     init(_ node : SKNode)
     {
-        self.node = node;
+        self._node = node;
         
         super.init();
     }
@@ -45,7 +53,7 @@ class GPEntity: NSObject
     // Adds an array of components to this entity
     func addComponents(components: [GPComponent])
     {
-        self.components += components;
+        self._components += components;
         
         // Notify the game scene this entity has been modified
         self.gameScene?.entityModified(self);
@@ -63,19 +71,19 @@ class GPEntity: NSObject
     // Intenral method that adds a components to this entity
     private func internalAddComponent(component: GPComponent)
     {
-        self.components += component;
+        self._components += component;
     }
     
     // Internal method that removes components from this entity
     private func internalRemoveComponent(component: GPComponent)
     {
-        self.components -= component;
+        self._components -= component;
     }
     
     // Returns whether the entity has the given component type inside of it
     func hasComponentType(type: GPComponent.Type) -> Bool
     {
-        for comp in self.components
+        for comp in self._components
         {
             if(comp.isKindOfClass(type))
             {
@@ -91,7 +99,7 @@ class GPEntity: NSObject
     {
         var ret: [GPComponent] = [];
         
-        for comp in self.components
+        for comp in self._components
         {
             if(comp.isKindOfClass(type))
             {
@@ -107,11 +115,11 @@ class GPEntity: NSObject
     {
         var i:Int = 0;
         
-        while(i < self.components.count)
+        while(i < self._components.count)
         {
-            if(self.components[i].isKindOfClass(type))
+            if(self._components[i].isKindOfClass(type))
             {
-                self.components.removeAtIndex(i);
+                self._components.removeAtIndex(i);
             }
             else
             {
