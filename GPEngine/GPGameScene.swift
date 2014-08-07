@@ -77,6 +77,12 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
         super.init(coder: aDecoder);
     }
     
+    init(size: CGSize)
+    {
+        self._worldNode = SKNode();
+        super.init(size: size);
+    }
+    
     init()
     {
         self._worldNode = SKNode();
