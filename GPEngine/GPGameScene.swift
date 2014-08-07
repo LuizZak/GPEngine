@@ -11,7 +11,7 @@ import SpriteKit
 
 func ==(lhs: GPGameSceneNotifier, rhs: GPGameSceneNotifier) -> Bool
 {
-    return lhs == rhs;
+    return lhs.isEqual(rhs);
 }
 
 // Protocolo implementado em sistemas, serve para notificar quando
