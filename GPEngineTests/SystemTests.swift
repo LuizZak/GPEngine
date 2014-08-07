@@ -79,12 +79,36 @@ class SystemTests: XCTestCase
         scene?.removeEntity(entity);
         
         // Test system add
-        XCTAssert(system.receivedRemoveEntity, "System must be notified of entity removal via the gameSceneDidRemoveEntity() method")
+        XCTAssert(system.receivedRemoveEntity, "Systems must be notified of entity removal via the gameSceneDidRemoveEntity() method")
     }
     
     func testEntityModifyNotify()
     {
+        var system = CustomSystem();
+        var entity = GPEntity(SKNode());
         
+        scene?.addSystem(system)
+        
+        scene?.addEntity(entity);
+        
+        entity.id = 10;
+        
+        // Test system add
+        XCTAssert(system.receivedModifyEntity, "Systems must be notified of entity 'id' field modifications via the entityModified() method")
+        
+        system.receivedModifyEntity = false;
+        
+        entity.addComponent(GPComponent());
+        
+        // Test system add
+        XCTAssert(system.receivedModifyEntity, "Systems must be notified of entity component structure modifications via the entityModified() method")
+        
+        system.receivedModifyEntity = false;
+        
+        entity.type = 0x1 << 2;
+        
+        // Test system add
+        XCTAssert(system.receivedModifyEntity, "Systems must be notified of entity 'type' field modifications via the entityModified() method")
     }
 }
 
@@ -92,6 +116,7 @@ class CustomSystem: GPSystem
 {
     var receivedAddEntity = false;
     var receivedRemoveEntity = false;
+    var receivedModifyEntity = false;
     
     override func gameSceneDidAddEntity(entity: GPEntity) -> Bool
     {
@@ -105,5 +130,10 @@ class CustomSystem: GPSystem
         receivedRemoveEntity = true;
         
         return self.testEntityToRemove(entity);
+    }
+    
+    override func entityModified(entity: GPEntity)
+    {
+        receivedModifyEntity = true;
     }
 }
