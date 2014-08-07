@@ -62,6 +62,8 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     private var _worldNode: SKNode;
     // The last update time interval tick. Used to calculate a delta time (time difference) between frames
     private var _lastUpdateTimeInterval: NSTimeInterval = 0;
+    // The event dispatcher that handles event handling on the game screen
+    private var _eventDispatcher: GPEventDispatcher = GPEventDispatcher();
     
     // Gets the world node of this game scene.
     //
@@ -70,6 +72,9 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // useful when making camera objects etc., since the SKScene node cannot have transformations
     // applied to them.
     var worldNode: SKNode { get { return _worldNode; } }
+    
+    // Gets the event dispatcher for this game scene
+    var eventDispatcher: GPEventDispatcher { get { return _eventDispatcher } }
     
     init(coder aDecoder: NSCoder!)
     {
