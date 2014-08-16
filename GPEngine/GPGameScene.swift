@@ -71,10 +71,10 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // transformation modifications to properties such as position, scale and rotation, and are
     // useful when making camera objects etc., since the SKScene node cannot have transformations
     // applied to them.
-    var worldNode: SKNode { get { return _worldNode; } }
+    var worldNode: SKNode { return _worldNode; }
     
     // Gets the event dispatcher for this game scene
-    var eventDispatcher: GPEventDispatcher { get { return _eventDispatcher } }
+    var eventDispatcher: GPEventDispatcher { return _eventDispatcher }
     
     required init(coder aDecoder: NSCoder!)
     {

@@ -15,7 +15,7 @@ class GPEventDispatcher: NSObject
     private var events: [String: [GPEventListener]] = [String: [GPEventListener]]();
     
     // Gets the number of events currently registered on this GPEventDispatcher
-    var eventCount: Int { get { return events.count; } }
+    var eventCount: Int { return events.count; }
     
     // Makes a given event listener listen for a specific type of event dispatched on this event dispatcher
     func addEventListener<T: GPEventListener where T: Equatable>(listener: T, eventType: GPEvent.Type)

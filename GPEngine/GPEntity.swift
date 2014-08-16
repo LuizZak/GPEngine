@@ -32,7 +32,7 @@ class GPEntity: NSObject
     var type: Int { get { return _type; } set { _type = newValue; self.gameScene?.entityModified(self); } }
     
     // Gets this entity's node
-    var node: SKNode { get { return _node; } }
+    var node: SKNode { return _node; }
     
     init(_ node : SKNode)
     {
