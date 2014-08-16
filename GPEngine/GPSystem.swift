@@ -18,7 +18,7 @@ class GPSystem: GPGameSceneNotifier
     // The default entity selector for this game scene object
     var entitySelector: GPEntitySelector;
     
-    init()
+    override init()
     {
         self.entitySelector = GPEntitySelector(GPSRNone());
         
