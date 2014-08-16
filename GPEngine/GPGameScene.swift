@@ -127,14 +127,14 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
             timeSinceLast = 1.0 / 60.0;
             self._lastUpdateTimeInterval = currentTime;
         }
-    
+        
         self.updateWithTimeSinceLastUpdate(timeSinceLast);
     }
     
     override func didEvaluateActions()
     {
         super.didEvaluateActions();
-    
+        
         for system in _systems
         {
             system.didEvaluateActions();
@@ -144,7 +144,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     override func didSimulatePhysics()
     {
         super.didSimulatePhysics();
-    
+        
         for system in _systems
         {
             system.didSimulatePhysics();
@@ -159,7 +159,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
         {
             self.removeSystem(self._systems[0]);
         }
-    
+        
         // Remove todas as entides
         while(_entities.count > 0)
         {
@@ -176,11 +176,11 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     func addEntity(entity: GPEntity, toNode node:SKNode)
     {
         self._entities += entity;
-    
+        
         node.addChild(entity.node);
         
         entity.gameScene = self;
-    
+        
         // Fire the notifiers
         for notifier in self._notifiers
         {
@@ -192,14 +192,14 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     func removeEntity(entity: GPEntity)
     {
         self._entities.remove(entity);
-    
+        
         entity.node.removeFromParent();
-    
+        
         if(entity.gameScene == self)
         {
             entity.gameScene = nil;
         }
-    
+        
         // Fire the notifiers
         for notifier in self._notifiers
         {
@@ -216,14 +216,14 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
                 return entity;
             }
         }
-    
+        
         return nil;
     }
     // Returns a list of entities in this scene that match the given type
     func getEntitiesByType(type: Int) -> [GPEntity]
     {
         var array: [GPEntity] = [];
-    
+        
         for entity in array
         {
             if((entity.type & type) != 0)
@@ -231,7 +231,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
                 array += _entities;
             }
         }
-    
+        
         return array;
     }
     
@@ -262,27 +262,27 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     func addSystem(system: GPSystem)
     {
         system.willAddToScene(self);
-    
+        
         self._systems += system;
-    
+        
         // Forces the system to load the relevant entities from this scene now
         system.reloadEntities(_entities);
-    
+        
         // Adds the system as a notifier for this game scene
         _notifiers += system;
-    
+        
         system.didAddToScene();
     }
     // Removes a system from this game scene
     func removeSystem(system: GPSystem)
     {
         system.willRemoveFromScene();
-    
+        
         self._systems -= system;
-    
+        
         // Remove the system as a notifier
         self._notifiers -= system;
-    
+        
         system.didRemoveFromScene();
     }
     // Returns a system in this game scene that derives from a specific class
@@ -295,7 +295,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
                 return system as? T;
             }
         }
-    
+        
         return nil;
     }
     
