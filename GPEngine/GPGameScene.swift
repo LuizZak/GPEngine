@@ -14,8 +14,8 @@ func ==(lhs: GPGameSceneNotifier, rhs: GPGameSceneNotifier) -> Bool
     return lhs.isEqual(rhs);
 }
 
-// Protocolo implementado em sistemas, serve para notificar quando
-// entidades são adicionadas/removidas/modificadas em uma GameScene
+// Protocol to be implemented by systens, used to notify when
+// entities are added/removed/modified in a GameScene
 class GPGameSceneNotifier: NSObject, Equatable
 {
     // Notifies when an entity was added to the scene. The return value depends on the class that implements it.

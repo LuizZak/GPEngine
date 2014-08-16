@@ -100,7 +100,7 @@ class GPSystem: GPGameSceneNotifier
     {
         if(entities.contains(entity))
         {
-            // Testa se a entidade não cabe mais ao selector
+            // Test if the entity does not fits the selector anymore
             if(!entitySelector.applyRuleToEntity(entity) && self.testEntityToRemove(entity))
             {
                 entities.remove(entity);
