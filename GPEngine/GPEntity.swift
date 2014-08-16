@@ -95,15 +95,15 @@ class GPEntity: NSObject
     }
     
     // Gets a list of components that match a given component class type
-    func getComponentsWithType(type: GPComponent.Type) -> [GPComponent]
+    func getComponentsWithType<T: GPComponent>(type: T.Type) -> [T]
     {
-        var ret: [GPComponent] = [];
+        var ret: [T] = [];
         
         for comp in self._components
         {
-            if(comp.isKindOfClass(type))
+            if(comp is T)
             {
-                ret += comp;
+                ret += (comp as T);
             }
         }
         
