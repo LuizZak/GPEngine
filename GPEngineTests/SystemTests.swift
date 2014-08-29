@@ -122,18 +122,20 @@ class CustomSystem: GPSystem
     {
         receivedAddEntity = true;
         
-        return self.testEntityToAdd(entity);
+        return super.gameSceneDidAddEntity(entity);
     }
     
     override func gameSceneDidRemoveEntity(entity: GPEntity) -> Bool
     {
         receivedRemoveEntity = true;
         
-        return self.testEntityToRemove(entity);
+        return super.gameSceneDidRemoveEntity(entity);
     }
     
     override func entityModified(entity: GPEntity)
     {
         receivedModifyEntity = true;
+        
+        super.entityModified(entity);
     }
 }
