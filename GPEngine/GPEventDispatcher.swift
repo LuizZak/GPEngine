@@ -20,6 +20,7 @@ class GPEventDispatcher: NSObject
     // Makes a given event listener listen for a specific type of event dispatched on this event dispatcher
     func addEventListener<T: GPEventListener where T: Equatable>(listener: T, eventType: GPEvent.Type)
     {
+        // TODO: Find a better way to derive a unique key for the event type for the events dictionary
         var hashEventType = NSStringFromClass(eventType);
         
         // Try to find the key bonded to the event
@@ -41,6 +42,7 @@ class GPEventDispatcher: NSObject
     // Removes the given event listener from listening to a specific type of events
     func removeEventListener<T: GPEventListener where T: Equatable>(listener: T, eventType: GPEvent.Type)
     {
+        // TODO: Find a better way to derive a unique key for the event type for the events dictionary
         var hashEventType = NSStringFromClass(eventType);
         
         self.internalRemoveEventListener(listener, hashEventType);
@@ -89,6 +91,7 @@ class GPEventDispatcher: NSObject
     func dispatchEvent(event: GPEvent)
     {
         // Find the lsit of listeners
+        // TODO: Find a better way to derive a unique key for the event type for the events dictionary
         var hashEventType = NSStringFromClass(event.classForCoder);
         
         if let list = self.events[hashEventType]
