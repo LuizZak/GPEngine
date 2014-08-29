@@ -15,7 +15,7 @@ import GPEngine
 class SystemTests: XCTestCase
 {
     var view: SKView?;
-    var scene: GPGameScene?;
+    var scene: GPGameScene = GPGameScene();
     
     override func setUp()
     {
@@ -39,30 +39,30 @@ class SystemTests: XCTestCase
     {
         var system = CustomSystem();
         
-        scene?.addSystem(system);
+        scene.addSystem(system);
         
         // Test system add
-        XCTAssert(scene?.getSystemWithType(GPSystem) != nil, "Systems must be added after a call to GPGameScene.addSystem()")
+        XCTAssert(scene.getSystemWithType(GPSystem) != nil, "Systems must be added after a call to GPGameScene.addSystem()")
     }
     
     func testRemoveSystem()
     {
         var system = CustomSystem();
         
-        scene?.addSystem(system)
-        scene?.removeSystem(system)
+        scene.addSystem(system)
+        scene.removeSystem(system)
         
         // Test system add
-        XCTAssert(scene?.getSystemWithType(GPSystem) == nil, "Systems must be removed after a call to GPGameScene.removeSystem()")
+        XCTAssert(scene.getSystemWithType(GPSystem) == nil, "Systems must be removed after a call to GPGameScene.removeSystem()")
     }
     
     func testAddEntityNotify()
     {
         var system = CustomSystem();
         
-        scene?.addSystem(system)
+        scene.addSystem(system)
         
-        scene?.addEntity(GPEntity(SKNode()));
+        scene.addEntity(GPEntity(SKNode()));
         
         // Test system add
         XCTAssert(system.receivedAddEntity, "Systems must be notified of entity insertion via the gameSceneDidAddEntity() method")
@@ -73,10 +73,10 @@ class SystemTests: XCTestCase
         var system = CustomSystem();
         var entity = GPEntity(SKNode());
         
-        scene?.addSystem(system)
+        scene.addSystem(system)
         
-        scene?.addEntity(entity);
-        scene?.removeEntity(entity);
+        scene.addEntity(entity);
+        scene.removeEntity(entity);
         
         // Test system add
         XCTAssert(system.receivedRemoveEntity, "Systems must be notified of entity removal via the gameSceneDidRemoveEntity() method")
@@ -87,9 +87,9 @@ class SystemTests: XCTestCase
         var system = CustomSystem();
         var entity = GPEntity(SKNode());
         
-        scene?.addSystem(system)
+        scene.addSystem(system)
         
-        scene?.addEntity(entity);
+        scene.addEntity(entity);
         
         entity.id = 10;
         
