@@ -123,7 +123,7 @@ class EventingTests: XCTestCase
     }
 }
 
-class EventReceiverTestClass: GPEntity, GPEventListener, Equatable
+class EventReceiverTestClass: GPEntity, GPEventListener
 {
     var received = false;
     var hitCount = 0;
@@ -138,9 +138,4 @@ class EventReceiverTestClass: GPEntity, GPEventListener, Equatable
 class CustomEvent: GPEvent
 {
     
-}
-
-func ==(lhs: EventReceiverTestClass, rhs: EventReceiverTestClass) -> Bool
-{
-    return lhs.isEqual(rhs);
 }
