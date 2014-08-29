@@ -31,6 +31,16 @@ class EventingTests: XCTestCase
     
     func testMultiEventAdd()
     {
+        // Test multiple event hooking
+        //
+        // 1. Add one listener to two events
+        // -> The event count should be 2!
+        // 
+        // 2. Remove all listeners on that listener
+        // 3. Add the same listener twice on the same event
+        // 4. Dispatch that event
+        // -> The listener should only be called once!
+        
         var skNode = SKNode();
         var receiv = EventReceiverTestClass(skNode);
         
@@ -51,6 +61,18 @@ class EventingTests: XCTestCase
     
     func testEventRemove()
     {
+        // Test the removeAllEventsForListener()
+        //
+        // 1. Add one listener to an event type
+        // 2. Use the removelAllEventsForListener() with that listener
+        // -> The event count should be 0!
+        //
+        // 3. Add two listeners to an event type
+        // -> The event count should be 1!
+        //
+        // 4. Use the removelAllEventsForListener() with one of the listeners
+        // -> The event count should still be 1!
+        
         var skNode = SKNode();
         var receiv1 = EventReceiverTestClass(skNode);
         var receiv2 = EventReceiverTestClass(skNode);
@@ -73,6 +95,12 @@ class EventingTests: XCTestCase
     
     func testEventRemoveAll()
     {
+        // Test the removeAllEventsForListener()
+        // 
+        // 1. Add one listener to two different event types
+        // 2. Use the removelAllEventsForListener() with that listener
+        // -> The event count should be 0!
+        
         var skNode = SKNode();
         var receiv = EventReceiverTestClass(skNode);
         
@@ -86,6 +114,12 @@ class EventingTests: XCTestCase
     
     func testEventDispatch()
     {
+        // Test the basic event dispatching
+        //
+        // 1. Add one listener to an event type
+        // 2. Dispatch that event
+        // -> The listener should be called!
+        
         var skNode = SKNode();
         var receiv = EventReceiverTestClass(skNode);
         
@@ -97,6 +131,12 @@ class EventingTests: XCTestCase
     
     func testMultiListenersEventDispatch()
     {
+        // Test multiple listeners to same event dispatching
+        //
+        // 1. Add two listeners to an event type
+        // 2. Dispatch that event
+        // -> Both listeners should be called!
+        
         var skNode = SKNode();
         var receiv1 = EventReceiverTestClass(skNode);
         var receiv2 = EventReceiverTestClass(skNode);
@@ -111,12 +151,18 @@ class EventingTests: XCTestCase
     
     func testRemoveAllListeners()
     {
+        // Test the removeAllEvents() method on the dispatcher
+        // 
+        // 1. Add two listeners to two distict events
+        // 2. Use the removeAllEvents() to clear the events
+        // -> The event count should be 0!
+        
         var skNode = SKNode();
         var receiv1 = EventReceiverTestClass(skNode);
         var receiv2 = EventReceiverTestClass(skNode);
         
         disp.addEventListener(receiv1, eventType: GPEvent.self);
-        disp.addEventListener(receiv2, eventType: GPEvent.self);
+        disp.addEventListener(receiv2, eventType: CustomEvent.self);
         
         disp.removeAllEvents();
         
@@ -124,6 +170,7 @@ class EventingTests: XCTestCase
     }
 }
 
+// Test class used to capture event receiving
 class EventReceiverTestClass: GPEntity, GPEventListener
 {
     var received = false;
@@ -136,6 +183,7 @@ class EventReceiverTestClass: GPEntity, GPEventListener
     }
 }
 
+// Custom event used to test different event types
 class CustomEvent: GPEvent
 {
     
