@@ -94,6 +94,21 @@ class GPEntity: NSObject
         return false;
     }
     
+    // Gets a single component that matches a given component class type
+    // If no components match the passed component type, nil is returned
+    func getComponentWithType<T: GPComponent>(type: T.Type) -> T?
+    {
+        for comp in self._components
+        {
+            if(comp is T)
+            {
+                return comp as? T;
+            }
+        }
+        
+        return nil;
+    }
+    
     // Gets a list of components that match a given component class type
     func getComponentsWithType<T: GPComponent>(type: T.Type) -> [T]
     {
