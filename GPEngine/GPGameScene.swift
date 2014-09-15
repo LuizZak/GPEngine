@@ -76,7 +76,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // Gets the event dispatcher for this game scene
     var eventDispatcher: GPEventDispatcher { return _eventDispatcher }
     
-    required init(coder aDecoder: NSCoder!)
+    required init(coder aDecoder: NSCoder)
     {
         self._worldNode = SKNode();
         super.init(coder: aDecoder);
@@ -301,7 +301,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     
     
     // Interface events
-    override func touchesBegan(touches: NSSet!, withEvent event: UIEvent!)
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent)
     {
         // Fire the notifiers
         for notifier in _notifiers
@@ -309,7 +309,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
             notifier.gameSceneDidReceiveTouchesBegan(touches, withEvent:event);
         }
     }
-    override func touchesEnded(touches: NSSet!, withEvent event: UIEvent!)
+    override func touchesEnded(touches: NSSet, withEvent event: UIEvent)
     {
         // Fire the notifiers
         for notifier in _notifiers
@@ -317,7 +317,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
             notifier.gameSceneDidReceiveTouchesEnded(touches, withEvent:event);
         }
     }
-    override func touchesMoved(touches: NSSet!, withEvent event: UIEvent!)
+    override func touchesMoved(touches: NSSet, withEvent event: UIEvent)
     {
         // Fire the notifiers
         for notifier in _notifiers
@@ -333,7 +333,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
             notifier.gameSceneDidReceiveTouchesCancelled(touches, withEvent:event);
         }
     }
-    override func didMoveToView(view: SKView!)
+    override func didMoveToView(view: SKView)
     {
         // Fire the notifiers
         for notifier in _notifiers
@@ -341,7 +341,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
             notifier.gameSceneDidAddToView();
         }
     }
-    override func willMoveFromView(view: SKView!)
+    override func willMoveFromView(view: SKView)
     {
         // Fire the notifiers
         for notifier in _notifiers
