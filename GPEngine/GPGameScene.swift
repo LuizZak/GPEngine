@@ -76,7 +76,7 @@ class GPGameScene: SKScene, SKPhysicsContactDelegate
     // Gets the event dispatcher for this game scene
     var eventDispatcher: GPEventDispatcher { return _eventDispatcher }
     
-    required init(coder aDecoder: NSCoder)
+    required init?(coder aDecoder: NSCoder)
     {
         self._worldNode = SKNode();
         super.init(coder: aDecoder);
