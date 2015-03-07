@@ -20,9 +20,6 @@ public class GPEntity: Equatable
     /// A bitmask field used to quickly describe the type of this entity
     private var _type = 0;
     
-    /// The game scene that owns this GPEntity instance
-    public var gameScene : GPGameScene?;
-    
     /// The gamespace that owns this entity
     private var _space: GPSpace;
     

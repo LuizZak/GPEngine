@@ -17,11 +17,14 @@ public class GPGame
     /// The list of systems that can manipulate the spaces
     private var _systems: [GPSystem];
     
-    // The event dispatcher that handles event handling on the game
+    /// The event dispatcher that handles event handling on the game
     private var _eventDispatcher: GPEventDispatcher = GPEventDispatcher();
     
-    // Gets the event dispatcher for this game
+    /// Gets the event dispatcher for this game
     var eventDispatcher: GPEventDispatcher { return _eventDispatcher }
+    
+    /// The last update time interval tick. Used to calculate a delta time (time difference) between frames
+    private var _lastUpdateTimeInterval: NSTimeInterval = 0;
     
     public init()
     {
@@ -29,9 +32,29 @@ public class GPGame
         _systems = [GPSystem]();
     }
     
+    public func updateWithTimeSinceLastUpdate(timeSinceLast: CFTimeInterval)
+    {
+        /* Called before each frame is rendered */
+        
+    }
+    
     /// Updates this game object, with a specified time since the last frame in milliseconds
     public func update(dt: NSTimeInterval)
     {
+        // Handle time delta.
+        // If we drop below 60fps, we still want everything to move the same distance.
+        var timeSinceLast = dt - self._lastUpdateTimeInterval;
+        self._lastUpdateTimeInterval = dt;
+        
+        if (timeSinceLast > 1)
+        {
+            // more than a second since last update
+            timeSinceLast = 1.0 / 60.0;
+            self._lastUpdateTimeInterval = dt;
+        }
+        
+        self.updateWithTimeSinceLastUpdate(timeSinceLast);
+        
         for space in _spaces
         {
             if(space.active)
