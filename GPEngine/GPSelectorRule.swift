@@ -9,67 +9,67 @@
 import Foundation
 
 // Specifies a base class to be implemented by selector rules
-class GPSelectorRule
+public class GPSelectorRule
 {
     // Applies the selector rule to an entity
-    func applyRule(entity: GPEntity) -> Bool
+    public func applyRule(entity: GPEntity) -> Bool
     {
         return true;
     }
 }
 
 // Describes a selector rule that filter entities by components
-class GPSRComponentSelector : GPSelectorRule
+public class GPSRComponent : GPSelectorRule
 {
-    var componentClass: GPComponent.Type;
+    public var componentClass: GPComponent.Type;
     
-    init(_ componentClass: GPComponent.Type)
+    public init(_ componentClass: GPComponent.Type)
     {
         self.componentClass = componentClass;
     }
     
-    override func applyRule(entity: GPEntity) -> Bool
+    public override func applyRule(entity: GPEntity) -> Bool
     {
-        return entity.hasComponentType(componentClass);
+        return entity.hasComponentType(componentClass.self);
     }
 }
 
 // Describes a selector rule that always returns false
-class GPSRNone : GPSelectorRule
+public class GPSRNone : GPSelectorRule
 {
-    override func applyRule(entity: GPEntity) -> Bool
+    public override func applyRule(entity: GPEntity) -> Bool
     {
         return false;
     }
 }
 
 // Describes a selector rule that filters entities by ID
-class GPSRIDSelector : GPSelectorRule
+public class GPSREntityID : GPSelectorRule
 {
-    var id : Int;
+    public var id : Int;
     
-    init(_ id: Int)
+    public init(_ id: Int)
     {
         self.id = id;
     }
     
-    override func applyRule(entity: GPEntity) -> Bool
+    public override func applyRule(entity: GPEntity) -> Bool
     {
         return entity.id == self.id;
     }
 }
 
 // Describes a selector rule that filters entities by type
-class GPSRTypeSelector : GPSelectorRule
+public class GPSRType : GPSelectorRule
 {
-    var type: Int;
+    public var type: Int;
     
-    init(_ id: Int)
+    public init(_ id: Int)
     {
         self.type = id;
     }
     
-    override func applyRule(entity: GPEntity) -> Bool
+    public override func applyRule(entity: GPEntity) -> Bool
     {
         return (entity.type & self.type) != 0;
     }
@@ -77,18 +77,18 @@ class GPSRTypeSelector : GPSelectorRule
 
 // Describes a selector rule that groups two selector rules with an AND operation
 // The operation is automatically short-circuited by the underlying runtime
-class GPSRAndSelector : GPSelectorRule
+public class GPSRAnd : GPSelectorRule
 {
-    var firstRule: GPSelectorRule;
-    var secondRule: GPSelectorRule;
+    public var firstRule: GPSelectorRule;
+    public var secondRule: GPSelectorRule;
     
-    init(_ firstRule: GPSelectorRule, _ secondRule : GPSelectorRule)
+    public init(_ firstRule: GPSelectorRule, _ secondRule : GPSelectorRule)
     {
         self.firstRule = firstRule;
         self.secondRule = secondRule;
     }
     
-    override func applyRule(entity: GPEntity) -> Bool
+    public override func applyRule(entity: GPEntity) -> Bool
     {
         return firstRule.applyRule(entity) && secondRule.applyRule(entity);
     }
@@ -96,34 +96,34 @@ class GPSRAndSelector : GPSelectorRule
 
 // Describes a selector rule that groups two selector rules with an OR operation
 // The operation is automatically short-circuited by the underlying runtime
-class GPSROrSelector : GPSelectorRule
+public class GPSROr : GPSelectorRule
 {
-    var firstRule: GPSelectorRule;
-    var secondRule: GPSelectorRule;
+    public var firstRule: GPSelectorRule;
+    public var secondRule: GPSelectorRule;
     
-    init(_ firstRule: GPSelectorRule, _ secondRule : GPSelectorRule)
+    public init(_ firstRule: GPSelectorRule, _ secondRule : GPSelectorRule)
     {
         self.firstRule = firstRule;
         self.secondRule = secondRule;
     }
     
-    override func applyRule(entity: GPEntity) -> Bool
+    public override func applyRule(entity: GPEntity) -> Bool
     {
         return firstRule.applyRule(entity) || secondRule.applyRule(entity);
     }
 }
 
 // Describes a selector rule that negates the result of another selector rule nested within it
-class GPSRNotSelector : GPSelectorRule
+public class GPSRNot : GPSelectorRule
 {
-    var rule: GPSelectorRule;
+    public var rule: GPSelectorRule;
     
-    init(_ firstRule: GPSelectorRule)
+    public init(_ firstRule: GPSelectorRule)
     {
         self.rule = firstRule;
     }
     
-    override func applyRule(entity: GPEntity) -> Bool
+    public override func applyRule(entity: GPEntity) -> Bool
     {
         return !rule.applyRule(entity);
     }

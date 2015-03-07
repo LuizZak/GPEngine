@@ -9,7 +9,7 @@
 import UIKit
 
 // A protocol to be implemented by classed that receive events fired by the game screen
-protocol GPEventListener
+public protocol GPEventListener
 {
     // Receives an event fired by the game screen
     func receiveEvent(event: GPEvent);

@@ -1,6 +1,6 @@
 //
 //  Utils.swift
-//  GPEngine
+//  JelloSwift
 //
 //  Created by Luiz Fernando Silva on 03/08/14.
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
@@ -8,12 +8,12 @@
 
 import Foundation
 
-func +=<T>(inout lhs: Array<T>, rhs: T)
+func +=<T>(inout lhs:Array<T>, rhs:T)
 {
     lhs.append(rhs);
 }
 
-func -=<T: Equatable>(inout lhs: Array<T>, rhs: T)
+func -=<T: Equatable>(inout lhs:Array<T>, rhs:T)
 {
     lhs.remove(rhs);
 }
@@ -51,4 +51,24 @@ extension Array
             }
         }
     }
+    
+    func forEach(doThis: (element: T) -> Void)
+    {
+        for e in self
+        {
+            doThis(element: e)
+        }
+    }
+}
+
+func fillArray<T: Equatable>(object: T, count: Int) -> [T]
+{
+    var ret: [T] = [];
+    
+    for i in 0..<count
+    {
+        ret += object;
+    }
+    
+    return ret;
 }

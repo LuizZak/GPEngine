@@ -28,8 +28,8 @@ class EntityTests: XCTestCase
 
     func testComponentAdd()
     {
-        var node = SKNode();
-        var entity = GPEntity(node);
+        var space = GPSpace();
+        var entity = GPEntity(space);
         var comp = GPComponent();
         
         entity.addComponent(comp);
@@ -40,8 +40,8 @@ class EntityTests: XCTestCase
     
     func testComponentRemove()
     {
-        var node = SKNode();
-        var entity = GPEntity(node);
+        var space = GPSpace();
+        var entity = GPEntity(space);
         var comp = GPComponent();
         
         entity.addComponent(comp);
@@ -53,8 +53,8 @@ class EntityTests: XCTestCase
     
     func testComponentGetType()
     {
-        var node = SKNode();
-        var entity = GPEntity(node);
+        var space = GPSpace();
+        var entity = GPEntity(space);
         var comp1 = GPComponent();
         var comp2 = TestComponent();
         

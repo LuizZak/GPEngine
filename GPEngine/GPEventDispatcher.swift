@@ -9,16 +9,16 @@
 import UIKit
 
 // A class that is responsible for handling dispatching of events and their associated receivers
-class GPEventDispatcher: NSObject
+public class GPEventDispatcher
 {
     // Represents the dictionary of event receivers listening specific events
     private var events: [String: [GPEventListener]] = [String: [GPEventListener]]();
     
     // Gets the number of events currently registered on this GPEventDispatcher
-    var eventCount: Int { return events.count; }
+    public var eventCount: Int { return events.count; }
     
     // Makes a given event listener listen for a specific type of event dispatched on this event dispatcher
-    func addEventListener<T: GPEventListener where T: Equatable>(listener: T, eventType: GPEvent.Type)
+    public func addEventListener<T: GPEventListener where T: Equatable>(listener: T, eventType: GPEvent.Type)
     {
         // TODO: Find a better way to derive a unique key for the event type for the events dictionary
         var hashEventType = NSStringFromClass(eventType);
@@ -40,7 +40,7 @@ class GPEventDispatcher: NSObject
     }
     
     // Removes the given event listener from listening to a specific type of events
-    func removeEventListener<T: GPEventListener where T: Equatable>(listener: T, eventType: GPEvent.Type)
+    public func removeEventListener<T: GPEventListener where T: Equatable>(listener: T, eventType: GPEvent.Type)
     {
         // TODO: Find a better way to derive a unique key for the event type for the events dictionary
         var hashEventType = NSStringFromClass(eventType);
@@ -49,7 +49,7 @@ class GPEventDispatcher: NSObject
     }
     
     // Removes a given event listener from all events it is currently listening to
-    func removeAllEventsForListener<T: GPEventListener where T: Equatable>(listener: T)
+    public func removeAllEventsForListener<T: GPEventListener where T: Equatable>(listener: T)
     {
         var i: Int = 0;
         while(i < self.events.keys.array.count)
@@ -66,7 +66,7 @@ class GPEventDispatcher: NSObject
     }
     
     // Removes all the events currently registered on this event dispatcher
-    func removeAllEvents()
+    public func removeAllEvents()
     {
         // Clear the event list
         self.events.removeAll(keepCapacity: false)
@@ -88,7 +88,7 @@ class GPEventDispatcher: NSObject
     }
     
     // Dispatches the given event in this event dispatcher
-    func dispatchEvent(event: GPEvent)
+    public func dispatchEvent(event: GPEvent)
     {
         // Find the lsit of listeners
         // TODO: Find a better way to derive a unique key for the event type for the events dictionary

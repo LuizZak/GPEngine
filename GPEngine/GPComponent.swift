@@ -8,8 +8,13 @@
 
 import UIKit
 
-// Describes a game component
-class GPComponent: NSObject
+/// Describes a game component
+public class GPComponent: Equatable
 {
     
+}
+
+public func ==(lhs: GPComponent, rhs: GPComponent) -> Bool
+{
+    return lhs === rhs;
 }

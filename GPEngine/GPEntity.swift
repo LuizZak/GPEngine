@@ -9,83 +9,82 @@
 import UIKit
 import SpriteKit
 
-// Describes a game entity
-class GPEntity: NSObject
+/// Describes a game entity
+public class GPEntity: Equatable
 {
-    // The internal list of components for this entity
+    /// The internal list of components for this entity
     private var _components : [GPComponent] = [];
     
-    // The unique identifier for this entity
+    /// The unique identifier for this entity
     private var _id = 0;
-    // A bitmask field used to quickly describe the type of this entity
+    /// A bitmask field used to quickly describe the type of this entity
     private var _type = 0;
     
-    // A node that is associated with this entity
-    private var _node : SKNode;
+    /// The game scene that owns this GPEntity instance
+    public var gameScene : GPGameScene?;
     
-    // The game scene that owns this GPEntity instance
-    var gameScene : GPGameScene?;
+    /// The gamespace that owns this entity
+    private var _space: GPSpace;
     
-    // Gets or sets the ID of this entity
-    var id: Int { get { return _id; } set { _id = newValue; self.gameScene?.entityModified(self); } }
-    // Gets or sets the type of this entity
-    var type: Int { get { return _type; } set { _type = newValue; self.gameScene?.entityModified(self); } }
+    /// Gets or sets the ID of this entity
+    public var id: Int { get { return _id; } set { _id = newValue; } }
+    /// Gets or sets the type of this entity
+    public var type: Int { get { return _type; } set { _type = newValue; } }
     
-    // Gets this entity's node
-    var node: SKNode { return _node; }
+    /// Gets the game space that owns this entity
+    public var space: GPSpace { return _space; }
     
-    init(_ node : SKNode)
+    public init(_ space: GPSpace)
     {
-        self._node = node;
+        self._space = space;
         
-        super.init();
+        space.addEntity(self);
     }
     
-    // Adds the given component to this entity
-    func addComponent(component: GPComponent)
+    /// Moves this entity to another space
+    public func moveToSpace(space: GPSpace)
+    {
+        _space.removeEntity(self);
+        
+        space.addEntity(self);
+    }
+    
+    /// Adds the given component to this entity
+    public func addComponent(component: GPComponent)
     {
         self.internalAddComponent(component);
-        
-        // Notify the game scene this entity has been modified
-        self.gameScene?.entityModified(self);
     }
     
-    // Adds an array of components to this entity
-    func addComponents(components: [GPComponent])
+    /// Adds an array of components to this entity
+    public func addComponents(components: [GPComponent])
     {
         self._components += components;
-        
-        // Notify the game scene this entity has been modified
-        self.gameScene?.entityModified(self);
     }
     
-    // Removes a component from this entity
-    func removeComponent(component: GPComponent)
+    /// Removes a component from this entity
+    public func removeComponent(component: GPComponent)
     {
         self.internalRemoveComponent(component);
-        
-        // Notify the game scene this entity has been modified
-        self.gameScene?.entityModified(self);
     }
     
-    // Intenral method that adds a components to this entity
+    /// Intenral method that adds a components to this entity
     private func internalAddComponent(component: GPComponent)
     {
         self._components += component;
     }
     
-    // Internal method that removes components from this entity
+    /// Internal method that removes components from this entity
     private func internalRemoveComponent(component: GPComponent)
     {
         self._components -= component;
     }
     
-    // Returns whether the entity has the given component type inside of it
-    func hasComponentType(type: GPComponent.Type) -> Bool
+    /// Returns whether the entity has the given component type inside of it
+    public func hasComponentType<T: GPComponent>(type: T.Type) -> Bool
     {
         for comp in self._components
         {
-            if(comp.isKindOfClass(type))
+            if(comp.dynamicType.self === type)
             {
                 return true;
             }
@@ -94,9 +93,9 @@ class GPEntity: NSObject
         return false;
     }
     
-    // Gets a single component that matches a given component class type
-    // If no components match the passed component type, nil is returned
-    func getComponentWithType<T: GPComponent>(type: T.Type) -> T?
+    /// Gets a single component that matches a given component class type
+    /// If no components match the passed component type, nil is returned
+    public func getComponentWithType<T: GPComponent>(type: T.Type) -> T?
     {
         for comp in self._components
         {
@@ -109,8 +108,8 @@ class GPEntity: NSObject
         return nil;
     }
     
-    // Gets a list of components that match a given component class type
-    func getComponentsWithType<T: GPComponent>(type: T.Type) -> [T]
+    /// Gets a list of components that match a given component class type
+    public func getComponentsWithType<T: GPComponent>(type: T.Type) -> [T]
     {
         var ret: [T] = [];
         
@@ -118,21 +117,21 @@ class GPEntity: NSObject
         {
             if(comp is T)
             {
-                ret += (comp as T);
+                ret += (comp as! T);
             }
         }
         
         return ret;
     }
     
-    // Removes all components that match the given class type
-    func removeComponentsWithType(type: GPComponent.Type)
+    /// Removes all components that match the given class type
+    public func removeComponentsWithType<T: GPComponent>(type: T.Type)
     {
         var i:Int = 0;
         
         while(i < self._components.count)
         {
-            if(self._components[i].isKindOfClass(type))
+            if(self._components[i] is T)
             {
                 self._components.removeAtIndex(i);
             }
@@ -141,8 +140,10 @@ class GPEntity: NSObject
                 i++;
             }
         }
-        
-        // Notify the game scene this entity has been modified
-        self.gameScene?.entityModified(self);
     }
+}
+
+public func ==(lhs: GPEntity, rhs: GPEntity) -> Bool
+{
+    return lhs === rhs;
 }

@@ -10,6 +10,11 @@
 		A064D1FA1991CB3900B31697 /* GPEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1F91991CB3900B31697 /* GPEvent.swift */; };
 		A064D1FC1991CB5B00B31697 /* GPEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FB1991CB5B00B31697 /* GPEventListener.swift */; };
 		A064D1FE1991CC9F00B31697 /* GPEventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FD1991CC9F00B31697 /* GPEventDispatcher.swift */; };
+		A07CB23A1A644E6000D1B0CE /* GPGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07CB2391A644E6000D1B0CE /* GPGame.swift */; };
+		A07CB23C1A644FE100D1B0CE /* GPSubspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C19CBC1A644B4B00FC4656 /* GPSubspace.swift */; };
+		A07CB23D1A644FE300D1B0CE /* GPGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = A07CB2391A644E6000D1B0CE /* GPGame.swift */; };
+		A07CB23E1A644FEC00D1B0CE /* GPSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927392198F244100E8212E /* GPSystem.swift */; };
+		A07CB23F1A64500000D1B0CE /* GPSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C19CBA1A644A7300FC4656 /* GPSpace.swift */; };
 		A092738D198F1E3C00E8212E /* GPSelectorRule.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738C198F1E3C00E8212E /* GPSelectorRule.swift */; };
 		A092738F198F1E9000E8212E /* GPEntitySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = A092738E198F1E9000E8212E /* GPEntitySelector.swift */; };
 		A0927391198F23D400E8212E /* GPGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927390198F23D400E8212E /* GPGameScene.swift */; };
@@ -21,17 +26,17 @@
 		A099BC18198EF1440071C581 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC17198EF1440071C581 /* GameViewController.swift */; };
 		A099BC1B198EF1440071C581 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A099BC19198EF1440071C581 /* Main.storyboard */; };
 		A099BC1D198EF1440071C581 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A099BC1C198EF1440071C581 /* Images.xcassets */; };
-		A099BC29198EF1440071C581 /* GPEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC28198EF1440071C581 /* GPEngineTests.swift */; };
 		A099BC38198EF57D0071C581 /* GPComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC37198EF57D0071C581 /* GPComponent.swift */; };
 		A099BC3A198EF5A10071C581 /* GPEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC39198EF5A10071C581 /* GPEntity.swift */; };
 		A099BC3C198EF7FA0071C581 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC3B198EF7FA0071C581 /* Utils.swift */; };
+		A0C19CBB1A644A7300FC4656 /* GPSpace.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C19CBA1A644A7300FC4656 /* GPSpace.swift */; };
+		A0C19CBD1A644B4B00FC4656 /* GPSubspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C19CBC1A644B4B00FC4656 /* GPSubspace.swift */; };
 		A0C95470199285B10066F88F /* EntityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C9546E199285B10066F88F /* EntityTests.swift */; };
 		A0C95471199285B10066F88F /* EventingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C9546F199285B10066F88F /* EventingTests.swift */; };
 		A0C95472199285CF0066F88F /* GPEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1F91991CB3900B31697 /* GPEvent.swift */; };
 		A0C95473199285CF0066F88F /* GPEventListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FB1991CB5B00B31697 /* GPEventListener.swift */; };
 		A0C95474199285CF0066F88F /* GPEventDispatcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = A064D1FD1991CC9F00B31697 /* GPEventDispatcher.swift */; };
 		A0C95475199285CF0066F88F /* GPEntityBag.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927396198F306B00E8212E /* GPEntityBag.swift */; };
-		A0C95476199285CF0066F88F /* GPSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927392198F244100E8212E /* GPSystem.swift */; };
 		A0C95477199285CF0066F88F /* GPComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC37198EF57D0071C581 /* GPComponent.swift */; };
 		A0C95478199285CF0066F88F /* GPEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC39198EF5A10071C581 /* GPEntity.swift */; };
 		A0C95479199285CF0066F88F /* GPGameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0927390198F23D400E8212E /* GPGameScene.swift */; };
@@ -76,6 +81,7 @@
 		A064D1F91991CB3900B31697 /* GPEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEvent.swift; sourceTree = "<group>"; };
 		A064D1FB1991CB5B00B31697 /* GPEventListener.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEventListener.swift; sourceTree = "<group>"; };
 		A064D1FD1991CC9F00B31697 /* GPEventDispatcher.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEventDispatcher.swift; sourceTree = "<group>"; };
+		A07CB2391A644E6000D1B0CE /* GPGame.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPGame.swift; sourceTree = "<group>"; };
 		A092738C198F1E3C00E8212E /* GPSelectorRule.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPSelectorRule.swift; sourceTree = "<group>"; };
 		A092738E198F1E9000E8212E /* GPEntitySelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEntitySelector.swift; sourceTree = "<group>"; };
 		A0927390198F23D400E8212E /* GPGameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPGameScene.swift; sourceTree = "<group>"; };
@@ -91,10 +97,11 @@
 		A099BC1C198EF1440071C581 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		A099BC22198EF1440071C581 /* GPEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GPEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A099BC27198EF1440071C581 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A099BC28198EF1440071C581 /* GPEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPEngineTests.swift; sourceTree = "<group>"; };
 		A099BC37198EF57D0071C581 /* GPComponent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPComponent.swift; sourceTree = "<group>"; };
 		A099BC39198EF5A10071C581 /* GPEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPEntity.swift; sourceTree = "<group>"; };
 		A099BC3B198EF7FA0071C581 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		A0C19CBA1A644A7300FC4656 /* GPSpace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPSpace.swift; sourceTree = "<group>"; };
+		A0C19CBC1A644B4B00FC4656 /* GPSubspace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GPSubspace.swift; sourceTree = "<group>"; };
 		A0C9546E199285B10066F88F /* EntityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityTests.swift; sourceTree = "<group>"; };
 		A0C9546F199285B10066F88F /* EventingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventingTests.swift; sourceTree = "<group>"; };
 		A0C9547D19930B520066F88F /* SystemTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemTests.swift; sourceTree = "<group>"; };
@@ -172,7 +179,6 @@
 		A099BC25198EF1440071C581 /* GPEngineTests */ = {
 			isa = PBXGroup;
 			children = (
-				A099BC28198EF1440071C581 /* GPEngineTests.swift */,
 				A0C9546F199285B10066F88F /* EventingTests.swift */,
 				A0C9546E199285B10066F88F /* EntityTests.swift */,
 				A0C9547D19930B520066F88F /* SystemTests.swift */,
@@ -192,17 +198,36 @@
 		A099BC36198EF1B70071C581 /* GamePrototype */ = {
 			isa = PBXGroup;
 			children = (
+				A0C19CB91A644A1000FC4656 /* Selector */,
+				A0C19CB81A6449EA00FC4656 /* Core */,
 				A064D1F81991CB1B00B31697 /* Eventing */,
+				A07CB2391A644E6000D1B0CE /* GPGame.swift */,
+				A0927390198F23D400E8212E /* GPGameScene.swift */,
+				A099BC3B198EF7FA0071C581 /* Utils.swift */,
+			);
+			name = GamePrototype;
+			sourceTree = "<group>";
+		};
+		A0C19CB81A6449EA00FC4656 /* Core */ = {
+			isa = PBXGroup;
+			children = (
 				A0927396198F306B00E8212E /* GPEntityBag.swift */,
 				A0927392198F244100E8212E /* GPSystem.swift */,
 				A099BC37198EF57D0071C581 /* GPComponent.swift */,
 				A099BC39198EF5A10071C581 /* GPEntity.swift */,
-				A0927390198F23D400E8212E /* GPGameScene.swift */,
+				A0C19CBA1A644A7300FC4656 /* GPSpace.swift */,
+				A0C19CBC1A644B4B00FC4656 /* GPSubspace.swift */,
+			);
+			name = Core;
+			sourceTree = "<group>";
+		};
+		A0C19CB91A644A1000FC4656 /* Selector */ = {
+			isa = PBXGroup;
+			children = (
 				A092738E198F1E9000E8212E /* GPEntitySelector.swift */,
 				A092738C198F1E3C00E8212E /* GPSelectorRule.swift */,
-				A099BC3B198EF7FA0071C581 /* Utils.swift */,
 			);
-			name = GamePrototype;
+			name = Selector;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -312,13 +337,16 @@
 				A099BC16198EF1440071C581 /* GameScene.swift in Sources */,
 				A092738D198F1E3C00E8212E /* GPSelectorRule.swift in Sources */,
 				A0927397198F306B00E8212E /* GPEntityBag.swift in Sources */,
+				A07CB23A1A644E6000D1B0CE /* GPGame.swift in Sources */,
 				A099BC18198EF1440071C581 /* GameViewController.swift in Sources */,
 				A099BC38198EF57D0071C581 /* GPComponent.swift in Sources */,
 				A064D1FC1991CB5B00B31697 /* GPEventListener.swift in Sources */,
 				A064D1FA1991CB3900B31697 /* GPEvent.swift in Sources */,
 				A099BC3A198EF5A10071C581 /* GPEntity.swift in Sources */,
+				A0C19CBD1A644B4B00FC4656 /* GPSubspace.swift in Sources */,
 				A099BC12198EF1440071C581 /* AppDelegate.swift in Sources */,
 				A092738F198F1E9000E8212E /* GPEntitySelector.swift in Sources */,
+				A0C19CBB1A644A7300FC4656 /* GPSpace.swift in Sources */,
 				A0927393198F244100E8212E /* GPSystem.swift in Sources */,
 				A099BC3C198EF7FA0071C581 /* Utils.swift in Sources */,
 				A064D1FE1991CC9F00B31697 /* GPEventDispatcher.swift in Sources */,
@@ -330,21 +358,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A07CB23E1A644FEC00D1B0CE /* GPSystem.swift in Sources */,
+				A07CB23F1A64500000D1B0CE /* GPSpace.swift in Sources */,
 				A0C95472199285CF0066F88F /* GPEvent.swift in Sources */,
 				A0C95473199285CF0066F88F /* GPEventListener.swift in Sources */,
 				A0C95474199285CF0066F88F /* GPEventDispatcher.swift in Sources */,
+				A07CB23D1A644FE300D1B0CE /* GPGame.swift in Sources */,
 				A0C95475199285CF0066F88F /* GPEntityBag.swift in Sources */,
 				A0C9547E19930B520066F88F /* SystemTests.swift in Sources */,
-				A0C95476199285CF0066F88F /* GPSystem.swift in Sources */,
 				A0C95477199285CF0066F88F /* GPComponent.swift in Sources */,
 				A0C95478199285CF0066F88F /* GPEntity.swift in Sources */,
+				A07CB23C1A644FE100D1B0CE /* GPSubspace.swift in Sources */,
 				A0C95479199285CF0066F88F /* GPGameScene.swift in Sources */,
 				A0C9547A199285CF0066F88F /* GPEntitySelector.swift in Sources */,
 				A0C9547B199285CF0066F88F /* GPSelectorRule.swift in Sources */,
 				A0C9547C199285CF0066F88F /* Utils.swift in Sources */,
 				A0C95470199285B10066F88F /* EntityTests.swift in Sources */,
 				A0C95471199285B10066F88F /* EventingTests.swift in Sources */,
-				A099BC29198EF1440071C581 /* GPEngineTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,7 +449,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -456,7 +486,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
@@ -472,7 +502,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = GPEngine/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -486,7 +516,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = GPEngine/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";

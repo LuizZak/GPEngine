@@ -9,7 +9,7 @@
 import UIKit
 
 // Represents a game event that is broadcaster through a game screen
-class GPEvent: NSObject
+public class GPEvent: NSObject
 {
     
 }

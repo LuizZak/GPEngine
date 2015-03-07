@@ -10,19 +10,19 @@ import UIKit
 
 // Describes an object that is capable of filtering a list of entities
 // and return a new one that only contains objects that conform to a rule
-class GPEntitySelector: NSObject
+public class GPEntitySelector
 {
     // The base rule to apply
-    var baseRule: GPSelectorRule;
+    public private(set) var baseRule: GPSelectorRule;
     
-    init(_ rule: GPSelectorRule)
+    public init(_ rule: GPSelectorRule)
     {
         self.baseRule = rule;
     }
     
     // Applies the selector rule to an array of entities, and returns
     // an array of entities that passed the test
-    func applyRuleToArray(objs: [GPEntity]) -> [GPEntity]
+    public func applyRuleToArray(objs: [GPEntity]) -> [GPEntity]
     {
         var out: [GPEntity] = [];
         
@@ -38,7 +38,7 @@ class GPEntitySelector: NSObject
     }
     
     // Applies the selector rule to a given entity
-    func applyRuleToEntity(entity: GPEntity) -> Bool
+    public func applyRuleToEntity(entity: GPEntity) -> Bool
     {
         return baseRule.applyRule(entity);
     }

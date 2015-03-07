@@ -9,15 +9,15 @@
 import UIKit
 
 // Describes an object that bags entities from the game scene based on an entity selector
-class GPEntityBag: NSObject
+public class GPEntityBag
 {
     // The arrays of entities in this bag
-    var entities: [GPEntity] = [];
+    public var entities: [GPEntity] = [];
     // The entity selector filtering out the entities on this bag
-    var entitySelector: GPEntitySelector;
+    public var entitySelector: GPEntitySelector;
     
-    init(_ entitySelector: GPEntitySelector)
+    public init(selector: GPEntitySelector)
     {
-        self.entitySelector = entitySelector;
+        self.entitySelector = selector;
     }
 }
