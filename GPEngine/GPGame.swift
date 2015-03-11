@@ -10,12 +10,15 @@ import UIKit
 
 /// Represents a game object, which is the core object of this engine.
 /// Games contains spaces and systems, and manages the interactions between them.
-public class GPGame
+public class GPGame: UIResponder
 {
     /// The list of spaces currently registered on this game
     private var _spaces: [GPSpace];
     /// The list of systems that can manipulate the spaces
     private var _systems: [GPSystem];
+    
+    /// The last update time interval tick. Used to calculate a delta time (time difference) between frames
+    private var _lastUpdateTimeInterval: NSTimeInterval = 0;
     
     /// The event dispatcher that handles event handling on the game
     private var _eventDispatcher: GPEventDispatcher = GPEventDispatcher();
@@ -23,13 +26,15 @@ public class GPGame
     /// Gets the event dispatcher for this game
     var eventDispatcher: GPEventDispatcher { return _eventDispatcher }
     
-    /// The last update time interval tick. Used to calculate a delta time (time difference) between frames
-    private var _lastUpdateTimeInterval: NSTimeInterval = 0;
+    /// A custom optional view to dispatch along UI events
+    var view: UIView?;
     
-    public init()
+    public override init()
     {
         _spaces = [GPSpace]();
         _systems = [GPSystem]();
+        
+        super.init();
     }
     
     public func updateWithTimeSinceLastUpdate(timeSinceLast: CFTimeInterval)
@@ -85,7 +90,10 @@ public class GPGame
     /// Adds a space to the game
     public func addSpace(space: GPSpace)
     {
-        _spaces += space;
+        if(!_spaces.contains(space))
+        {
+            _spaces += space;
+        }
     }
     /// Removes a space from the game
     public func removeSpace(space: GPSpace)
@@ -101,7 +109,7 @@ public class GPGame
     /// Adds a system to the game, but only if there are no systems of its type registered
     public func addSystemOnce(system: GPSystem)
     {
-        if(!_systems.contains(system))
+        if(getSystemByType(system.dynamicType) == nil)
         {
             _systems += system;
         }
@@ -111,7 +119,7 @@ public class GPGame
     {
         for system in _systems
         {
-            if(system is T)
+            if(system.dynamicType.self === type)
             {
                 return system as? T;
             }
@@ -124,7 +132,7 @@ public class GPGame
     {
         for system in _systems
         {
-            if(system is T)
+            if(system.dynamicType.self === type)
             {
                 return true;
             }
@@ -137,5 +145,35 @@ public class GPGame
     public func removeSystem(system: GPSystem)
     {
         _systems -= system;
+    }
+    
+    override public func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent)
+    {
+        let event = GPTouchEvent(touches: touches, event: event, eventType: GPTouchEventType.TouchesBegan, view: view);
+        
+        for space in _spaces
+        {
+            space.eventDispatcher.dispatchEvent(event);
+        }
+    }
+    
+    override public func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent)
+    {
+        let event = GPTouchEvent(touches: touches, event: event, eventType: GPTouchEventType.TouchesMoved, view: view);
+        
+        for space in _spaces
+        {
+            space.eventDispatcher.dispatchEvent(event);
+        }
+    }
+    
+    override public func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent)
+    {
+        let event = GPTouchEvent(touches: touches, event: event, eventType: GPTouchEventType.TouchesEnded, view: view);
+        
+        for space in _spaces
+        {
+            space.eventDispatcher.dispatchEvent(event);
+        }
     }
 }

@@ -94,6 +94,12 @@ public class GPSubspace: Equatable
         }
     }
     
+    /// Function called whenever this subspace's space has been changed
+    func spaceSet(newSpace: GPSpace?)
+    {
+        
+    }
+    
     /// Clears all the entities from this subspace
     public func clearEntities()
     {

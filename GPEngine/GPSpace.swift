@@ -121,10 +121,12 @@ private extension GPSubspace
     func addedToSpace(space: GPSpace)
     {
         self.space = space;
+        spaceSet(space);
     }
     /// Called to notify this subspace that it has been removed from its current space
     func removedFromSpace()
     {
         self.space = nil;
+        spaceSet(nil);
     }
 }
