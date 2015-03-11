@@ -43,6 +43,15 @@ public class GPSRNone : GPSelectorRule
     }
 }
 
+// Describes a selector rule that always returns true
+public class GPSRAll : GPSelectorRule
+{
+    public override func applyRule(entity: GPEntity) -> Bool
+    {
+        return false;
+    }
+}
+
 // Describes a selector rule that filters entities by ID
 public class GPSREntityID : GPSelectorRule
 {
