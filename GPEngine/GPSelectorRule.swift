@@ -48,7 +48,7 @@ public class GPSRAll : GPSelectorRule
 {
     public override func applyRule(entity: GPEntity) -> Bool
     {
-        return false;
+        return true;
     }
 }
 
