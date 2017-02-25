@@ -15,10 +15,6 @@ open class Game: GameEventDispatcherDelegate {
     /// The list of systems that can manipulate the spaces
     internal(set) open var systems: [System]
     
-    /// The last update time interval tick. Used to calculate a delta time (time
-    /// difference) between frames
-    fileprivate var lastUpdateTime: DeltaTimeInterval = 0
-    
     /// The event dispatcher that handles event handling on the game
     internal(set) open var eventDispatcher: GameEventDispatcher = GameEventDispatcher()
     
@@ -37,29 +33,9 @@ open class Game: GameEventDispatcherDelegate {
         }
     }
     
-    /// Method called before each frame is rendered on the screen
-    open func updateWithTimeSinceLastUpdate(_ timeSinceLast: DeltaTimeInterval) {
-        /* Called before each frame is rendered */
-        
-    }
-    
     /// Updates this game object, with a specified time since the last frame in 
     /// milliseconds
-    open func updateAndRender(_ dt: DeltaTimeInterval) {
-        // Handle time delta.
-        // If we drop below 60fps, we still want everything to move the same
-        // distance.
-        var timeSinceLast = dt - self.lastUpdateTime
-        self.lastUpdateTime = dt
-        
-        if (timeSinceLast > 1) {
-            // more than a second since last update
-            timeSinceLast = 1.0 / 60.0
-            self.lastUpdateTime = dt
-        }
-        
-        self.updateWithTimeSinceLastUpdate(timeSinceLast)
-        
+    open func update(_ dt: DeltaTimeInterval) {
         for system in systems {
             system.update(spaces: spaces.filter { $0.active }, interval: dt)
         }
