@@ -38,7 +38,7 @@ class SystemTests: XCTestCase {
         game.addSystem(system)
         
         // Test system add
-        XCTAssert(game.getSystemByType(GPSystem.self) != nil, "Systems must be added after a call to GameScene.addSystem()")
+        XCTAssert(game.getSystemByType(System.self) != nil, "Systems must be added after a call to GameScene.addSystem()")
     }
     
     func testRemoveSystem() {
@@ -48,10 +48,10 @@ class SystemTests: XCTestCase {
         game.removeSystem(system)
         
         // Test system add
-        XCTAssert(game.getSystemByType(GPSystem.self) == nil, "Systems must be removed after a call to GameScene.removeSystem()")
+        XCTAssert(game.getSystemByType(System.self) == nil, "Systems must be removed after a call to GameScene.removeSystem()")
     }
 }
 
-class CustomSystem: GPSystem {
+class CustomSystem: System {
     
 }

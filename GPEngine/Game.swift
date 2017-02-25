@@ -15,7 +15,7 @@ open class Game: UIResponder {
     /// The list of spaces currently registered on this game
     internal(set) open var spaces: [Space]
     /// The list of systems that can manipulate the spaces
-    internal(set) open var systems: [GPSystem]
+    internal(set) open var systems: [System]
     
     /// The last update time interval tick. Used to calculate a delta time (time difference) between frames
     fileprivate var _lastUpdateTimeInterval: TimeInterval = 0
@@ -28,7 +28,7 @@ open class Game: UIResponder {
     
     public override init() {
         spaces = [Space]()
-        systems = [GPSystem]()
+        systems = [System]()
         
         super.init()
     }
@@ -85,17 +85,17 @@ open class Game: UIResponder {
     }
     
     /// Adds a system to the game
-    open func addSystem(_ system: GPSystem) {
+    open func addSystem(_ system: System) {
         systems.append(system)
     }
     /// Adds a system to the game, but only if there are no systems of its type registered
-    open func addSystemOnce(_ system: GPSystem) {
+    open func addSystemOnce(_ system: System) {
         if(getSystemByType(type(of: system)) == nil) {
             systems.append(system)
         }
     }
     /// Returns a system in the game that has the specified type, or nil, if none was found
-    open func getSystemByType<T: GPSystem>(_ type: T.Type) -> T? {
+    open func getSystemByType<T: System>(_ type: T.Type) -> T? {
         for system in systems {
             if(system is T) {
                 return system as? T
@@ -104,8 +104,9 @@ open class Game: UIResponder {
         
         return nil
     }
+    
     /// Returns a value specifying whether a system with a given type exists on this game object
-    open func hasSystemType<T: GPSystem>(_ type: T.Type) -> Bool {
+    open func hasSystemType<T: System>(_ type: T.Type) -> Bool {
         for system in systems {
             if(system is T) {
                 return true
@@ -116,7 +117,7 @@ open class Game: UIResponder {
     }
     
     /// Removes a system from the game
-    open func removeSystem(_ system: GPSystem) {
+    open func removeSystem(_ system: System) {
         systems.remove(system)
     }
     
