@@ -57,23 +57,15 @@ open class Game: UIResponder {
         
         self.updateWithTimeSinceLastUpdate(timeSinceLast)
         
-        for space in spaces {
-            if(space.active) {
-                for system in systems {
-                    system.update(space: space, interval: dt)
-                }
-            }
+        for system in systems {
+            system.update(spaces: spaces.filter { $0.active }, interval: dt)
         }
     }
     
     /// Renders this game object
     open func render(_ dt: TimeInterval) {
-        for space in spaces {
-            if(space.active) {
-                for system in systems {
-                    system.render(space: space, interval: dt)
-                }
-            }
+        for system in systems {
+            system.render(spaces: spaces.filter { $0.active }, interval: dt)
         }
     }
     

@@ -23,12 +23,30 @@ open class System: Equatable {
         self.game = game
     }
     
-    /// Updates a specific space with this system
+    /// Updates all spaces provided
+    open func update(spaces: [Space], interval deltaTime: TimeInterval) {
+        for space in spaces {
+            update(space: space, interval: deltaTime)
+        }
+    }
+    
+    /// Updates a specific space with this system.
+    /// Called by update(spaces:interval:) individualy for every space passed in
+    /// order
     open func update(space: Space, interval deltaTime: TimeInterval) {
         
     }
     
+    /// Renders all spaces provided
+    open func render(spaces: [Space], interval deltaTime: TimeInterval) {
+        for space in spaces {
+            render(space: space, interval: deltaTime)
+        }
+    }
+    
     /// Renders a specific space with this system
+    /// Called by render(spaces:interval:) individualy for every space passed in
+    /// order
     open func render(space: Space, interval deltaTime: TimeInterval) {
         
     }
