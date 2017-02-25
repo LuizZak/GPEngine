@@ -1,0 +1,16 @@
+PODS:
+  - GPEngine (0.1.0)
+
+DEPENDENCIES:
+  - GPEngine (from `../`)
+
+EXTERNAL SOURCES:
+  GPEngine:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  GPEngine: 9038fb6dc624729c05e62b353b954f582fc9ab93
+
+PODFILE CHECKSUM: b93f7be70ac60d2d8fd0aea6995017035a50fdbd
+
+COCOAPODS: 1.1.1

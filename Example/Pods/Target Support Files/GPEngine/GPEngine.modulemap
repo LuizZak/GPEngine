@@ -1,0 +1,6 @@
+framework module GPEngine {
+  umbrella header "GPEngine-umbrella.h"
+
+  export *
+  module * { export * }
+}
