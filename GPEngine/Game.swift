@@ -17,8 +17,9 @@ open class Game: UIResponder {
     /// The list of systems that can manipulate the spaces
     internal(set) open var systems: [System]
     
-    /// The last update time interval tick. Used to calculate a delta time (time difference) between frames
-    fileprivate var _lastUpdateTimeInterval: TimeInterval = 0
+    /// The last update time interval tick. Used to calculate a delta time (time
+    /// difference) between frames
+    fileprivate var lastUpdateTime: TimeInterval = 0
     
     /// The event dispatcher that handles event handling on the game
     internal(set) open var eventDispatcher: GameEventDispatcher = GameEventDispatcher()
@@ -33,22 +34,25 @@ open class Game: UIResponder {
         super.init()
     }
     
-    open func updateWithTimeSinceLastUpdate(_ timeSinceLast: CFTimeInterval) {
+    /// Method called before each frame is rendered on the screen
+    open func updateWithTimeSinceLastUpdate(_ timeSinceLast: TimeInterval) {
         /* Called before each frame is rendered */
         
     }
     
-    /// Updates this game object, with a specified time since the last frame in milliseconds
-    open func update(_ dt: TimeInterval) {
+    /// Updates this game object, with a specified time since the last frame in 
+    /// milliseconds
+    open func updateAndRender(_ dt: TimeInterval) {
         // Handle time delta.
-        // If we drop below 60fps, we still want everything to move the same distance.
-        var timeSinceLast = dt - self._lastUpdateTimeInterval
-        self._lastUpdateTimeInterval = dt
+        // If we drop below 60fps, we still want everything to move the same
+        // distance.
+        var timeSinceLast = dt - self.lastUpdateTime
+        self.lastUpdateTime = dt
         
         if (timeSinceLast > 1) {
             // more than a second since last update
             timeSinceLast = 1.0 / 60.0
-            self._lastUpdateTimeInterval = dt
+            self.lastUpdateTime = dt
         }
         
         self.updateWithTimeSinceLastUpdate(timeSinceLast)
@@ -63,11 +67,11 @@ open class Game: UIResponder {
     }
     
     /// Renders this game object
-    open func render() {
+    open func render(_ dt: TimeInterval) {
         for space in spaces {
             if(space.active) {
                 for system in systems {
-                    system.render(space: space)
+                    system.render(space: space, interval: dt)
                 }
             }
         }

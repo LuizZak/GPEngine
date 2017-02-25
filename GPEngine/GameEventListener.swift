@@ -8,8 +8,9 @@
 
 import UIKit
 
-// A protocol to be implemented by classed that receive events fired by the game screen
+/// A protocol to be implemented by classed that receive events fired by the game screen
 public protocol GameEventListener {
-    // Receives an event fired by the game screen
+    
+    /// Receives an event fired by the game screen
     func receiveEvent(_ event: GameEvent)
 }

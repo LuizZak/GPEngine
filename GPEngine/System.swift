@@ -29,7 +29,7 @@ open class System: Equatable {
     }
     
     /// Renders a specific space with this system
-    open func render(space: Space) {
+    open func render(space: Space, interval deltaTime: TimeInterval) {
         
     }
 }

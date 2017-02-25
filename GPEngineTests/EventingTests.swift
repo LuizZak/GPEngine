@@ -10,7 +10,6 @@ import UIKit
 import XCTest
 
 import SpriteKit
-import GPEngine
 
 class EventingTests: XCTestCase {
     var disp = GameEventDispatcher()
