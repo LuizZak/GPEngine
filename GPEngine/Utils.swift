@@ -48,7 +48,3 @@ extension RangeReplaceableCollection where Iterator.Element: Equatable {
         self.removeFirst(where: { $0 == object })
     }
 }
-
-func fillArray<T: Equatable>(_ object: T, count: Int) -> [T] {
-    return [T](repeating: object, count: count)
-}
