@@ -47,6 +47,6 @@ extension RangeReplaceableCollection where Iterator.Element: Equatable {
     
     /// Removes a given equatable instance from this collection
     mutating func remove(_ object : Iterator.Element) {
-        self.removeFirst(where: { $0 == object })
+        _=removeFirst(where: { $0 == object })
     }
 }
