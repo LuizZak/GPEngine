@@ -89,6 +89,11 @@ open class Space: Equatable {
     
     /// Adds a component to an entity in this space
     open func addComponent(_ component: Component, entity: Entity) {
+        // Notify component addition
+        for subspace in subspaces {
+            subspace.willAddComponent(component, to: entity)
+        }
+        
         entity.components.append(component)
         
         /// Update subspaces that may contain this entity
@@ -98,26 +103,14 @@ open class Space: Equatable {
     }
     
     /// Removes a given component type from an entity
-    open func removeComponent(type: Component.Type, from entity: Entity) {
-        let c = entity.components.count
-        entity.components.removeFirst(where: { type(of: $0) == type })
-        
-        // No change
-        if(c == entity.components.count) {
-            return
-        }
-        
-        /// Update subspaces that may contain this entity
-        for subspace in subspaces {
-            subspace.manageEntity(entity)
-        }
+    open func removeComponent<C: Component>(type: C.Type, from entity: Entity) {
+        removeFirstComponent(from: entity, where: { $0 is C })
     }
     
-    /// Removes all instances of components from an entity where the closure
-    /// passed evaluates to true
-    open func removeComponent<C: Component>(from entity: Entity, where closure: (C) -> Bool) {
-        let c = entity.components.count
-        entity.components.removeAll { component -> Bool in
+    /// Removes the first component that returns true for a given closure.
+    open func removeFirstComponent<C: Component>(from entity: Entity, where closure: (C) -> Bool) {
+        var components = entity.components
+        let rem = components.removeFirst { component -> Bool in
             if let c = component as? C {
                 return closure(c)
             }
@@ -125,11 +118,18 @@ open class Space: Equatable {
         }
         
         // No change
-        if(c == entity.components.count) {
+        guard let removed = rem else {
             return
         }
         
-        /// Update subspaces that may contain this entity
+        // Notify impending removal
+        for subspace in subspaces {
+            subspace.willRemoveComponent(removed, from: entity)
+        }
+        
+        entity.components = components
+        
+        // Update subspaces that may contain this entity
         for subspace in subspaces {
             subspace.manageEntity(entity)
         }

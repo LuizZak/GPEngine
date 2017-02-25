@@ -9,18 +9,22 @@
 extension RangeReplaceableCollection {
     
     /// Removes the first element in this collection where the given closure
-    /// evaluates to true
-    mutating func removeFirst(where closure: (Iterator.Element) -> Bool) {
+    /// evaluates to true.
+    /// This method also returns the element that was removed, if any.
+    mutating func removeFirst(where closure: (Iterator.Element) -> Bool) -> Iterator.Element? {
         var index = startIndex
         
         while index != endIndex {
-            if closure(self[index]) {
+            let element = self[index]
+            if closure(element) {
                 remove(at: index)
-                break
+                return element
             }
             
             index = self.index(after: index)
         }
+        
+        return nil
     }
     
     /// Removes all elements in this collection where the given closure

@@ -67,6 +67,16 @@ open class Subspace: Equatable {
         
     }
     
+    /// Called by the space to notify a component will be added to an entity
+    open func willAddComponent(_ component: Component, to entity: Entity) {
+        
+    }
+    
+    /// Called by the space to notify a component will be removed from an entity
+    open func willRemoveComponent(_ component: Component, from entity: Entity) {
+        
+    }
+    
     /// Manages a given entity in this subspace, removing it if it no longer
     /// fits the entity selector, and adding it in if it fits
     open func manageEntity(_ entity: Entity) {

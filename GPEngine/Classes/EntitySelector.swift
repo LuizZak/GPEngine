@@ -21,10 +21,14 @@ public indirect enum EntitySelector {
     /// Reverses the result of a selector
     case not(EntitySelector)
     
-    /// Selects if any of a set of selectors does
+    /// Selects if any of a set of selectors does.
+    /// This selector shortcircuits the operation, succeeding on the first
+    /// rule that does.
     case or([EntitySelector])
     
-    /// Selects only if all of a set of selectors do
+    /// Selects only if all of a set of selectors do.
+    /// This selector shortcircuits the operation, failing on the first
+    /// rule that does.
     case and([EntitySelector])
     
     /// Selects if a givne component exists an the entity
@@ -95,6 +99,7 @@ public indirect enum EntitySelector {
     
     // MARK: Operators
     
+    /// Creates a .and selector based on the combination of two entity selectors
     public static func &&(lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
         // Shortcut: If lhs is already an 'and', compose it over the set of
         // rules there
@@ -106,6 +111,7 @@ public indirect enum EntitySelector {
         }
     }
     
+    /// Creates an .or selector based on the combination of two entity selectors
     public static func ||(lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
         // Shortcut: If lhs is already an 'or', compose it over the set of
         // rules there
@@ -117,6 +123,7 @@ public indirect enum EntitySelector {
         }
     }
     
+    /// Creates a .not selector based on the given selector
     public static prefix func !(rule: EntitySelector) -> EntitySelector {
         // Shrotcut: If the rule is already a 'not' rule, just unwrap it
         switch(rule) {

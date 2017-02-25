@@ -53,6 +53,15 @@ open class Entity: Equatable {
         return nil
     }
     
+    /// Applies a given closure to each component of this entity
+    open func withComponents<T: Component>(ofType type: T.Type, do closure: (T) -> ()) {
+        for (i, comp) in components.enumerated() {
+            if let c = comp as? T {
+                closure(c)
+            }
+        }
+    }
+    
     /// Gets all components in this entity
     open func getAllComponents() -> [Component] {
         return components
