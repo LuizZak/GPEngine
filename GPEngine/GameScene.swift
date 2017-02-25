@@ -8,7 +8,6 @@
 
 import SpriteKit
 
-class GameScene: GPGameScene
-{
+class GameScene: SKScene {
     
 }

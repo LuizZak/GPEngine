@@ -1,5 +1,5 @@
 //
-//  GPComponent.swift
+//  Component.swift
 //  GPEngine
 //
 //  Created by Luiz Fernando Silva on 03/08/14.
@@ -9,12 +9,6 @@
 import UIKit
 
 /// Describes a game component
-public class GPComponent: Equatable
-{
+public protocol Component {
     
-}
-
-public func ==(lhs: GPComponent, rhs: GPComponent) -> Bool
-{
-    return lhs === rhs;
 }

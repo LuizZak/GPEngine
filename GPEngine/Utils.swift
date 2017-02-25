@@ -8,67 +8,47 @@
 
 import Foundation
 
-func +=<T>(inout lhs:Array<T>, rhs:T)
-{
-    lhs.append(rhs);
-}
-
-func -=<T: Equatable>(inout lhs:Array<T>, rhs:T)
-{
-    lhs.remove(rhs);
-}
-
-extension Array
-{
-    func contains<T: Equatable>(object : T) -> Bool
-    {
-        for i in 0..<self.count
-        {
-            if let item = self[i] as? T
-            {
-                if(item == object)
-                {
-                    return true;
-                }
-            }
-        }
+extension RangeReplaceableCollection {
+    
+    /// Removes the first element in this collection where the given closure
+    /// evaluates to true
+    mutating func removeFirst(where closure: (Iterator.Element) -> Bool) {
+        var index = startIndex
         
-        return false;
-    }
-    
-    mutating func remove<T: Equatable>(object : T)
-    {
-        for i in 0..<self.count
-        {
-            if let item = self[i] as? T
-            {
-                if(item == object)
-                {
-                    self.removeAtIndex(i);
-                    
-                    return;
-                }
+        while index != endIndex {
+            if closure(self[index]) {
+                remove(at: index)
+                break
             }
+            
+            index = self.index(after: index)
         }
     }
     
-    func forEach(doThis: (element: T) -> Void)
-    {
-        for e in self
-        {
-            doThis(element: e)
+    /// Removes all elements in this collection where the given closure
+    /// evaluates to true
+    mutating func removeAll(where closure: (Iterator.Element) -> Bool) {
+        var index = startIndex
+        
+        while index != endIndex {
+            if closure(self[index]) {
+                remove(at: index)
+                continue
+            }
+            
+            index = self.index(after: index)
         }
     }
 }
 
-func fillArray<T: Equatable>(object: T, count: Int) -> [T]
-{
-    var ret: [T] = [];
+extension RangeReplaceableCollection where Iterator.Element: Equatable {
     
-    for i in 0..<count
-    {
-        ret += object;
+    /// Removes a given equatable instance from this collection
+    mutating func remove(_ object : Iterator.Element) {
+        self.removeFirst(where: { $0 == object })
     }
-    
-    return ret;
+}
+
+func fillArray<T: Equatable>(_ object: T, count: Int) -> [T] {
+    return [T](repeating: object, count: count)
 }

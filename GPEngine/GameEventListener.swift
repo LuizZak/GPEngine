@@ -1,5 +1,5 @@
 //
-//  GPEventReceiver.swift
+//  GameEventReceiver.swift
 //  GPEngine
 //
 //  Created by Luiz Fernando Silva on 05/08/14.
@@ -9,8 +9,7 @@
 import UIKit
 
 // A protocol to be implemented by classed that receive events fired by the game screen
-public protocol GPEventListener
-{
+public protocol GameEventListener {
     // Receives an event fired by the game screen
-    func receiveEvent(event: GPEvent);
+    func receiveEvent(_ event: GameEvent)
 }

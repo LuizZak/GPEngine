@@ -12,64 +12,61 @@ import XCTest
 import SpriteKit
 import GPEngine
 
-class EntityTests: XCTestCase
-{
-    override func setUp()
-    {
+class EntityTests: XCTestCase {
+    override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
     
-    override func tearDown()
-    {
+    override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
 
-    func testComponentAdd()
-    {
-        var space = GPSpace();
-        var entity = GPEntity(space);
-        var comp = GPComponent();
+    func testComponentAdd() {
+        let space = Space()
+        let entity = Entity(space)
+        let comp = TestComponent()
         
-        entity.addComponent(comp);
+        space.addComponent(comp, entity: entity)
         
         // Test component count after inclusion being < 1
-        XCTAssert(entity.getComponentsWithType(GPComponent).count == 1, "The components must be added to the entity after an addComponent() call")
+        XCTAssert(entity.getComponents(ofType: TestComponent.self).count == 1, "The components must be added to the entity after an addComponent() call")
     }
     
-    func testComponentRemove()
-    {
-        var space = GPSpace();
-        var entity = GPEntity(space);
-        var comp = GPComponent();
+    func testComponentRemove() {
+        let space = Space()
+        let entity = Entity(space)
+        let comp = TestComponent()
         
-        entity.addComponent(comp);
-        entity.removeComponent(comp);
+        space.addComponent(comp, entity: entity)
+        space.removeComponent(type: TestComponent.self, from: entity)
         
         // Test component count after removal being > 0
-        XCTAssert(entity.getComponentsWithType(GPComponent).count == 0, "Components must be removed after a removeComponent() call")
+        XCTAssert(entity.getComponents(ofType: TestComponent.self).count == 0, "Components must be removed after a removeComponent() call")
     }
     
-    func testComponentGetType()
-    {
-        var space = GPSpace();
-        var entity = GPEntity(space);
-        var comp1 = GPComponent();
-        var comp2 = TestComponent();
+    func testComponentGetType() {
+        let space = Space()
+        let entity = Entity(space)
+        let comp1 = TestComponent()
+        let comp2 = OtherTestComponent()
         
-        entity.addComponent(comp1);
-        entity.addComponent(comp2);
+        space.addComponent(comp1, entity: entity)
+        space.addComponent(comp2, entity: entity)
         
         // Test component get
-        XCTAssert(entity.getComponentsWithType(TestComponent).count == 1, "Calls to getComponentsWithType() must return a component with that type, or derived from that type only")
+        XCTAssert(entity.getComponents(ofType: TestComponent.self).count == 1, "Calls to getComponents(ofType: ) must return a component with that type, or derived from that type only")
         
         // Test complete component get
-        XCTAssert(entity.getComponentsWithType(GPComponent).count == 2, "Calls to getComponentsWithType() with a base GPComponent class must return all components registered")
+        XCTAssert(entity.getAllComponents().count == 2, "Calls to getComponents(ofType: ) with a base Component class must return all components registered")
     }
 }
 
-class TestComponent: GPComponent
-{
-    var point: CGPoint = CGPointZero;
+class TestComponent: Component {
+    var point: CGPoint = CGPoint.zero
+}
+
+class OtherTestComponent: Component {
+    var point: CGPoint = CGPoint.zero
 }
