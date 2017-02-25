@@ -71,7 +71,7 @@ class EntitySelectorTests: XCTestCase {
         entity1.id = 1
         entity2.id = 2
         
-        let rule: EntitySelector = .withId(1)
+        let rule: EntitySelector = .id(1)
         
         XCTAssert(rule.evaluate(with: entity1))
         XCTAssertFalse(rule.evaluate(with: entity2))
@@ -106,7 +106,7 @@ class EntitySelectorTests: XCTestCase {
         space.addComponent(component, entity: entity1)
         space.addComponent(component, entity: entity2)
         
-        let rule: EntitySelector = .and([.component(TestComponent.self), .withId(1)])
+        let rule: EntitySelector = .and([.component(TestComponent.self), .id(1)])
         
         XCTAssert(rule.evaluate(with: entity1))
         XCTAssertFalse(rule.evaluate(with: entity2))
@@ -124,7 +124,7 @@ class EntitySelectorTests: XCTestCase {
         let component = TestComponent()
         space.addComponent(component, entity: entity2)
         
-        let rule: EntitySelector = .or([.component(TestComponent.self), .withId(1)])
+        let rule: EntitySelector = .or([.component(TestComponent.self), .id(1)])
         
         XCTAssert(rule.evaluate(with: entity1))
         XCTAssert(rule.evaluate(with: entity2))
@@ -143,7 +143,7 @@ class EntitySelectorTests: XCTestCase {
         let component = TestComponent()
         space.addComponent(component, entity: entity2)
         
-        let rule: EntitySelector = .not(.or([.component(TestComponent.self), .withId(1)]))
+        let rule: EntitySelector = .not(.or([.component(TestComponent.self), .id(1)]))
         
         XCTAssertFalse(rule.evaluate(with: entity1))
         XCTAssertFalse(rule.evaluate(with: entity2))

@@ -31,7 +31,7 @@ public indirect enum EntitySelector {
     case component(Component.Type)
     
     /// Selects if an entity corresponds to a given id
-    case withId(Int)
+    case id(Int)
     
     /// Selects if the entty's type flag conforms to a given type.
     /// Does a binary & to filter.
@@ -82,7 +82,7 @@ public indirect enum EntitySelector {
         case .component(let type):
             return entity.hasComponent(ofType: type)
             
-        case .withId(let id):
+        case .id(let id):
             return entity.id == id
             
         case .typeFlag(let type):
