@@ -10,7 +10,7 @@ import UIKit
 
 /// Represents a game object, which is the core object of this engine.
 /// Games contains spaces and systems, and manages the interactions between them.
-open class Game: UIResponder {
+open class Game: UIResponder, GameEventDispatcherDelegate {
     
     /// The list of spaces currently registered on this game
     internal(set) open var spaces: [Space]
@@ -32,6 +32,16 @@ open class Game: UIResponder {
         systems = [System]()
         
         super.init()
+        
+        eventDispatcher.delegate = self
+    }
+    
+    func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, wihhDispatch event: GameEvent) {
+        
+        // Forward to spaces
+        for space in spaces {
+            space.eventDispatcher.dispatchEvent(event)
+        }
     }
     
     /// Method called before each frame is rendered on the screen

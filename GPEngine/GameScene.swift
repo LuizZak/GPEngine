@@ -10,4 +10,9 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    var game = Game()
+    
+    override func sceneDidLoad() {
+        
+    }
 }

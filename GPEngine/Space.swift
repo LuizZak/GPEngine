@@ -23,7 +23,8 @@ open class Space: Equatable {
     /// The set of subspaces for the space
     open fileprivate(set) var subspaces: [Subspace]
     
-    /// The event dispatcher that handles event handling on the game screen
+    /// The event dispatcher that handles event handling specificly on this
+    /// space
     internal(set) open var eventDispatcher = GameEventDispatcher()
     
     public init() {
