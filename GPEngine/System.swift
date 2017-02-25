@@ -12,7 +12,8 @@ public func ==(lhs: System, rhs: System) -> Bool {
     return lhs === rhs
 }
 
-/// Describes a game system, that handles interactions between entities in a game scene
+/// Describes a game system, that handles interactions between entities in a
+/// game scene
 open class System: Equatable {
     
     /// Updates all spaces provided

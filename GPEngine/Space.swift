@@ -8,9 +8,11 @@
 
 import UIKit
 
-/// Represents a game space. A space is a set of game entities and game subspaces
-/// that compose a standalone, independent region of the game. Spaces do not interact
-/// with each other in any way
+/// Represents a game space. A space is a set of game entities and game
+/// subspaces that compose a standalone, independent region of the game.
+///
+/// Spaces do not interact with each other in any way, and their entities are
+/// also considered isolated between each other.
 open class Space: Equatable {
     
     /// Whether this space is currently active

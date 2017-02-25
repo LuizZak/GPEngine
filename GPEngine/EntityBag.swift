@@ -8,14 +8,15 @@
 
 import UIKit
 
-/// Describes an object that bags entities from the game scene based on an entity selector
-open class EntityBag {
+/// Describes an object that bags entities from the game scene based on an
+/// entity selector
+struct EntityBag {
     
     /// The arrays of entities in this bag
-    open var entities: [Entity] = []
+    var entities: [Entity] = []
     
     /// The entity selector filtering out the entities on this bag
-    open var entitySelector: EntitySelector
+    var entitySelector: EntitySelector
     
     public init(selector: EntitySelector) {
         self.entitySelector = selector

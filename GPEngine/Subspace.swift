@@ -26,7 +26,8 @@ open class Subspace: Equatable {
         selector = .none
     }
     
-    /// Reloads the list of entities from the space this subspace is currently hosted on
+    /// Reloads the list of entities from the space this subspace is currently
+    /// hosted on
     open func reloadFromSpace() {
         clearEntities()
         
@@ -68,8 +69,8 @@ open class Subspace: Equatable {
         
     }
     
-    /// Manages a given entity in this subspace, removing it if it no longer fits the entity
-    /// selector, and adding it in if it fits
+    /// Manages a given entity in this subspace, removing it if it no longer
+    /// fits the entity selector, and adding it in if it fits
     open func manageEntity(_ entity: Entity) {
         if(entities.contains(entity)) {
             if(!testEntity(entity)) {
