@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
-
 /// Represents a game space. A space is a set of game entities and game
 /// subspaces that compose a standalone, independent region of the game.
 ///
@@ -136,8 +134,8 @@ open class Space: Equatable {
             subspace.manageEntity(entity)
         }
     }
-}
-
-public func ==(lhs: Space, rhs: Space) -> Bool {
-    return lhs === rhs
+    
+    public static func ==(lhs: Space, rhs: Space) -> Bool {
+        return lhs === rhs
+    }
 }

@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public func ==(lhs: System, rhs: System) -> Bool {
     return lhs === rhs

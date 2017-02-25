@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
-
 /// Describes an object that bags entities from the game scene based on an
 /// entity selector
 struct EntityBag {

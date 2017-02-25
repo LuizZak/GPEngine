@@ -129,24 +129,21 @@ open class Game: UIResponder, GameEventDispatcherDelegate {
     override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let event = TouchEvent(touches: touches, event: event!, eventType: TouchEventType.touchesBegan, view: view)
         
-        for space in spaces {
-            space.eventDispatcher.dispatchEvent(event)
-        }
+        // Dispatch
+        eventDispatcher.dispatchEvent(event)
     }
     
     override open func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         let event = TouchEvent(touches: touches, event: event!, eventType: TouchEventType.touchesMoved, view: view)
         
-        for space in spaces {
-            space.eventDispatcher.dispatchEvent(event)
-        }
+        // Dispatch
+        eventDispatcher.dispatchEvent(event)
     }
     
     override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         let event = TouchEvent(touches: touches, event: event!, eventType: TouchEventType.touchesEnded, view: view)
         
-        for space in spaces {
-            space.eventDispatcher.dispatchEvent(event)
-        }
+        // Dispatch
+        eventDispatcher.dispatchEvent(event)
     }
 }

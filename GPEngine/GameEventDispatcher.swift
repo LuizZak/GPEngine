@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
-
 /// Delegation for a game event dispatcher
 protocol GameEventDispatcherDelegate: class {
     /// Called when an event dispatcher is about to dispatch an event.

@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
-
 /// A protocol to be implemented by classed that receive events fired by the
 /// game screen
 public protocol GameEventListener {

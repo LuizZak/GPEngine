@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import Foundation
-
 /// Specifies a set of recursive rules for selecting entities using boolean
 /// operations.
 ///

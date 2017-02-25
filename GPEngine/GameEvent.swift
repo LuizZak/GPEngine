@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
-
 // Represents a game event that is broadcaster through a game screen
 public protocol GameEvent {
     

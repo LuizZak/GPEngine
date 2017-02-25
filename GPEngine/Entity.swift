@@ -6,9 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
-import SpriteKit
-
 /// Describes a game entity
 open class Entity: Equatable {
     
@@ -65,9 +62,8 @@ open class Entity: Equatable {
     open func getComponents<T: Component>(ofType type: T.Type) -> [T] {
         return components.flatMap { $0 as? T }
     }
-
-}
-
-public func ==(lhs: Entity, rhs: Entity) -> Bool {
-    return lhs === rhs
+    
+    public static func ==(lhs: Entity, rhs: Entity) -> Bool {
+        return lhs === rhs
+    }
 }

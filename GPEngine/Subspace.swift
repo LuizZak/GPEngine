@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
-
 /// Defines a subspace, which is a part of a game space that contains
 /// an entity selector and data that pertains to a specific portion of a game.
 /// Subspaces are queried by game systems to have operations made upon
@@ -94,8 +92,8 @@ open class Subspace: Equatable {
             removeEntity(entities[0])
         }
     }
-}
-
-public func ==(lhs: Subspace, rhs: Subspace) -> Bool {
-    return lhs === rhs
+    
+    public static func ==(lhs: Subspace, rhs: Subspace) -> Bool {
+        return lhs === rhs
+    }
 }
