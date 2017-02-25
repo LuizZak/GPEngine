@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import Foundation
-
 extension RangeReplaceableCollection {
     
     /// Removes the first element in this collection where the given closure

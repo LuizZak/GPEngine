@@ -28,6 +28,8 @@
 		A099BC38198EF57D0071C581 /* Component.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC37198EF57D0071C581 /* Component.swift */; };
 		A099BC3A198EF5A10071C581 /* Entity.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC39198EF5A10071C581 /* Entity.swift */; };
 		A099BC3C198EF7FA0071C581 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = A099BC3B198EF7FA0071C581 /* Utils.swift */; };
+		A0AF38291E62113B00C8113E /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AF38281E62113B00C8113E /* Types.swift */; };
+		A0AF382A1E62118E00C8113E /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AF38281E62113B00C8113E /* Types.swift */; };
 		A0C19CBB1A644A7300FC4656 /* Space.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C19CBA1A644A7300FC4656 /* Space.swift */; };
 		A0C19CBD1A644B4B00FC4656 /* Subspace.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C19CBC1A644B4B00FC4656 /* Subspace.swift */; };
 		A0C95470199285B10066F88F /* EntityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C9546E199285B10066F88F /* EntityTests.swift */; };
@@ -96,6 +98,7 @@
 		A099BC37198EF57D0071C581 /* Component.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Component.swift; sourceTree = "<group>"; };
 		A099BC39198EF5A10071C581 /* Entity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Entity.swift; sourceTree = "<group>"; };
 		A099BC3B198EF7FA0071C581 /* Utils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
+		A0AF38281E62113B00C8113E /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		A0C19CBA1A644A7300FC4656 /* Space.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Space.swift; sourceTree = "<group>"; };
 		A0C19CBC1A644B4B00FC4656 /* Subspace.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Subspace.swift; sourceTree = "<group>"; };
 		A0C9546E199285B10066F88F /* EntityTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntityTests.swift; sourceTree = "<group>"; };
@@ -200,6 +203,7 @@
 				A064D1F81991CB1B00B31697 /* Eventing */,
 				A07CB2391A644E6000D1B0CE /* Game.swift */,
 				A099BC3B198EF7FA0071C581 /* Utils.swift */,
+				A0AF38281E62113B00C8113E /* Types.swift */,
 			);
 			name = GamePrototype;
 			sourceTree = "<group>";
@@ -343,6 +347,7 @@
 				A099BC3A198EF5A10071C581 /* Entity.swift in Sources */,
 				A0C19CBD1A644B4B00FC4656 /* Subspace.swift in Sources */,
 				A099BC12198EF1440071C581 /* AppDelegate.swift in Sources */,
+				A0AF38291E62113B00C8113E /* Types.swift in Sources */,
 				A0C19CBB1A644A7300FC4656 /* Space.swift in Sources */,
 				A0927393198F244100E8212E /* System.swift in Sources */,
 				A099BC3C198EF7FA0071C581 /* Utils.swift in Sources */,
@@ -357,6 +362,7 @@
 				A00AE8E21CB541C6007F69C6 /* System.swift in Sources */,
 				A07CB23F1A64500000D1B0CE /* Space.swift in Sources */,
 				A0C95472199285CF0066F88F /* GameEvent.swift in Sources */,
+				A0AF382A1E62118E00C8113E /* Types.swift in Sources */,
 				A0C95473199285CF0066F88F /* GameEventListener.swift in Sources */,
 				A0C95474199285CF0066F88F /* GameEventDispatcher.swift in Sources */,
 				A07CB23D1A644FE300D1B0CE /* Game.swift in Sources */,

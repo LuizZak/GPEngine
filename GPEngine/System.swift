@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import Foundation
-
 public func ==(lhs: System, rhs: System) -> Bool {
     return lhs === rhs
 }
@@ -17,7 +15,7 @@ public func ==(lhs: System, rhs: System) -> Bool {
 open class System: Equatable {
     
     /// Updates all spaces provided
-    open func update(spaces: [Space], interval deltaTime: TimeInterval) {
+    open func update(spaces: [Space], interval deltaTime: DeltaTimeInterval) {
         for space in spaces {
             update(space: space, interval: deltaTime)
         }
@@ -26,12 +24,12 @@ open class System: Equatable {
     /// Updates a specific space with this system.
     /// Called by update(spaces:interval:) individualy for every space passed in
     /// order
-    open func update(space: Space, interval deltaTime: TimeInterval) {
+    open func update(space: Space, interval deltaTime: DeltaTimeInterval) {
         
     }
     
     /// Renders all spaces provided
-    open func render(spaces: [Space], interval deltaTime: TimeInterval) {
+    open func render(spaces: [Space], interval deltaTime: DeltaTimeInterval) {
         for space in spaces {
             render(space: space, interval: deltaTime)
         }
@@ -40,7 +38,7 @@ open class System: Equatable {
     /// Renders a specific space with this system
     /// Called by render(spaces:interval:) individualy for every space passed in
     /// order
-    open func render(space: Space, interval deltaTime: TimeInterval) {
+    open func render(space: Space, interval deltaTime: DeltaTimeInterval) {
         
     }
 }

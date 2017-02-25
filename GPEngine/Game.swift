@@ -6,8 +6,6 @@
 //  Copyright (c) 2015 Luiz Fernando Silva. All rights reserved.
 //
 
-import Foundation
-
 /// Represents a game object, which is the core object of this engine.
 /// Games contains spaces and systems, and manages the interactions between them.
 open class Game: GameEventDispatcherDelegate {
@@ -19,7 +17,7 @@ open class Game: GameEventDispatcherDelegate {
     
     /// The last update time interval tick. Used to calculate a delta time (time
     /// difference) between frames
-    fileprivate var lastUpdateTime: TimeInterval = 0
+    fileprivate var lastUpdateTime: DeltaTimeInterval = 0
     
     /// The event dispatcher that handles event handling on the game
     internal(set) open var eventDispatcher: GameEventDispatcher = GameEventDispatcher()
@@ -40,14 +38,14 @@ open class Game: GameEventDispatcherDelegate {
     }
     
     /// Method called before each frame is rendered on the screen
-    open func updateWithTimeSinceLastUpdate(_ timeSinceLast: TimeInterval) {
+    open func updateWithTimeSinceLastUpdate(_ timeSinceLast: DeltaTimeInterval) {
         /* Called before each frame is rendered */
         
     }
     
     /// Updates this game object, with a specified time since the last frame in 
     /// milliseconds
-    open func updateAndRender(_ dt: TimeInterval) {
+    open func updateAndRender(_ dt: DeltaTimeInterval) {
         // Handle time delta.
         // If we drop below 60fps, we still want everything to move the same
         // distance.
@@ -68,7 +66,7 @@ open class Game: GameEventDispatcherDelegate {
     }
     
     /// Renders this game object
-    open func render(_ dt: TimeInterval) {
+    open func render(_ dt: DeltaTimeInterval) {
         for system in systems {
             system.render(spaces: spaces.filter { $0.active }, interval: dt)
         }
