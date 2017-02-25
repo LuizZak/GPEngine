@@ -15,14 +15,6 @@ public func ==(lhs: System, rhs: System) -> Bool {
 /// Describes a game system, that handles interactions between entities in a game scene
 open class System: Equatable {
     
-    /// The game associated with this system
-    open weak var game: Game?
-    
-    /* NEW ENGINE UPDATE MEMBERS */
-    public init(game: Game) {
-        self.game = game
-    }
-    
     /// Updates all spaces provided
     open func update(spaces: [Space], interval deltaTime: TimeInterval) {
         for space in spaces {

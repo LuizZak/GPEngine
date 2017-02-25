@@ -85,13 +85,13 @@ open class Game: UIResponder {
         systems.append(system)
     }
     /// Adds a system to the game, but only if there are no systems of its type registered
-    open func addSystemOnce(_ system: System) {
-        if(getSystemByType(type(of: system)) == nil) {
+    open func addSystemOnce<T: System>(_ system: T) {
+        if(getSystem(ofType: T.self) == nil) {
             systems.append(system)
         }
     }
     /// Returns a system in the game that has the specified type, or nil, if none was found
-    open func getSystemByType<T: System>(_ type: T.Type) -> T? {
+    open func getSystem<T: System>(ofType type: T.Type) -> T? {
         for system in systems {
             if(system is T) {
                 return system as? T
@@ -102,7 +102,7 @@ open class Game: UIResponder {
     }
     
     /// Returns a value specifying whether a system with a given type exists on this game object
-    open func hasSystemType<T: System>(_ type: T.Type) -> Bool {
+    open func hasSystem<T: System>(ofType type: T.Type) -> Bool {
         for system in systems {
             if(system is T) {
                 return true
