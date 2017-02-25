@@ -104,7 +104,8 @@ open class Space: Equatable {
     
     /// Removes a given component type from an entity
     open func removeComponent<C: Component>(type: C.Type, from entity: Entity) {
-        removeFirstComponent(from: entity, where: { $0 is C })
+        // Type-casting already performed by removeFirstComponent
+        removeFirstComponent(from: entity, where: { (c: C) -> Bool in true })
     }
     
     /// Removes the first component that returns true for a given closure.

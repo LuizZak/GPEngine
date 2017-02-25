@@ -12,16 +12,7 @@ import XCTest
 import GPEngine
 
 class EntityTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     func testComponentAdd() {
         let space = Space()
         let entity = Entity(space)
@@ -30,7 +21,7 @@ class EntityTests: XCTestCase {
         space.addComponent(comp, entity: entity)
         
         // Test component count after inclusion being < 1
-        XCTAssert(entity.getComponents(ofType: TestComponent.self).count == 1, "The components must be added to the entity after an addComponent() call")
+        XCTAssertEqual(entity.getComponents(ofType: TestComponent.self).count, 1, "The components must be added to the entity after an addComponent() call")
     }
     
     func testComponentRemove() {
@@ -42,7 +33,7 @@ class EntityTests: XCTestCase {
         space.removeComponent(type: TestComponent.self, from: entity)
         
         // Test component count after removal being > 0
-        XCTAssert(entity.getComponents(ofType: TestComponent.self).count == 0, "Components must be removed after a removeComponent() call")
+        XCTAssertEqual(entity.getComponents(ofType: TestComponent.self).count, 0, "Components must be removed after a removeComponent() call")
     }
     
     func testComponentGetType() {
@@ -55,17 +46,22 @@ class EntityTests: XCTestCase {
         space.addComponent(comp2, entity: entity)
         
         // Test component get
-        XCTAssert(entity.getComponents(ofType: TestComponent.self).count == 1, "Calls to getComponents(ofType: ) must return a component with that type, or derived from that type only")
+        XCTAssertEqual(entity.getComponents(ofType: TestComponent.self).count, 1, "Calls to getComponents(ofType: ) must return a component with that type, or derived from that type only")
         
         // Test complete component get
-        XCTAssert(entity.getAllComponents().count == 2, "Calls to getComponents(ofType: ) with a base Component class must return all components registered")
+        XCTAssertEqual(entity.getAllComponents().count, 2, "Calls to getComponents(ofType: ) with a base Component class must return all components registered")
+        
+        space.removeComponent(type: TestComponent.self, from: entity)
+        
+        XCTAssertNil(entity.getComponent(ofType: TestComponent.self))
+        XCTAssertNotNil(entity.getComponent(ofType: OtherTestComponent.self))
     }
 }
 
 class TestComponent: Component {
-    var point: CGPoint = CGPoint.zero
+    
 }
 
 class OtherTestComponent: Component {
-    var point: CGPoint = CGPoint.zero
+    
 }
