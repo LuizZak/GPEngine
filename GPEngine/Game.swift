@@ -6,11 +6,11 @@
 //  Copyright (c) 2015 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 /// Represents a game object, which is the core object of this engine.
 /// Games contains spaces and systems, and manages the interactions between them.
-open class Game: UIResponder, GameEventDispatcherDelegate {
+open class Game: GameEventDispatcherDelegate {
     
     /// The list of spaces currently registered on this game
     internal(set) open var spaces: [Space]
@@ -24,19 +24,14 @@ open class Game: UIResponder, GameEventDispatcherDelegate {
     /// The event dispatcher that handles event handling on the game
     internal(set) open var eventDispatcher: GameEventDispatcher = GameEventDispatcher()
     
-    /// A custom optional view to dispatch along UI events
-    var view: UIView?
-    
-    public override init() {
+    public init() {
         spaces = [Space]()
         systems = [System]()
-        
-        super.init()
         
         eventDispatcher.delegate = self
     }
     
-    func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, wihhDispatch event: GameEvent) {
+    open func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, wihhDispatch event: GameEvent) {
         
         // Forward to spaces
         for space in spaces {
@@ -124,26 +119,5 @@ open class Game: UIResponder, GameEventDispatcherDelegate {
     /// Removes a system from the game
     open func removeSystem(_ system: System) {
         systems.remove(system)
-    }
-    
-    override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let event = TouchEvent(touches: touches, event: event!, eventType: TouchEventType.touchesBegan, view: view)
-        
-        // Dispatch
-        eventDispatcher.dispatchEvent(event)
-    }
-    
-    override open func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let event = TouchEvent(touches: touches, event: event!, eventType: TouchEventType.touchesMoved, view: view)
-        
-        // Dispatch
-        eventDispatcher.dispatchEvent(event)
-    }
-    
-    override open func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let event = TouchEvent(touches: touches, event: event!, eventType: TouchEventType.touchesEnded, view: view)
-        
-        // Dispatch
-        eventDispatcher.dispatchEvent(event)
     }
 }
