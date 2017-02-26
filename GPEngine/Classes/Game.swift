@@ -67,17 +67,17 @@ open class Game: GameEventDispatcherDelegate {
     /// Adds a system to the game, but only if there are no systems of its type
     /// registered
     open func addSystemOnce<T: System>(_ system: T) {
-        if(getSystem(ofType: T.self) == nil) {
+        if(self.system(ofType: T.self) == nil) {
             systems.append(system)
         }
     }
     
     /// Returns a system in the game that has the specified type, or nil, if
     /// none was found
-    open func getSystem<T: System>(ofType type: T.Type) -> T? {
+    open func system<T: System>(ofType type: T.Type) -> T? {
         for system in systems {
-            if(system is T) {
-                return system as? T
+            if let s = system as? T {
+                return s
             }
         }
         

@@ -43,7 +43,7 @@ open class Entity: Equatable {
     
     /// Gets a single component that matches a given component class type
     /// If no components match the passed component type, nil is returned
-    open func getComponent<T: Component>(ofType type: T.Type) -> T? {
+    open func component<T: Component>(ofType type: T.Type) -> T? {
         for comp in self.components {
             if let c = comp as? T {
                 return c
@@ -68,7 +68,7 @@ open class Entity: Equatable {
     }
     
     /// Gets a list of components that match a given component class type
-    open func getComponents<T: Component>(ofType type: T.Type) -> [T] {
+    open func components<T: Component>(ofType type: T.Type) -> [T] {
         return components.flatMap { $0 as? T }
     }
     

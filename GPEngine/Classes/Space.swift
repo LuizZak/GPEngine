@@ -53,10 +53,10 @@ open class Space: Equatable {
     }
     
     /// Gets a subspace with a specified type from this space
-    open func getSubspace<T: Subspace>(_ type: T.Type) -> T? {
+    open func subspace<S: Subspace>(_ type: S.Type) -> S? {
         for subspace in subspaces {
-            if(subspace is T) {
-                return subspace as? T
+            if let s = subspace as? S {
+                return s
             }
         }
         
@@ -134,6 +134,12 @@ open class Space: Equatable {
         for subspace in subspaces {
             subspace.manageEntity(entity)
         }
+    }
+    
+    /// Returns all instances of Subspace objects in this space that are of a
+    /// specified type
+    open func subspaces<S: Subspace>(ofType type: S.Type) -> [S] {
+        return subspaces.flatMap { $0 as? S }
     }
     
     public static func ==(lhs: Space, rhs: Space) -> Bool {
