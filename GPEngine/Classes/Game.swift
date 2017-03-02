@@ -25,7 +25,7 @@ open class Game: GameEventDispatcherDelegate {
         eventDispatcher.delegate = self
     }
     
-    open func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, wihhDispatch event: GameEvent) {
+    open func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, willDispatch event: GameEvent) {
         
         // Forward to spaces
         for space in spaces {

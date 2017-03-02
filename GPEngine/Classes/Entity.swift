@@ -54,10 +54,10 @@ open class Entity: Equatable {
     }
     
     /// Applies a given closure to each component of this entity
-    open func withComponents<T: Component>(ofType type: T.Type, do closure: (T) -> ()) {
+    open func withComponents<T: Component>(ofType type: T.Type, do closure: (T) throws -> ()) rethrows {
         for comp in components {
             if let c = comp as? T {
-                closure(c)
+                try closure(c)
             }
         }
     }

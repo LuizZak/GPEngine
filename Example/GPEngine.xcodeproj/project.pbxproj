@@ -329,6 +329,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 83BF7620B23389D006AB897F /* Pods-GPEngine_Tests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -349,6 +350,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CE9545AF4AEC5153E8D2039E /* Pods-GPEngine_Tests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",

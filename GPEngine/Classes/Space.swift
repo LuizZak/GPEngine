@@ -109,11 +109,11 @@ open class Space: Equatable {
     }
     
     /// Removes the first component that returns true for a given closure.
-    open func removeFirstComponent<C: Component>(from entity: Entity, where closure: (C) -> Bool) {
+    open func removeFirstComponent<C: Component>(from entity: Entity, where closure: (C) throws -> Bool) rethrows {
         var components = entity.components
-        let rem = components.removeFirst { component -> Bool in
+        let rem = try components.removeFirst { component -> Bool in
             if let c = component as? C {
-                return closure(c)
+                return try closure(c)
             }
             return false
         }

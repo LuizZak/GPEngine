@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'GPEngine'
-  s.version          = '1.3.0'
+  s.version          = '1.3.1'
   s.summary          = 'A Space/Entity/Component/System framework for creating games.'
 
 # This description is used to generate tags and improve search results.

@@ -11,11 +11,11 @@ protocol GameEventDispatcherDelegate: class {
     /// Called when an event dispatcher is about to dispatch an event.
     /// This delegate method is called regardless if there are any listeners
     /// to the event passed.
-    func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, wihhDispatch event: GameEvent)
+    func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, willDispatch event: GameEvent)
 }
 
 extension GameEventDispatcherDelegate {
-    func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, wihhDispatch event: GameEvent) {
+    func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, willDispatch event: GameEvent) {
         
     }
 }
@@ -153,7 +153,7 @@ open class GameEventDispatcher {
     /// Dispatches the given event in this event dispatcher
     open func dispatchEvent(_ event: GameEvent) {
         // Fire delegate
-        delegate?.gameEventDispatcher(self, wihhDispatch: event)
+        delegate?.gameEventDispatcher(self, willDispatch: event)
         
         // Find the lsit of listeners
         let eventId = type(of: event).eventIdentifier
