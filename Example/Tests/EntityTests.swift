@@ -18,7 +18,7 @@ class EntityTests: XCTestCase {
         let entity = Entity(space)
         let comp = TestComponent()
         
-        space.addComponent(comp, entity: entity)
+        space.addComponent(comp, to: entity)
         
         // Test component count after inclusion being < 1
         XCTAssertEqual(entity.components(ofType: TestComponent.self).count, 1, "The components must be added to the entity after an addComponent() call")
@@ -29,7 +29,7 @@ class EntityTests: XCTestCase {
         let entity = Entity(space)
         let comp = TestComponent()
         
-        space.addComponent(comp, entity: entity)
+        space.addComponent(comp, to: entity)
         space.removeComponent(type: TestComponent.self, from: entity)
         
         // Test component count after removal being > 0
@@ -42,8 +42,8 @@ class EntityTests: XCTestCase {
         let comp1 = TestComponent()
         let comp2 = OtherTestComponent()
         
-        space.addComponent(comp1, entity: entity)
-        space.addComponent(comp2, entity: entity)
+        space.addComponent(comp1, to: entity)
+        space.addComponent(comp2, to: entity)
         
         // Test component get
         XCTAssertEqual(entity.components(ofType: TestComponent.self).count, 1, "Calls to components(ofType: ) must return a component with that type, or derived from that type only")

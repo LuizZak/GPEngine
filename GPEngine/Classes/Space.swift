@@ -94,7 +94,7 @@ open class Space: Equatable {
     }
     
     /// Adds a component to an entity in this space
-    open func addComponent(_ component: Component, entity: Entity) {
+    open func addComponent(_ component: Component, to entity: Entity) {
         // Notify component addition
         for subspace in subspaces {
             subspace.willAddComponent(component, to: entity)

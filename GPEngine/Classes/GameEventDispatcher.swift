@@ -172,10 +172,10 @@ open class GameEventDispatcher {
 /// dispatchers, and later remove them
 public struct EventListenerKey: Equatable {
     
-    /// Simple wrapper so we don't have to ask event listener keys by-reference
-    /// when invalidating them, and also invalidate keys that are stored outside
-    /// the event dispatcher.
-    final class InnerValid: ExpressibleByBooleanLiteral {
+    /// Simple wrapper so we maintain EventListenerKey as a value-type, while
+    /// also making invalidations of one event listener key be shared across all
+    /// other copies of the same key.
+    final internal class InnerValid: ExpressibleByBooleanLiteral {
         var value: Bool
         init(booleanLiteral value: Bool) {
             self.value = value
@@ -185,7 +185,7 @@ public struct EventListenerKey: Equatable {
     /// Whether this listener key acually points to an event listener.
     /// In case it doesn't, it won't affect dispatches after multiple calls
     /// to removeListener(forKey:)
-    var valid: InnerValid = true
+    internal var valid: InnerValid = true
     
     var eventIdentifier: String
     

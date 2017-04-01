@@ -31,7 +31,7 @@ public indirect enum EntitySelector {
     /// rule that does.
     case and([EntitySelector])
     
-    /// Selects if a givne component exists an the entity
+    /// Selects if a given component exists an the entity
     case component(Component.Type)
     
     /// Selects if an entity corresponds to a given id

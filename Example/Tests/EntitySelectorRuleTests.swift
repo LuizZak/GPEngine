@@ -21,7 +21,7 @@ class EntitySelectorTests: XCTestCase {
         entity2.id = 2
         
         let component = TestComponent()
-        space.addComponent(component, entity: entity2)
+        space.addComponent(component, to: entity2)
         
         let rule: EntitySelector = .any
         
@@ -40,7 +40,7 @@ class EntitySelectorTests: XCTestCase {
         entity2.id = 2
         
         let component = TestComponent()
-        space.addComponent(component, entity: entity2)
+        space.addComponent(component, to: entity2)
         
         let rule: EntitySelector = .none
         
@@ -56,7 +56,7 @@ class EntitySelectorTests: XCTestCase {
         
         let component = TestComponent()
         
-        space.addComponent(component, entity: entity1)
+        space.addComponent(component, to: entity1)
         
         let rule: EntitySelector = .component(TestComponent.self)
         
@@ -104,8 +104,8 @@ class EntitySelectorTests: XCTestCase {
         entity2.id = 2
         
         let component = TestComponent()
-        space.addComponent(component, entity: entity1)
-        space.addComponent(component, entity: entity2)
+        space.addComponent(component, to: entity1)
+        space.addComponent(component, to: entity2)
         
         let rule: EntitySelector = .and([.component(TestComponent.self), .id(1)])
         
@@ -123,7 +123,7 @@ class EntitySelectorTests: XCTestCase {
         entity2.id = 2
         
         let component = TestComponent()
-        space.addComponent(component, entity: entity2)
+        space.addComponent(component, to: entity2)
         
         let rule: EntitySelector = .or([.component(TestComponent.self), .id(1)])
         
@@ -142,7 +142,7 @@ class EntitySelectorTests: XCTestCase {
         entity2.id = 2
         
         let component = TestComponent()
-        space.addComponent(component, entity: entity2)
+        space.addComponent(component, to: entity2)
         
         let rule: EntitySelector = .not(.or([.component(TestComponent.self), .id(1)]))
         
@@ -177,7 +177,7 @@ class EntitySelectorTests: XCTestCase {
         entity2.id = 2
         
         let component = TestComponent()
-        space.addComponent(component, entity: entity2)
+        space.addComponent(component, to: entity2)
         
         let rule: EntitySelector = .and([])
         
@@ -196,7 +196,7 @@ class EntitySelectorTests: XCTestCase {
         entity2.id = 2
         
         let component = TestComponent()
-        space.addComponent(component, entity: entity2)
+        space.addComponent(component, to: entity2)
         
         let rule: EntitySelector = .or([])
         
