@@ -9,8 +9,8 @@
 /// Represents a game space. A space is a set of game entities and game
 /// subspaces that compose a standalone, independent region of the game.
 ///
-/// Spaces do not interact with each other in any way, and their entities are
-/// also considered isolated between each other.
+/// Spaces do not interact with each other in any way, and entities across
+/// spaces are also considered isolated from each other.
 open class Space: Equatable {
     
     /// Whether this space is currently active
@@ -30,10 +30,16 @@ open class Space: Equatable {
         subspaces = [Subspace]()
     }
     
-    /// Adds a subspace to this space
+    /// Adds a subspace to this space.
+    /// If the subspace is already contained within a space, it is removed and
+    /// then added to this space.
     open func addSubspace(_ subspace: Subspace) {
-        if(subspace.space != nil) {
-            return
+        if let previous = subspace.space {
+            if(previous == self) {
+                return
+            }
+            
+            previous.subspaces.remove(subspace)
         }
         
         subspaces.append(subspace)
@@ -46,7 +52,7 @@ open class Space: Equatable {
     
     /// Removes a subspace from this space
     open func removeSubspace(_ subspace: Subspace) {
-        subspaces.append(subspace)
+        subspaces.remove(subspace)
         
         subspace.space = nil
         subspace.didMoveTo(space: nil)
