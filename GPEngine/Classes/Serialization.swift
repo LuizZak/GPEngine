@@ -257,6 +257,44 @@ public class GameSerializer {
         
         throw DeserializationError.unrecognizedSerializedName
     }
+    
+    
+    /// Scans and prints to the console a given space for components/subspaces
+    /// that are not serializable.
+    ///
+    /// Useful during debugging.
+    public static func diagnoseSerialize(on space: Space) {
+        if(canSerialize(space)) {
+            print("Space is serializable!")
+            return
+        }
+        
+        for subspace in space.subspaces {
+            if !(subspace is Serializable) {
+                print("Found subspace type \(type(of: subspace)) that is not serializable!")
+            }
+        }
+        
+        for entity in space.entities {
+            for comp in entity.components {
+                if !(comp is Serializable) {
+                    print("Found component type \(type(of: comp)) on entity id \(entity.id) that is not serializable!")
+                }
+            }
+        }
+    }
+    
+    /// Scans and prints to the console a given entity for components that are
+    /// not serializable.
+    ///
+    /// Useful during debugging.
+    public static func diagnoseSerialize(on entity: Entity) {
+        for comp in entity.components {
+            if !(comp is Serializable) {
+                print("Found component type \(type(of: comp)) that is not serializable!")
+            }
+        }
+    }
 }
 
 /// Represents a serialized object.
