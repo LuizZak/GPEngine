@@ -197,8 +197,8 @@ public class GameSerializer {
         return space
     }
     
-    /// Extracts a component type from a serialized object
-    public func extract<T: Component>(from serialized: Serialized) throws -> T {
+    /// Extracts a serializable object from a serialized object container
+    public func extract<T: Serializable>(from serialized: Serialized) throws -> T {
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is T.Type {
             return try type.deserialized(from: serialized.data) as! T
