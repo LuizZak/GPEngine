@@ -37,15 +37,15 @@ public enum SerializationError: Error, CustomStringConvertible {
 /// provided JSON
 public enum DeserializationError: Error, CustomStringConvertible {
     case notImplemented
-    case unrecognizedSerializedName
+    case unrecognizedSerializedName(name: String)
     case invalidSerialized(message: String)
     
     public var description: String {
         switch(self) {
         case .notImplemented:
             return "Deserialization error: method not implemented"
-        case .unrecognizedSerializedName:
-            return "Deserialization error: unrecognized serialized type name"
+        case .unrecognizedSerializedName(let name):
+            return "Deserialization error: unrecognized serialized type name '\(name)'"
         case .invalidSerialized(let message):
             return "Deserialization error: \(message)"
         }
@@ -56,6 +56,9 @@ public enum DeserializationError: Error, CustomStringConvertible {
 public class GameSerializer {
     /// A type provider for this serializer
     public var typeProvider: SerializationTypeProvider
+    
+    /// Preset context for presets found during deserialization
+    var presetContext = PresetContext()
     
     public init(typeProvider: SerializationTypeProvider) {
         self.typeProvider = typeProvider
@@ -145,6 +148,24 @@ public class GameSerializer {
         return Serialized(typeName: name, contentType: type, data: serialized)
     }
     
+    /// Deserializes a preset that is contained within a serialized object
+    public func deserializePreset(in serialized: Serialized) throws -> Serialized {
+        if(serialized.contentType != .preset) {
+            throw DeserializationError.invalidSerialized(message: "Does not represent a preset")
+        }
+        
+        // Fetch variables from data and expand preset on them
+        guard let vars = serialized.data.dictionaryObject else {
+            throw DeserializationError.invalidSerialized(message: "Data for a serialized preset must be a dictionary")
+        }
+        
+        guard let preset = presetContext.preset(named: serialized.typeName) else {
+            throw DeserializationError.invalidSerialized(message: "Could not find preset named \(serialized.typeName)")
+        }
+        
+        return try preset.expandPreset(withVariables: vars)
+    }
+    
     /// Deserializes a given serialized instance
     public func deserialize(from json: JSON) throws -> Serialized {
         return try Serialized.deserialized(from: json)
@@ -152,6 +173,18 @@ public class GameSerializer {
     
     /// Extracts an entity with all its components from a serialized object
     public func extract(from serialized: Serialized) throws -> Entity {
+        // Push context for presets
+        presetContext.push()
+        presetContext.addPresets(presets: serialized.presets)
+        defer {
+            presetContext.pop()
+        }
+        
+        // Detect preset on this object
+        if(serialized.contentType == .preset) {
+            return try extract(from: deserializePreset(in: serialized))
+        }
+        
         if(serialized.typeName != "Entity" || serialized.contentType != .entity) {
             throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Entity instance")
         }
@@ -182,6 +215,18 @@ public class GameSerializer {
     
     /// Extracts a game space with all its entities from a serialized object
     public func extract(from serialized: Serialized) throws -> Space {
+        // Push context for presets
+        presetContext.push()
+        presetContext.addPresets(presets: serialized.presets)
+        defer {
+            presetContext.pop()
+        }
+        
+        // Detect preset on this object
+        if(serialized.contentType == .preset) {
+            return try extract(from: deserializePreset(in: serialized))
+        }
+        
         if(serialized.typeName != "Space" || serialized.contentType != .space) {
             throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Space instance")
         }
@@ -218,32 +263,68 @@ public class GameSerializer {
     
     /// Extracts a serializable object from a serialized object container
     public func extract<T: Serializable>(from serialized: Serialized) throws -> T {
+        // Push context for presets
+        presetContext.push()
+        presetContext.addPresets(presets: serialized.presets)
+        defer {
+            presetContext.pop()
+        }
+        
+        // Detect preset on this object
+        if(serialized.contentType == .preset) {
+            return try extract(from: deserializePreset(in: serialized))
+        }
+        
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is T.Type {
             return try type.deserialized(from: serialized.data) as! T
         }
         
-        throw DeserializationError.unrecognizedSerializedName
+        throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
     }
     
     /// Extracts a Component type from a serialized object
     public func extract(from serialized: Serialized) throws -> Component {
+        // Push context for presets
+        presetContext.push()
+        presetContext.addPresets(presets: serialized.presets)
+        defer {
+            presetContext.pop()
+        }
+        
+        // Detect preset on this object
+        if(serialized.contentType == .preset) {
+            return try extract(from: deserializePreset(in: serialized))
+        }
+        
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is Component.Type {
             return try type.deserialized(from: serialized.data) as! Component
         }
         
-        throw DeserializationError.unrecognizedSerializedName
+        throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
     }
     
     /// Extracts a Subspace type from a serialized object
     public func extract(from serialized: Serialized) throws -> Subspace {
+        // Push context for presets
+        presetContext.push()
+        presetContext.addPresets(presets: serialized.presets)
+        defer {
+            presetContext.pop()
+        }
+        
+        // Detect preset on this object
+        if(serialized.contentType == .preset) {
+            return try extract(from: deserializePreset(in: serialized))
+        }
+        
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is Subspace.Type {
             return try type.deserialized(from: serialized.data) as! Subspace
         }
         
-        throw DeserializationError.unrecognizedSerializedName
+        throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
     }
     
     /// Returns if a game space is serializable.
@@ -313,6 +394,49 @@ public class GameSerializer {
             }
         }
     }
+    
+    /// A preset context holds information about presets available during
+    /// expansion of serialized objects
+    class PresetContext {
+        /// The presets available within this context
+        var presets: [SerializedPreset] = []
+        
+        /// Represents the indexes at which the presets where pushed.
+        /// When calling `pop`, the method removes the last item from this array
+        /// and removes all elements on `presets` past that index.
+        var stack: [Int] = []
+        
+        /// Pushes a new preset stack context
+        func push() {
+            stack.append(presets.count)
+        }
+        
+        /// Adds a series of presets to the currently available preset stack
+        /// level
+        func addPresets(presets: [SerializedPreset]) {
+            self.presets.append(contentsOf: presets)
+        }
+        
+        /// Removes the current preset stack.
+        /// Traps, if stack is empty
+        func pop() {
+            let last = stack.removeLast()
+            
+            // Only remove if there's anything to remove
+            if(last != presets.count) {
+                presets = Array(presets[last..<presets.count])
+            }
+        }
+        
+        /// Searches for a serialized preset with a given name.
+        /// This searches in reverse order, so the last preset specifies with a
+        /// given name is the one chosen.
+        ///
+        /// Returns nil, if no preset named `name` was found.
+        func preset(named name: String) -> SerializedPreset? {
+            return presets.reversed().first { $0.name == name }
+        }
+    }
 }
 
 /// Represents a serialized object.
@@ -323,17 +447,21 @@ public struct Serialized: Serializable {
     public var typeName: String
     /// The type of content serialized
     public var contentType: ContentType
+    /// Any presets that where specified in the original JSON object
+    public var presets: [SerializedPreset]
     /// The serialized object
     public var data: JSON
     
-    init(typeName: String, contentType: ContentType, data: JSON) {
+    init(typeName: String, presets: [SerializedPreset] = [], contentType: ContentType, data: JSON) {
         self.typeName = typeName
+        self.presets = presets
         self.contentType = contentType
         self.data = data
     }
     
     fileprivate init() {
         self.typeName = ""
+        self.presets = []
         self.contentType = .custom
         self.data = []
     }
@@ -345,6 +473,7 @@ public struct Serialized: Serializable {
         return [
             "typeName": typeName,
             "contentType": contentType.rawValue,
+            "presets": presets.map { $0.serialized().object },
             "data": data.object
         ]
     }
@@ -366,6 +495,9 @@ public struct Serialized: Serializable {
         }
         if(json["data"].type == .null || json["data"].type == .unknown) {
             throw DeserializationError.invalidSerialized(message: "Missing 'data'")
+        }
+        if let presets = json["presets"].array {
+            self.presets = try presets.map { try SerializedPreset.deserialized(from: $0) }
         }
         
         self.typeName = name
@@ -455,6 +587,9 @@ public struct SerializedPreset: Serializable {
         return json
     }
     
+    /// Deserializeds a preset from a given JSON object.
+    /// The preset information provided cannot represent a preset type itself
+    /// (i.e. `"presetType" != .preset`.
     mutating public func deserialize(from json: JSON) throws {
         guard let name = json["presetName"].string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'presetName'")
@@ -473,9 +608,14 @@ public struct SerializedPreset: Serializable {
             throw DeserializationError.invalidSerialized(message: "Presets cannot represent preset types themselves in preset '\(name)'")
         }
         
+        let presetData = json["presetData"]
+        if(presetData.type != .dictionary) {
+            throw DeserializationError.invalidSerialized(message: "Expected 'presetData' to contain a dictionary in preset '\(name)'")
+        }
+        
         self.name = name
         self.type = presetType
-        self.data = try Serialized.deserialized(from: json["presetData"])
+        self.data = try Serialized.deserialized(from: presetData)
         
         // Match serialized content types
         if(self.type != self.data.contentType) {

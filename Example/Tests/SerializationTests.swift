@@ -62,7 +62,7 @@ class SerializationTests: XCTestCase {
                 }
             }
             
-            throw DeserializationError.unrecognizedSerializedName
+            throw DeserializationError.unrecognizedSerializedName(name: name)
         }
     }
     
@@ -380,6 +380,26 @@ class SerializationTests: XCTestCase {
         }
     }
     
+    func testPresetSerializedDataNotDictionaryError() {
+        // Presets can only contain dictionaries within their 'presetData' key
+        
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [:],
+                "presetData": [
+                ]
+            ]
+            
+            _=try SerializedPreset.deserialized(from: json)
+            
+            XCTFail("Should have thrown error")
+        } catch {
+            XCTAssert(error is DeserializationError)
+        }
+    }
+    
     func testPresetCannotRepresentPresets() {
         // Presets are not allowed to represent 'preset' typed contents
         
@@ -450,6 +470,92 @@ class SerializationTests: XCTestCase {
             XCTFail("Should have failed")
         } catch {
             XCTAssert(error is DeserializationError)
+        }
+    }
+    
+    // MARK: Preset expansion in serialized object
+    
+    func testPresetExpansion() {
+        do {
+            let serializer = GameSerializer(typeProvider: Provider())
+            
+            let json: JSON = [
+                "contentType": "space",
+                "typeName": "Space",
+                "presets": [
+                    [
+                        "presetName": "Player",
+                        "presetType": "entity",
+                        "presetVariables": [
+                            "var": "number"
+                        ],
+                        "presetData": [
+                            "contentType": "entity",
+                            "typeName": "Entity",
+                            "data": [
+                                "id": 1,
+                                "type": 2,
+                                "components": [
+                                    [
+                                        "contentType": "component",
+                                        "typeName": "SerializableComponent",
+                                        "data": [
+                                            "field": [ "presetVariable": "var" ]
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                    [
+                        "presetName": "ASubspace",
+                        "presetType": "subspace",
+                        "presetVariables": [
+                            "var": "number"
+                        ],
+                        "presetData": [
+                            "contentType": "subspace",
+                            "typeName": "SerializableSubspace",
+                            "data": [
+                                "subspaceField": [ "presetVariable": "var" ]
+                            ]
+                        ]
+                    ]
+                ],
+                "data": [
+                    "subspaces": [
+                        [
+                            "contentType": "preset",
+                            "typeName": "ASubspace",
+                            "data": [
+                                "var": 10
+                            ]
+                        ]
+                    ],
+                    "entities": [
+                        [
+                            "contentType": "preset",
+                            "typeName": "Player",
+                            "data": [
+                                "var": 20
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            
+            let serialized = try Serialized.deserialized(from: json)
+            let space: Space = try serializer.extract(from: serialized)
+            
+            XCTAssertEqual(space.subspaces.count, 1)
+            XCTAssertEqual(space.subspace(SerializableSubspace.self)?.subspaceField, 10)
+            
+            XCTAssertEqual(space.entities.count, 1)
+            XCTAssertEqual(space.entities[0].id, 1)
+            XCTAssertEqual(space.entities[0].type, 2)
+            XCTAssertEqual(space.entities[0].component(ofType: SerializableComponent.self)?.field, 20)
+        } catch {
+            XCTFail("\(error)")
         }
     }
 }
