@@ -13,6 +13,7 @@
 		A0AF384D1E6229B900C8113E /* EventingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AF38491E6229B900C8113E /* EventingTests.swift */; };
 		A0AF384E1E6229B900C8113E /* SystemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0AF384A1E6229B900C8113E /* SystemTests.swift */; };
 		A0FD4BEE1E9029350074B2E8 /* SpaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FD4BED1E9029350074B2E8 /* SpaceTests.swift */; };
+		A0FD4BF21E9078500074B2E8 /* SerializationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0FD4BF11E9078500074B2E8 /* SerializationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,8 +28,9 @@
 		A0AF38491E6229B900C8113E /* EventingTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventingTests.swift; sourceTree = "<group>"; };
 		A0AF384A1E6229B900C8113E /* SystemTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemTests.swift; sourceTree = "<group>"; };
 		A0FD4BED1E9029350074B2E8 /* SpaceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpaceTests.swift; sourceTree = "<group>"; };
+		A0FD4BF11E9078500074B2E8 /* SerializationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializationTests.swift; sourceTree = "<group>"; };
 		CE9545AF4AEC5153E8D2039E /* Pods-GPEngine_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GPEngine_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-GPEngine_Tests/Pods-GPEngine_Tests.release.xcconfig"; sourceTree = "<group>"; };
-		DBBFA07A8BAB6E4B8F267798 /* GPEngine.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = GPEngine.podspec; path = ../GPEngine.podspec; sourceTree = "<group>"; };
+		DBBFA07A8BAB6E4B8F267798 /* GPEngine.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = GPEngine.podspec; path = ../GPEngine.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 				A0AF38491E6229B900C8113E /* EventingTests.swift */,
 				A0AF384A1E6229B900C8113E /* SystemTests.swift */,
 				A0FD4BED1E9029350074B2E8 /* SpaceTests.swift */,
+				A0FD4BF11E9078500074B2E8 /* SerializationTests.swift */,
 				607FACE91AFB9204008FA782 /* Supporting Files */,
 			);
 			path = Tests;
@@ -235,6 +238,7 @@
 				A0AF384D1E6229B900C8113E /* EventingTests.swift in Sources */,
 				A0AF384C1E6229B900C8113E /* EntityTests.swift in Sources */,
 				A0AF384B1E6229B900C8113E /* EntitySelectorRuleTests.swift in Sources */,
+				A0FD4BF21E9078500074B2E8 /* SerializationTests.swift in Sources */,
 				A0AF384E1E6229B900C8113E /* SystemTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

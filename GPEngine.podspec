@@ -32,4 +32,6 @@ See https://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-con
   s.ios.deployment_target = '8.0'
 
   s.source_files = 'GPEngine/Classes/**/*'
+
+  s.dependency 'SwiftyJSON'
 end

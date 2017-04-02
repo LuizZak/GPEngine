@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double GPEngineVersionNumber;
-FOUNDATION_EXPORT const unsigned char GPEngineVersionString[];
+FOUNDATION_EXPORT double SwiftyJSONVersionNumber;
+FOUNDATION_EXPORT const unsigned char SwiftyJSONVersionString[];
 
