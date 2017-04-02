@@ -8,6 +8,13 @@
 
 import SwiftyJSON
 
+/// Errors that can be throwing during a serialization process.
+///
+/// - cannotSerialize: An error ocurring during the serialization process
+public enum SerializationError: Error {
+    case cannotSerialize(reason: String)
+}
+
 /// Errors that can be throwing during a deserialization process.
 ///
 /// - notImplemented: The current implementer has not overriden a default
@@ -20,10 +27,9 @@ import SwiftyJSON
 ///
 /// - invalidSerialized: A serialized object cannot be deserialized with a
 /// provided JSON
-public enum SerializationError: Error {
+public enum DeserializationError: Error {
     case notImplemented
     case unrecognizedSerializedName
-    case cannotSerialize(reason: String)
     case invalidSerialized(message: String)
 }
 
@@ -111,17 +117,17 @@ public class GameSerializer {
     /// Extracts an entity with all its components from a serialized object
     public func extract(from serialized: Serialized) throws -> Entity {
         if(serialized.typeName != "Entity" || serialized.contentType != .entity) {
-            throw SerializationError.invalidSerialized(message: "Does not represent a plain serialized Entity instance")
+            throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Entity instance")
         }
         
         guard let id = serialized.data["id"].int else {
-            throw SerializationError.invalidSerialized(message: "Missing 'id'")
+            throw DeserializationError.invalidSerialized(message: "Missing 'id'")
         }
         guard let type = serialized.data["type"].int else {
-            throw SerializationError.invalidSerialized(message: "Missing 'type'")
+            throw DeserializationError.invalidSerialized(message: "Missing 'type'")
         }
         guard let components = serialized.data["components"].array else {
-            throw SerializationError.invalidSerialized(message: "Missing 'components'")
+            throw DeserializationError.invalidSerialized(message: "Missing 'components'")
         }
         
         let serialComps: [Serialized] = try components.map {
@@ -145,7 +151,7 @@ public class GameSerializer {
             return try type.deserialized(from: serialized.data) as! T
         }
         
-        throw SerializationError.unrecognizedSerializedName
+        throw DeserializationError.unrecognizedSerializedName
     }
     
     /// Extracts a component type from a serialized object
@@ -155,7 +161,7 @@ public class GameSerializer {
             return try type.deserialized(from: serialized.data) as! Component
         }
         
-        throw SerializationError.unrecognizedSerializedName
+        throw DeserializationError.unrecognizedSerializedName
     }
 }
 
@@ -200,16 +206,16 @@ public struct Serialized: Serializable {
     /// - Throws: Any type of error during deserialization.
     public mutating func deserialize(from json: JSON) throws {
         guard let name = json["typeName"].string else {
-            throw SerializationError.invalidSerialized(message: "Missing 'typeName'")
+            throw DeserializationError.invalidSerialized(message: "Missing 'typeName'")
         }
         guard let type = json["contentType"].string else {
-            throw SerializationError.invalidSerialized(message: "Missing 'contentType'")
+            throw DeserializationError.invalidSerialized(message: "Missing 'contentType'")
         }
         guard let contentType = ContentType(rawValue: type) else {
-            throw SerializationError.invalidSerialized(message: "Invalid content type \(type)")
+            throw DeserializationError.invalidSerialized(message: "Invalid content type \(type)")
         }
         if(json["data"].type == .null || json["data"].type == .unknown) {
-            throw SerializationError.invalidSerialized(message: "Missing 'data'")
+            throw DeserializationError.invalidSerialized(message: "Missing 'data'")
         }
         
         self.typeName = name
