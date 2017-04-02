@@ -42,37 +42,6 @@ public class GameSerializer {
         self.typeProvider = typeProvider
     }
     
-    /// Returns if a game space is serializable.
-    /// A game space is serializable if all its entities and subspaces are, as
-    /// well.
-    /// See `canSerialize(_:Entity)` for entity serialization rules.
-    public func canSerialize(_ space: Space) -> Bool {
-        for entity in space.entities {
-            if !canSerialize(entity) {
-                return false
-            }
-        }
-        for subspace in space.subspaces {
-            if !(subspace is Serializable) {
-                return false
-            }
-        }
-        
-        return true
-    }
-    
-    /// Returns if an entity is serializable.
-    /// An entity is serializable if all its components are, as well.
-    public func canSerialize(_ entity: Entity) -> Bool {
-        for component in entity.components {
-            if !(component is Serializable) {
-                return false
-            }
-        }
-        
-        return true
-    }
-    
     /// Serializes an entity passed in.
     /// Throws, if any of the components are non-serializable.
     public func serialize(_ entity: Entity) throws -> Serialized {
@@ -258,6 +227,36 @@ public class GameSerializer {
         throw DeserializationError.unrecognizedSerializedName
     }
     
+    /// Returns if a game space is serializable.
+    /// A game space is serializable if all its entities and subspaces are, as
+    /// well.
+    /// See `canSerialize(_:Entity)` for entity serialization rules.
+    public static func canSerialize(_ space: Space) -> Bool {
+        for entity in space.entities {
+            if !canSerialize(entity) {
+                return false
+            }
+        }
+        for subspace in space.subspaces {
+            if !(subspace is Serializable) {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
+    /// Returns if an entity is serializable.
+    /// An entity is serializable if all its components are, as well.
+    public static func canSerialize(_ entity: Entity) -> Bool {
+        for component in entity.components {
+            if !(component is Serializable) {
+                return false
+            }
+        }
+        
+        return true
+    }
     
     /// Scans and prints to the console a given space for components/subspaces
     /// that are not serializable.
