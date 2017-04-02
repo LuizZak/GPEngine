@@ -72,6 +72,8 @@ open class Entity: Equatable {
         return components.flatMap { $0 as? T }
     }
     
+    /// Performs a reference-equality check between two Entity instances.
+    /// Parameter are equal if they reference the same object.
     public static func ==(lhs: Entity, rhs: Entity) -> Bool {
         return lhs === rhs
     }

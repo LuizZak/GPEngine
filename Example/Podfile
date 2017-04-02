@@ -1,6 +1,6 @@
 use_frameworks!
 target 'GPEngine_Tests' do
   pod 'GPEngine', :path => '../'
-  
+  pod 'GPEngine/Serialization', :path => '../'
   
 end

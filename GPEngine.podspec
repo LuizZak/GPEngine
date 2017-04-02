@@ -28,8 +28,20 @@ See https://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-con
   s.author           = { 'LuizZak' => 'luizinho_mack@yahoo.com.br' }
   s.source           = { :git => 'https://github.com/LuizZak/GPEngine.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/LuizZak'
+  s.default_subspec  = 'Core'
 
   s.ios.deployment_target = '8.0'
-
-  s.source_files = 'GPEngine/Classes/**/*'
+  
+  s.subspec 'Core' do |co|
+    co.dependency 'GPEngine/Base'
+  end
+  
+  s.subspec 'Base' do |base|
+    base.source_files = 'Source/Base/**/*'
+  end
+  
+  s.subspec 'Serialization' do |ser|
+    ser.source_files = 'Source/Serialization/**/*'
+    ser.dependency 'SwiftyJSON'
+  end
 end
