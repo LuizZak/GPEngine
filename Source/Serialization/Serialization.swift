@@ -141,6 +141,8 @@ public class GameSerializer {
             type = .subspace
         } else if serializable is Serialized {
             type = .serialized
+        } else if serializable is SerializedPreset {
+            type = .preset
         } else {
             type = .custom
         }
@@ -148,7 +150,10 @@ public class GameSerializer {
         return Serialized(typeName: name, contentType: type, data: serialized)
     }
     
-    /// Deserializes a preset that is contained within a serialized object
+    /// Deserializes a preset that is contained within a serialized object.
+    /// This method returns the expanded serialized container within the preset,
+    /// using the variables within the `serialized.data` property to feed the
+    /// preset variables.
     public func deserializePreset(in serialized: Serialized) throws -> Serialized {
         if(serialized.contentType != .preset) {
             throw DeserializationError.invalidSerialized(message: "Does not represent a preset")

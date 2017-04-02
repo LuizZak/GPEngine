@@ -482,6 +482,8 @@ class SerializationTests: XCTestCase {
             let json: JSON = [
                 "contentType": "space",
                 "typeName": "Space",
+                
+                // Presets are defined here, for an entity and a subspace...
                 "presets": [
                     [
                         "presetName": "Player",
@@ -522,6 +524,8 @@ class SerializationTests: XCTestCase {
                         ]
                     ]
                 ],
+                
+                // Presets are expanded here!
                 "data": [
                     "subspaces": [
                         [
@@ -556,6 +560,78 @@ class SerializationTests: XCTestCase {
             XCTAssertEqual(space.entities[0].component(ofType: SerializableComponent.self)?.field, 20)
         } catch {
             XCTFail("\(error)")
+        }
+    }
+    
+    func testRecursivePresetExpansion() {
+        // Tests that a moderately recursive-looking preset does not explode
+        // during expansion, and results in an error during deserialization
+        
+        do {
+            let serializer = GameSerializer(typeProvider: Provider())
+            
+            let json: JSON = [
+                "contentType": "space",
+                "typeName": "Space",
+                "presets": [
+                    [
+                        "presetName": "Player",
+                        "presetType": "entity",
+                        "presetVariables": [
+                            "var": "number"
+                        ],
+                        "presetData": [
+                            "contentType": "entity",
+                            "typeName": "Entity",
+                            "presets": [
+                                [
+                                    "presetName": "Player",
+                                    "presetType": "entity",
+                                    "presetVariables": [:],
+                                    "presetData": [
+                                        "contentType": "entity",
+                                        "typeName": "Entity",
+                                        "data": [
+                                            :
+                                        ]
+                                    ]
+                                ]
+                            ],
+                            "data": [
+                                "id": 1,
+                                "type": 2,
+                                "components": [
+                                    [
+                                        "contentType": "preset",
+                                        "typeName": "Player",
+                                        "data": [
+                                            :
+                                        ]
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                "data": [
+                    "subspaces": [ ],
+                    "entities": [
+                        [
+                            "contentType": "preset",
+                            "typeName": "Player",
+                            "data": [
+                                "var": 20
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            
+            let serialized = try Serialized.deserialized(from: json)
+            let _: Space=try serializer.extract(from: serialized)
+            XCTFail("Should not have succeeded")
+        } catch {
+            // Success!
         }
     }
 }
