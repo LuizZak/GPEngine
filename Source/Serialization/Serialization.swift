@@ -11,8 +11,15 @@ import SwiftyJSON
 /// Errors that can be throwing during a serialization process.
 ///
 /// - cannotSerialize: An error ocurring during the serialization process
-public enum SerializationError: Error {
+public enum SerializationError: Error, CustomStringConvertible {
     case cannotSerialize(reason: String)
+    
+    public var description: String {
+        switch(self) {
+        case .cannotSerialize(let reason):
+            return "Serialization error: \(reason)"
+        }
+    }
 }
 
 /// Errors that can be throwing during a deserialization process.
@@ -27,10 +34,21 @@ public enum SerializationError: Error {
 ///
 /// - invalidSerialized: A serialized object cannot be deserialized with a
 /// provided JSON
-public enum DeserializationError: Error {
+public enum DeserializationError: Error, CustomStringConvertible {
     case notImplemented
     case unrecognizedSerializedName
     case invalidSerialized(message: String)
+    
+    public var description: String {
+        switch(self) {
+        case .notImplemented:
+            return "Deserialization error: method not implemented"
+        case .unrecognizedSerializedName:
+            return "Deserialization error: unrecognized serialized type name"
+        case .invalidSerialized(let message):
+            return "Deserialization error: \(message)"
+        }
+    }
 }
 
 /// Class capable of serializing/deserializing components

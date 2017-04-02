@@ -180,4 +180,54 @@ class SerializationTests: XCTestCase {
             XCTAssert(error is SerializationError)
         }
     }
+    
+    func testFullDeserialize() throws {
+        let serializer = GameSerializer(typeProvider: Provider())
+        
+        let json: JSON = [
+            "contentType": "space",
+            "typeName": "Space", // Must always be 'Space' for spaces
+            "data": [
+                "subspaces": [
+                    [
+                        "contentType": "subspace",
+                        "typeName": "SerializableSubspace",
+                        "data": [
+                            "subspaceField": 10
+                        ]
+                    ]
+                ],
+                "entities": [
+                    [
+                        "contentType": "entity",
+                        "typeName": "Entity", // Must always be 'Entity' for entities
+                        "data": [
+                            "id": 1,
+                            "type": 2,
+                            "components": [
+                                [
+                                    "contentType": "component",
+                                    "typeName": "SerializableComponent",
+                                    "data": [
+                                        "field": 20
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ]
+            
+        let serialized = try Serialized.deserialized(from: json)
+        let space: Space = try serializer.extract(from: serialized)
+        
+        XCTAssertEqual(space.subspaces.count, 1)
+        XCTAssertEqual(space.subspace(SerializableSubspace.self)?.subspaceField, 10)
+        
+        XCTAssertEqual(space.entities.count, 1)
+        XCTAssertEqual(space.entities[0].id, 1)
+        XCTAssertEqual(space.entities[0].type, 2)
+        XCTAssertEqual(space.entities[0].component(ofType: SerializableComponent.self)?.field, 20)
+    }
 }
