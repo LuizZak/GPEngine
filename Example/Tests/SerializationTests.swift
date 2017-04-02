@@ -230,4 +230,226 @@ class SerializationTests: XCTestCase {
         XCTAssertEqual(space.entities[0].type, 2)
         XCTAssertEqual(space.entities[0].component(ofType: SerializableComponent.self)?.field, 20)
     }
+    
+    // MARK: Presets
+    func testDeserializePreset() {
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [
+                    "x": "number",
+                    "y": [ "type": "number", "default": 20.2 ]
+                ],
+                "presetData": [
+                    "contentType": "entity",
+                    "typeName": "Entity",
+                    "data": [
+                        "id": 1,
+                        "type": 0xff,
+                        "components": [
+                            [
+                                "contentType": "component",
+                                "typeName": "PositionComponent",
+                                "data": [
+                                    "x": [ "presetVariable": "x" ],
+                                    "y": [ "presetVariable": "y" ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            
+            let preset = try SerializedPreset.deserialized(from: json)
+            
+            XCTAssertEqual("Player", preset.name)
+            XCTAssertEqual(.entity, preset.type)
+            
+            // Check preset serialized within
+            XCTAssertEqual(preset.data.contentType, .entity)
+            XCTAssertEqual(preset.data.typeName, "Entity")
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
+    func testReplacePresetVariables() {
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [
+                    "x": "number",
+                    "y": "number",
+                    "z": [ "type": "number", "default": 30 ]
+                ],
+                "presetData": [
+                    "contentType": "entity",
+                    "typeName": "Entity",
+                    "data": [
+                        "id": 1,
+                        "type": 0xff,
+                        "components": [
+                            [
+                                "contentType": "component",
+                                "typeName": "PositionComponent",
+                                "data": [
+                                    "x": [ "presetVariable": "x" ],
+                                    "y": [ "presetVariable": "y" ],
+                                    "z": [ "presetVariable": "z" ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+            
+            let preset = try SerializedPreset.deserialized(from: json)
+            
+            let expanded =
+                try preset.expandPreset(withVariables:
+                    [
+                        "x": 10,
+                        "y": 20
+                    ])
+            
+            let data = expanded.data
+            
+            // Verify data
+            XCTAssertEqual(data["components", 0, "data", "x"], 10)
+            XCTAssertEqual(data["components", 0, "data", "y"], 20)
+            XCTAssertEqual(data["components", 0, "data", "z"], 30)
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
+    func testSimplePresetDeserialization() {
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [
+                    "var1": [ "type": "number", "default": 0 ],
+                    "var2": "string"
+                ],
+                "presetData": [
+                    "contentType": "entity",
+                    "typeName": "Entity",
+                    "data": [ ]
+                ]
+            ]
+            
+            let preset = try SerializedPreset.deserialized(from: json)
+            
+            XCTAssertEqual(preset.name, "Player")
+            XCTAssertEqual(preset.type, .entity)
+            XCTAssertEqual(preset.variables.count, 2)
+            XCTAssertEqual(preset.variables["var1"]?.name, "var1")
+            XCTAssertEqual(preset.variables["var1"]?.type, .number)
+            XCTAssertEqual(preset.variables["var1"]?.defaultValue as? Double, Double(0))
+            XCTAssertEqual(preset.variables["var2"]?.name, "var2")
+            XCTAssertEqual(preset.variables["var2"]?.type, .string)
+        } catch {
+            XCTFail("\(error)")
+        }
+    }
+    
+    func testPresetSerializedDataDifferentTypeError() {
+        // If the type specified in 'presetName' differs from the presetData's
+        // inner 'contentType', an error should be raised.
+        
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [:],
+                "presetData": [
+                    "contentType": "custom",
+                    "typeName": "MyType",
+                    "data": [:]
+                ]
+            ]
+            
+            _=try SerializedPreset.deserialized(from: json)
+            
+            XCTFail("Should have thrown error")
+        } catch {
+            XCTAssert(error is DeserializationError)
+        }
+    }
+    
+    func testPresetCannotRepresentPresets() {
+        // Presets are not allowed to represent 'preset' typed contents
+        
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "preset",
+                "presetVariables": [:],
+                "presetData": [
+                    "contentType": "preset",
+                    "typeName": "SerializedPreset",
+                    "data": [:]
+                ]
+            ]
+            
+            _=try SerializedPreset.deserialized(from: json)
+            
+            XCTFail("Should have thrown error")
+        } catch {
+            XCTAssert(error is DeserializationError)
+        }
+    }
+    
+    func testPresetVariableTypeError() {
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [
+                    "var": "number"
+                ],
+                "presetData": [
+                    "contentType": "entity",
+                    "typeName": "Entity",
+                    "data": [
+                        "from-preset": [ "presetVariable": "var" ]
+                    ]
+                ]
+            ]
+            
+            let preset = try SerializedPreset.deserialized(from: json)
+            
+            _=try preset.expandPreset(withVariables: [ "var": "but i'm a string!" ])
+            
+            XCTFail("Should have thrown error")
+        } catch {
+            XCTAssert(error is SerializedPreset.VariableReplaceError)
+        }
+    }
+    
+    func testPresetDefaultVariableTypeError() {
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [
+                    "broken": [ "type": "number", "default": "but i'm a string!" ]
+                ],
+                "presetData": [
+                    "contentType": "entity",
+                    "typeName": "Entity",
+                    "data": [:]
+                ]
+            ]
+            
+            _=try SerializedPreset.deserialized(from: json)
+            
+            XCTFail("Should have failed")
+        } catch {
+            XCTAssert(error is DeserializationError)
+        }
+    }
 }

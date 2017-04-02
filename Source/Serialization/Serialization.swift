@@ -7,6 +7,7 @@
 //
 
 import SwiftyJSON
+import enum SwiftyJSON.Type
 
 /// Errors that can be throwing during a serialization process.
 ///
@@ -319,11 +320,11 @@ public class GameSerializer {
 public struct Serialized: Serializable {
     
     /// The type name for this serialized object
-    fileprivate(set) public var typeName: String
+    public var typeName: String
     /// The type of content serialized
-    fileprivate(set) public var contentType: ContentType
+    public var contentType: ContentType
     /// The serialized object
-    fileprivate(set) public var data: JSON
+    public var data: JSON
     
     init(typeName: String, contentType: ContentType, data: JSON) {
         self.typeName = typeName
@@ -393,6 +394,7 @@ public struct Serialized: Serializable {
     /// - space: A subclass Space
     /// - system: A subclass of System
     /// - serialized: A Serialized object itself
+    /// - preset: A SerializedPreset object
     /// - custom: A custom implementer of Serialized, that is not any of the
     /// above types.
     public enum ContentType: String {
@@ -402,7 +404,250 @@ public struct Serialized: Serializable {
         case space
         case system
         case serialized
+        case preset
         case custom
+    }
+}
+
+/// Represents a reusable serializable object template that can be reference
+/// multiple times within a serialized instance.
+///
+/// Supports variable fields using 'presetVariable'.
+public struct SerializedPreset: Serializable {
+    
+    /// The reference name for this preset
+    public var name: String
+    
+    /// The inner type the preset expands to.
+    /// Cannot be `preset` itself.
+    public var type: Serialized.ContentType
+    
+    /// A collection of variables that can be defined within the preset when its
+    /// used to override values on the preset data.
+    public var variables: [String: Variable]
+    
+    /// The contents of the serialized preset
+    public var data: Serialized
+    
+    /// Serializes this preset object
+    public func serialized() -> JSON {
+        // Encode variables
+        var vars: JSON = [:]
+        
+        for (key, variable) in variables {
+            if let defaultValue = variable.defaultValue {
+                vars[key].object = [
+                    "type": variable.type.rawValue,
+                    "default": defaultValue
+                ]
+            } else {
+                vars[key].string = variable.type.rawValue
+            }
+        }
+        
+        let json: JSON = [
+            "presetName": name,
+            "presetType": type.rawValue,
+            "presetVariables": vars.object,
+            "presetData": data.serialized().object
+        ]
+        
+        return json
+    }
+    
+    mutating public func deserialize(from json: JSON) throws {
+        guard let name = json["presetName"].string else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'presetName'")
+        }
+        guard let type = json["presetType"].string else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'presetType' in preset '\(name)'")
+        }
+        guard let presetType = Serialized.ContentType(rawValue: type) else {
+            throw DeserializationError.invalidSerialized(message: "Invalid preset type '\(type)' in preset '\(name)'")
+        }
+        guard let vars = json["presetVariables"].dictionary else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'presetVariables' in preset '\(name)'")
+        }
+        
+        if presetType == .preset {
+            throw DeserializationError.invalidSerialized(message: "Presets cannot represent preset types themselves in preset '\(name)'")
+        }
+        
+        self.name = name
+        self.type = presetType
+        self.data = try Serialized.deserialized(from: json["presetData"])
+        
+        // Match serialized content types
+        if(self.type != self.data.contentType) {
+            throw DeserializationError.invalidSerialized(message: "Expected preset data of type '\(type)', but received preset with contentType '\(self.data.contentType)' in preset '\(name)'")
+        }
+        
+        // Expand variables
+        variables.removeAll()
+        for (key, value) in vars {
+            let typeString: String
+            var defaultValue: Any? = nil
+            if value.type == .dictionary {
+                guard let tString = value["type"].string else {
+                    throw DeserializationError.invalidSerialized(message: "Missing 'type' on variable '\(key)' in preset '\(name)'")
+                }
+                
+                // Currently we only support default values of string and number
+                if value["default"].type == .string {
+                    defaultValue = value["default"].string
+                } else if value["default"].type == .number {
+                    defaultValue = value["default"].double
+                } else {
+                    throw DeserializationError.invalidSerialized(message: "Unsuported variable type '\(value["default"].type)' in variable '\(name)' in preset '\(name)'")
+                }
+                
+                typeString = tString
+            } else if let string = value.string {
+                typeString = string
+            } else {
+                throw DeserializationError.invalidSerialized(message: "Preset variable value must either be string or dictionary, received \(value.type) in variable '\(key)' in preset '\(name)'")
+            }
+            
+            guard let type = VariableType(rawValue: typeString) else {
+                throw DeserializationError.invalidSerialized(message: "Unrecognized variable type '\(typeString)' on preset variable '\(key)' in preset '\(name)'")
+            }
+            
+            // Check type of default value
+            if let def = defaultValue {
+                if(JSON(def).type != type.jsonType) {
+                    throw DeserializationError.invalidSerialized(message: "Default value for variable '\(name)' has a different type than the variable in preset '\(name)'")
+                }
+            }
+            
+            variables[key] = Variable(name: key, type: type, defaultValue: defaultValue)
+        }
+    }
+    
+    /// Returns a copy of the Serialized data within this preset, using a given
+    /// map of variables to expand any variable within the preset object.
+    /// Preset variables are identified by being values with a 
+    /// `[ "presetVariable": {variableName} ]` for any key json within.
+    /// The replacement is applied recursively.
+    ///
+    /// Throws an error, if encounters preset variables with incorrect values or
+    /// that have no matching variables.
+    public func expandPreset(withVariables values: [String: Any]) throws -> Serialized {
+        var json = data.data
+        
+        // Verify variables
+        for (key, value) in values {
+            // Find matching definition
+            if let def = variables[key] {
+                if(def.type.jsonType != JSON(value).type) {
+                    throw VariableReplaceError.missmatchedType(valueName: key, expected: def.type.jsonType, received: JSON(value).type)
+                }
+            }
+        }
+        
+        // Walk recursively, expanding within
+        try expandPreset(recursiveOn: &json, withVariables: values)
+        
+        return Serialized(typeName: data.typeName, contentType: data.contentType, data: json)
+    }
+    
+    private func expandPreset(recursiveOn json: inout JSON, withVariables values: [String: Any]) throws {
+        // A preset replacement!
+        if let varName = json["presetVariable"].string {
+            if let value = values[varName] {
+                json = JSON(value)
+                return
+            } else {
+                // Search for default
+                if let def = variables[varName] {
+                    if let value = def.defaultValue {
+                        json = JSON(value)
+                        return
+                    }
+                }
+                
+                throw VariableReplaceError.missingValue(valueName: varName)
+            }
+        }
+        
+        // Traverse into the values...
+        if json.type == .dictionary {
+            for (key, var value) in json {
+                try expandPreset(recursiveOn: &value, withVariables: values)
+                json[key] = value
+            }
+        } else if json.type == .array {
+            for i in 0..<json.arrayValue.count {
+                var value = json[i]
+                try expandPreset(recursiveOn: &value, withVariables: values)
+                json[i] = value
+            }
+        }
+    }
+    
+    /// Deserializes a serialzied preset from a given JSON object
+    public static func deserialized(from json: JSON) throws -> SerializedPreset {
+        var preset = SerializedPreset(name: "", type: .custom, variables: [:], data: Serialized(typeName: "", contentType: .custom, data: [:]))
+        try preset.deserialize(from: json)
+        return preset
+    }
+    
+    /// Represents a preset variable
+    public struct Variable {
+        /// The name of this variable
+        public var name: String
+        
+        /// The type for this variable
+        public var type: VariableType
+        
+        /// The default value, if available.
+        /// Must match type specified on `type` field above.
+        public var defaultValue: Any?
+    }
+    
+    /// Allowed scalar values to expand a preset variable to.
+    /// Must expand to a recognized JSON type.
+    ///
+    /// - number: 64-bit floating point number
+    /// - string: Unicode string
+    public enum VariableType: String {
+        case number
+        case string
+        
+        /// Fetches the equivalent SwiftyJSON.Type enumeration value for this
+        /// variable
+        var jsonType: Type {
+            switch(self) {
+            case .number:
+                return .number
+            case .string:
+                return .string
+            }
+        }
+    }
+    
+    /// Possible errors returned by `.expandPreset(withVariables:)`
+    ///
+    /// - unkownVariable: A variable reference within the preset data is not
+    /// listed within the preset's variable list
+    /// - missingValue: A variable within the preset data has no matching value
+    /// within the variables dictionary
+    /// - missmatchedType: A value that was fed to the variables dictionary
+    /// mismatches the expected type
+    public enum VariableReplaceError: Error, CustomStringConvertible {
+        case unkownVariable(variableName: String)
+        case missingValue(valueName: String)
+        case missmatchedType(valueName: String, expected: Type, received: Type)
+        
+        public var description: String {
+            switch(self) {
+            case .unkownVariable(let name):
+                return "Unrecognized variable name \(name)"
+            case .missingValue(let name):
+                return "Values dictionary provided misses required value for variable '\(name)'"
+            case .missmatchedType(let name, let expected, let received):
+                return "Value for variable '\(name)' provided is \(received), but expected \(expected)"
+            }
+        }
     }
 }
 
