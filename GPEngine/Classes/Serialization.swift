@@ -148,8 +148,6 @@ public class GameSerializer {
             type = .space
         } else if serializable is Subspace {
             type = .subspace
-        } else if serializable is Game {
-            type = .game
         } else if serializable is Serialized {
             type = .serialized
         } else {
@@ -266,11 +264,11 @@ public class GameSerializer {
 public struct Serialized: Serializable {
     
     /// The type name for this serialized object
-    var typeName: String
+    fileprivate(set) public var typeName: String
     /// The type of content serialized
-    var contentType: ContentType
+    fileprivate(set) public var contentType: ContentType
     /// The serialized object
-    var data: JSON
+    fileprivate(set) public var data: JSON
     
     init(typeName: String, contentType: ContentType, data: JSON) {
         self.typeName = typeName
@@ -339,17 +337,15 @@ public struct Serialized: Serializable {
     /// - entity: An entity object
     /// - space: A subclass Space
     /// - system: A subclass of System
-    /// - game: An entire game state
     /// - serialized: A Serialized object itself
     /// - custom: A custom implementer of Serialized, that is not any of the
     /// above types.
-    enum ContentType: String {
+    public enum ContentType: String {
         case component
         case entity
         case subspace
         case space
         case system
-        case game
         case serialized
         case custom
     }

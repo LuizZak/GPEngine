@@ -73,6 +73,8 @@ class SerializationTests: XCTestCase {
         
         let original = SerializableComponent(field: 10)
         let object = serializer.serialize(original)
+        XCTAssertEqual(object.contentType, .component)
+        
         let ser: SerializableComponent = try serializer.extract(from: object)
         
         XCTAssertEqual(ser.field, original.field)
@@ -95,6 +97,7 @@ class SerializationTests: XCTestCase {
         
         let deserialized: Entity = try serializer.extract(from: object)
         // Check basic deserialization
+        XCTAssertEqual(object.contentType, .entity)
         XCTAssertEqual(deserialized.id, 20)
         XCTAssertEqual(deserialized.type, 3)
         
@@ -132,6 +135,8 @@ class SerializationTests: XCTestCase {
         original.addSubspace(SerializableSubspace(subspaceField: 20))
         
         let object = try serializer.serialize(original)
+        
+        XCTAssertEqual(object.contentType, .space)
         
         let deserialized: Space = try serializer.extract(from: object)
         
