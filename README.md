@@ -76,9 +76,9 @@ The serialized JSON returned from `Serialized.serialized()` follows the given st
 
 ```json
 {
-    "contentType": <String - one of the raw values of Serialized.ContentType>,
-    "typeName": <String - type name returned by your SerializationTypeProvider to retrieve the class to instantiate back>,
-    "data": <Any - this is the JSON returned by the object's serialize() method>
+    "contentType": "<String - one of the raw values of Serialized.ContentType>",
+    "typeName": "<String - type name returned by your SerializationTypeProvider to retrieve the class to instantiate back>",
+    "data": "<Any - this is the JSON returned by the object's serialize() method>"
 }
 ```
 
