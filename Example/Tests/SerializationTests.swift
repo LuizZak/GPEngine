@@ -15,14 +15,19 @@ class SerializationTests: XCTestCase {
     struct SerializableComponent: Component, Serializable {
         var field: Int
         
+        init(field: Int) {
+            self.field = field
+        }
+        
+        init(json: JSON) throws {
+            field = json["field"].intValue
+        }
+        
         func serialized() -> JSON {
             return ["field": field]
         }
         mutating func deserialize(from json: JSON) throws {
             
-        }
-        static func deserialized(from json: JSON) throws -> SerializableComponent {
-            return SerializableComponent(field: json["field"].intValue)
         }
     }
     
@@ -33,14 +38,15 @@ class SerializationTests: XCTestCase {
             self.subspaceField = subspaceField
         }
         
+        init(json: JSON) throws {
+            subspaceField = json["subspaceField"].intValue
+        }
+        
         func serialized() -> JSON {
             return ["subspaceField": subspaceField]
         }
         func deserialize(from json: JSON) throws {
             
-        }
-        static func deserialized(from json: JSON) throws -> SerializableSubspace {
-            return SerializableSubspace(subspaceField: json["subspaceField"].intValue)
         }
     }
     
@@ -219,7 +225,7 @@ class SerializationTests: XCTestCase {
             ]
         ]
             
-        let serialized = try Serialized.deserialized(from: json)
+        let serialized = try Serialized(json: json)
         let space: Space = try serializer.extract(from: serialized)
         
         XCTAssertEqual(space.subspaces.count, 1)
@@ -261,7 +267,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            let preset = try SerializedPreset.deserialized(from: json)
+            let preset = try SerializedPreset(json: json)
             
             XCTAssertEqual("Player", preset.name)
             XCTAssertEqual(.entity, preset.type)
@@ -305,7 +311,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            let preset = try SerializedPreset.deserialized(from: json)
+            let preset = try SerializedPreset(json: json)
             
             let expanded =
                 try preset.expandPreset(withVariables:
@@ -341,7 +347,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            let preset = try SerializedPreset.deserialized(from: json)
+            let preset = try SerializedPreset(json: json)
             
             XCTAssertEqual(preset.name, "Player")
             XCTAssertEqual(preset.type, .entity)
@@ -372,7 +378,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _=try SerializedPreset.deserialized(from: json)
+            _=try SerializedPreset(json: json)
             
             XCTFail("Should have thrown error")
         } catch {
@@ -392,7 +398,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _=try SerializedPreset.deserialized(from: json)
+            _=try SerializedPreset(json: json)
             
             XCTFail("Should have thrown error")
         } catch {
@@ -415,7 +421,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _=try SerializedPreset.deserialized(from: json)
+            _=try SerializedPreset(json: json)
             
             XCTFail("Should have thrown error")
         } catch {
@@ -440,7 +446,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            let preset = try SerializedPreset.deserialized(from: json)
+            let preset = try SerializedPreset(json: json)
             
             _=try preset.expandPreset(withVariables: [ "var": "but i'm a string!" ])
             
@@ -465,7 +471,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _=try SerializedPreset.deserialized(from: json)
+            _=try SerializedPreset(json: json)
             
             XCTFail("Should have failed")
         } catch {
@@ -548,7 +554,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            let serialized = try Serialized.deserialized(from: json)
+            let serialized = try Serialized(json: json)
             let space: Space = try serializer.extract(from: serialized)
             
             XCTAssertEqual(space.subspaces.count, 1)
@@ -627,7 +633,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            let serialized = try Serialized.deserialized(from: json)
+            let serialized = try Serialized(json: json)
             let _: Space=try serializer.extract(from: serialized)
             XCTFail("Should not have succeeded")
         } catch {

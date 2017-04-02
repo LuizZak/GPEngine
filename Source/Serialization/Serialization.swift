@@ -173,7 +173,7 @@ public class GameSerializer {
     
     /// Deserializes a given serialized instance
     public func deserialize(from json: JSON) throws -> Serialized {
-        return try Serialized.deserialized(from: json)
+        return try Serialized(json: json)
     }
     
     /// Extracts an entity with all its components from a serialized object
@@ -205,7 +205,7 @@ public class GameSerializer {
         }
         
         let serialComps: [Serialized] = try components.map {
-            try Serialized.deserialized(from: $0)
+            try Serialized(json: $0)
         }
         let comps: [Component] = try serialComps.map {
             try extract(from: $0)
@@ -244,13 +244,13 @@ public class GameSerializer {
         }
         
         let entities: [Entity] = try entitiesJson.map {
-            try Serialized.deserialized(from: $0)
+            try Serialized(json: $0)
         }.map {
             try extract(from: $0)
         }
         
         let subspaces: [Subspace] = try subspacesJson.map {
-            try Serialized.deserialized(from: $0)
+            try Serialized(json: $0)
         }.map {
             try extract(from: $0)
         }
@@ -282,7 +282,7 @@ public class GameSerializer {
         
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is T.Type {
-            return try type.deserialized(from: serialized.data) as! T
+            return try type.init(json: serialized.data) as! T
         }
         
         throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
@@ -304,7 +304,7 @@ public class GameSerializer {
         
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is Component.Type {
-            return try type.deserialized(from: serialized.data) as! Component
+            return try type.init(json: serialized.data) as! Component
         }
         
         throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
@@ -326,7 +326,7 @@ public class GameSerializer {
         
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is Subspace.Type {
-            return try type.deserialized(from: serialized.data) as! Subspace
+            return try type.init(json: serialized.data) as! Subspace
         }
         
         throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
@@ -464,6 +464,22 @@ public struct Serialized: Serializable {
         self.data = data
     }
     
+    /// Creates and initializes an instance of this type from a given serialized
+    /// state.
+    ///
+    /// - Parameter from: A state that was previously serialized by an instance
+    /// of this type using `serialized()`
+    /// - Returns: A deserialized instance of this component type
+    /// - Throws: Any type of error during deserialization.
+    public init(json: JSON) throws {
+        typeName = ""
+        presets = []
+        contentType = .custom
+        data = []
+        
+        try deserialize(from: json)
+    }
+    
     fileprivate init() {
         self.typeName = ""
         self.presets = []
@@ -502,25 +518,12 @@ public struct Serialized: Serializable {
             throw DeserializationError.invalidSerialized(message: "Missing 'data'")
         }
         if let presets = json["presets"].array {
-            self.presets = try presets.map { try SerializedPreset.deserialized(from: $0) }
+            self.presets = try presets.map { try SerializedPreset(json: $0) }
         }
         
         self.typeName = name
         self.contentType = contentType
         self.data = json["data"]
-    }
-    
-    /// Creates and initializes an instance of this type from a given serialized
-    /// state.
-    ///
-    /// - Parameter from: A state that was previously serialized by an instance
-    /// of this type using `serialized()`
-    /// - Returns: A deserialized instance of this component type
-    /// - Throws: Any type of error during deserialization.
-    public static func deserialized(from json: JSON) throws -> Serialized {
-        var obj = Serialized()
-        try obj.deserialize(from: json)
-        return obj
     }
     
     /// The type of content serialized within this serialized object.
@@ -565,6 +568,23 @@ public struct SerializedPreset: Serializable {
     
     /// The contents of the serialized preset
     public var data: Serialized
+    
+    public init(name: String, type: Serialized.ContentType, variables: [String: Variable], data: Serialized) {
+        self.name = name
+        self.type = type
+        self.variables = variables
+        self.data = data
+    }
+    
+    /// Deserializes a serialzied preset from a given JSON object
+    public init(json: JSON) throws {
+        name = ""
+        type = .custom
+        variables = [:]
+        data = Serialized(typeName: "", contentType: .custom, data: [:])
+        
+        try deserialize(from: json)
+    }
     
     /// Serializes this preset object
     public func serialized() -> JSON {
@@ -620,7 +640,7 @@ public struct SerializedPreset: Serializable {
         
         self.name = name
         self.type = presetType
-        self.data = try Serialized.deserialized(from: presetData)
+        self.data = try Serialized(json: presetData)
         
         // Match serialized content types
         if(self.type != self.data.contentType) {
@@ -729,13 +749,6 @@ public struct SerializedPreset: Serializable {
         }
     }
     
-    /// Deserializes a serialzied preset from a given JSON object
-    public static func deserialized(from json: JSON) throws -> SerializedPreset {
-        var preset = SerializedPreset(name: "", type: .custom, variables: [:], data: Serialized(typeName: "", contentType: .custom, data: [:]))
-        try preset.deserialize(from: json)
-        return preset
-    }
-    
     /// Represents a preset variable
     public struct Variable {
         /// The name of this variable
@@ -801,6 +814,13 @@ public struct SerializedPreset: Serializable {
 /// state of the object remains the same when deserializing from a previously
 /// serialized object.
 public protocol Serializable {
+    /// Initializes an instance of this type from a given serialized state.
+    ///
+    /// - Parameter json: A state that was previously serialized by an instance
+    /// of this type using `serialized()`
+    /// - Throws: Any type of error during deserialization.
+    init(json: JSON) throws
+    
     /// Serializes the state of this component into a JSON object.
     ///
     /// - Returns: The serialized state for this object.
@@ -812,15 +832,6 @@ public protocol Serializable {
     /// call to an instance of this object type's `serialize()` method.
     /// - Throws: Any type of error during deserialization.
     mutating func deserialize(from json: JSON) throws
-    
-    /// Creates and initializes an instance of this type from a given serialized
-    /// state.
-    ///
-    /// - Parameter json: A state that was previously serialized by an instance
-    /// of this type using `serialized()`
-    /// - Returns: A deserialized instance of this component type
-    /// - Throws: Any type of error during deserialization.
-    static func deserialized(from json: JSON) throws -> Self
 }
 
 /// Protocol to be implemented by objects that can provide the correct types to
