@@ -42,6 +42,25 @@ public class GameSerializer {
         self.typeProvider = typeProvider
     }
     
+    /// Returns if a game space is serializable.
+    /// A game space is serializable if all its entities and subspaces are, as
+    /// well.
+    /// See `canSerialize(_:Entity)` for entity serialization rules.
+    public func canSerialize(_ space: Space) -> Bool {
+        for entity in space.entities {
+            if !canSerialize(entity) {
+                return false
+            }
+        }
+        for subspace in space.subspaces {
+            if !(subspace is Serializable) {
+                return false
+            }
+        }
+        
+        return true
+    }
+    
     /// Returns if an entity is serializable.
     /// An entity is serializable if all its components are, as well.
     public func canSerialize(_ entity: Entity) -> Bool {
@@ -77,6 +96,37 @@ public class GameSerializer {
         }
         
         data["components"].arrayObject = serializedComps.map { $0.serialized().object }
+        
+        return Serialized(typeName: name, contentType: type, data: data)
+    }
+    
+    /// Serializes a game space passed in.
+    /// Throws, if any of the entities are non-serializable.
+    /// See `serialize(_:Entity)` for Entity serialization rules.
+    public func serialize(_ space: Space) throws -> Serialized {
+        let type = Serialized.ContentType.space
+        let name = String(describing: Space.self)
+        
+        var data: JSON = [:]
+        
+        var serializedEntities: [Serialized] = []
+        
+        for entity in space.entities {
+            try serializedEntities.append(serialize(entity))
+        }
+        
+        var serializedSubspaces: [Serialized] = []
+        
+        for subspace in space.subspaces {
+            guard let ser = subspace as? Serializable else {
+                throw SerializationError.cannotSerialize(reason: "Found subspace type \(type(of: subspace)) is not serializable.")
+            }
+            
+            serializedSubspaces.append(serialize(ser))
+        }
+        
+        data["entities"].arrayObject = serializedEntities.map { $0.serialized().object }
+        data["subspaces"].arrayObject = serializedSubspaces.map { $0.serialized().object }
         
         return Serialized(typeName: name, contentType: type, data: data)
     }
@@ -144,6 +194,42 @@ public class GameSerializer {
         return entity
     }
     
+    /// Extracts a game space with all its entities from a serialized object
+    public func extract(from serialized: Serialized) throws -> Space {
+        if(serialized.typeName != "Space" || serialized.contentType != .space) {
+            throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Space instance")
+        }
+        
+        guard let entitiesJson = serialized.data["entities"].array else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'entities'")
+        }
+        guard let subspacesJson = serialized.data["subspaces"].array else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'subspaces'")
+        }
+        
+        let entities: [Entity] = try entitiesJson.map {
+            try Serialized.deserialized(from: $0)
+        }.map {
+            try extract(from: $0)
+        }
+        
+        let subspaces: [Subspace] = try subspacesJson.map {
+            try Serialized.deserialized(from: $0)
+        }.map {
+            try extract(from: $0)
+        }
+        
+        let space = Space()
+        for sub in subspaces {
+            space.addSubspace(sub)
+        }
+        for entity in entities {
+            space.addEntity(entity)
+        }
+        
+        return space
+    }
+    
     /// Extracts a component type from a serialized object
     public func extract<T: Component>(from serialized: Serialized) throws -> T {
         let type = try typeProvider.deserialized(from: serialized.typeName)
@@ -154,11 +240,21 @@ public class GameSerializer {
         throw DeserializationError.unrecognizedSerializedName
     }
     
-    /// Extracts a component type from a serialized object
+    /// Extracts a Component type from a serialized object
     public func extract(from serialized: Serialized) throws -> Component {
         let type = try typeProvider.deserialized(from: serialized.typeName)
         if type is Component.Type {
             return try type.deserialized(from: serialized.data) as! Component
+        }
+        
+        throw DeserializationError.unrecognizedSerializedName
+    }
+    
+    /// Extracts a Subspace type from a serialized object
+    public func extract(from serialized: Serialized) throws -> Subspace {
+        let type = try typeProvider.deserialized(from: serialized.typeName)
+        if type is Subspace.Type {
+            return try type.deserialized(from: serialized.data) as! Subspace
         }
         
         throw DeserializationError.unrecognizedSerializedName

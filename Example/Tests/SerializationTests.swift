@@ -26,15 +26,47 @@ class SerializationTests: XCTestCase {
         }
     }
     
+    final class SerializableSubspace: Subspace, Serializable {
+        var subspaceField: Int
+        
+        init(subspaceField: Int) {
+            self.subspaceField = subspaceField
+        }
+        
+        func serialized() -> JSON {
+            return ["subspaceField": subspaceField]
+        }
+        func deserialize(from json: JSON) throws {
+            
+        }
+        static func deserialized(from json: JSON) throws -> SerializableSubspace {
+            return SerializableSubspace(subspaceField: json["subspaceField"].intValue)
+        }
+    }
+    
     struct UnserializableComponent: Component {
         
     }
     
     class Provider: SerializationTypeProvider {
+        
+        var types: [Serializable.Type] = [
+            SerializableComponent.self,
+            SerializableSubspace.self
+        ]
+        
         func deserialized(from name: String) throws -> Serializable.Type {
-            return SerializableComponent.self
+            for type in types {
+                if(String(describing: type) == name) {
+                    return type
+                }
+            }
+            
+            throw DeserializationError.unrecognizedSerializedName
         }
     }
+    
+    // MARK: Component
     
     func testSerializationType() throws {
         let serializer = GameSerializer(typeProvider: Provider())
@@ -45,6 +77,8 @@ class SerializationTests: XCTestCase {
         
         XCTAssertEqual(ser.field, original.field)
     }
+    
+    // MARK: Entity
     
     func testSerializeEntity() throws {
         let serializer = GameSerializer(typeProvider: Provider())
@@ -72,7 +106,7 @@ class SerializationTests: XCTestCase {
     }
     
     func testSerializeEntityError() throws {
-        // Tests error thrown when trying to serialzie an entity with an
+        // Tests error thrown when trying to serialize an entity with an
         // unserializable component
         
         let serializer = GameSerializer(typeProvider: Provider())
@@ -81,6 +115,62 @@ class SerializationTests: XCTestCase {
         
         do {
             _=try serializer.serialize(original)
+            XCTFail()
+        } catch {
+            XCTAssert(error is SerializationError)
+        }
+    }
+    
+    // MARK: Space
+    
+    func testSerializeSpace() throws {
+        
+        let serializer = GameSerializer(typeProvider: Provider())
+        
+        let original = Space()
+        original.addEntity(Entity(components: [SerializableComponent(field: 10)]))
+        original.addSubspace(SerializableSubspace(subspaceField: 20))
+        
+        let object = try serializer.serialize(original)
+        
+        let deserialized: Space = try serializer.extract(from: object)
+        
+        XCTAssertEqual(1, deserialized.entities.count)
+        XCTAssertEqual(1, deserialized.entities[0].components.count)
+        XCTAssertEqual(1, deserialized.subspaces.count)
+        
+        XCTAssertEqual(deserialized.subspace(SerializableSubspace.self)?.subspaceField, 20)
+    }
+    
+    func testSerializeSpaceEntityError() throws {
+        // Tests error thrown when trying to serialize a space with an
+        // unserializable entity
+        
+        let serializer = GameSerializer(typeProvider: Provider())
+        
+        let original = Space()
+        original.addEntity(Entity(components: [UnserializableComponent()]))
+        
+        do {
+            _=try serializer.serialize(original)
+            XCTFail()
+        } catch {
+            XCTAssert(error is SerializationError)
+        }
+    }
+    
+    func testSerializeSpaceSubspaceError() throws {
+        // Tests error thrown when trying to serialize a space with an
+        // unserializable subspace
+        
+        let serializer = GameSerializer(typeProvider: Provider())
+        
+        let original = Space()
+        original.addSubspace(Subspace()) // Default Subspace is unserializable by default
+        
+        do {
+            _=try serializer.serialize(original)
+            XCTFail()
         } catch {
             XCTAssert(error is SerializationError)
         }
