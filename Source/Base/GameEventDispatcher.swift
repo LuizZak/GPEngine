@@ -20,9 +20,11 @@ extension GameEventDispatcherDelegate {
     }
 }
 
+fileprivate let __globalEventsKey = "__globalEventsListener"
+
 /// A class that is responsible for handling dispatching of events and their
 /// associated receivers
-open class GameEventDispatcher {
+open class GameEventDispatcher: Equatable {
     
     weak var delegate: GameEventDispatcherDelegate?
     
@@ -40,10 +42,25 @@ open class GameEventDispatcher {
         removeAllEvents()
     }
     
+    /// Adds an event listener that will receive all events dispatched.
+    open func addListenerForAllEvents(_ listener: GameEventListener) -> EventListenerKey {
+        return addListener(listener, forEventNamed: __globalEventsKey)
+    }
+    
     /// Makes a given event listener listen for a specific type of event
-    /// dispatched on this event dispatcher
+    /// dispatched on this event dispatcher.
+    ///
+    /// Note: If listener === self, this will result in a trap.
     open func addListener(_ listener: GameEventListener, forEventType eventType: GameEvent.Type) -> EventListenerKey {
         let eventId = eventType.eventIdentifier
+        
+        return addListener(listener, forEventNamed: eventId)
+    }
+    
+    fileprivate func addListener(_ listener: GameEventListener, forEventNamed eventId: String) -> EventListenerKey {
+        if listener as? GameEventDispatcher === self {
+            fatalError("Cannot make dispatcher listen to its own events")
+        }
         
         let key: EventListenerKey
         
@@ -54,7 +71,7 @@ open class GameEventDispatcher {
             list.append((listener, key))
             self.events[eventId] = list
         }
-        // If none exist, start a new one
+            // If none exist, start a new one
         else {
             key = uniqueKey(forEvent: eventId, forList: [])
             
@@ -128,7 +145,7 @@ open class GameEventDispatcher {
         return EventListenerKey(valid: true, eventIdentifier: event, key: maxKey + 1)
     }
     
-    // Internal method that removes an event listener bonded to a given event
+    // Internal method that removes an event listener bounded to a given event
     // identifier
     fileprivate func internalRemoveEventListener<T: GameEventListener>(_ listener: T, _ eventIdentifier: String) where T: Equatable {
         // Try to find the key bonded to the event
@@ -158,13 +175,40 @@ open class GameEventDispatcher {
         // Find the lsit of listeners
         let eventId = type(of: event).eventIdentifier
         
-        guard let list = self.events[eventId] else {
+        dispatchEvent(event, forKeys: eventId)
+        
+        // Fire for global listeners, as well
+        dispatchEvent(event, forKeys: __globalEventsKey)
+    }
+    
+    private func dispatchEvent(_ event: GameEvent, forKeys key: String) {
+        guard let list = self.events[key] else {
             return
         }
         
         for (obj, _) in list {
             obj.receiveEvent(event)
         }
+    }
+    
+    /// Performs a reference-equality check between two GameEventDispatcher instances.
+    /// Parameter are equal if they reference the same object.
+    public static func ==(lhs: GameEventDispatcher, rhs: GameEventDispatcher) -> Bool {
+        return lhs === rhs
+    }
+}
+
+/// Event listener extension for game dispatcher
+/// This allows a game event dispatcher to be used as a broadcaster of events
+///
+/// Note: Trying to add an event dispatcher as its own listener results in a trap.
+/// Also, take care to not create event dispatcher cycles, as these will result
+/// in infinite loops.
+extension GameEventDispatcher: GameEventListener {
+    
+    /// Forwards the event to all listeners
+    public func receiveEvent(_ event: GameEvent) {
+        dispatchEvent(event)
     }
 }
 

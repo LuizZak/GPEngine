@@ -148,6 +148,8 @@ open class Space: Equatable {
         return subspaces.flatMap { $0 as? S }
     }
     
+    /// Performs a reference-equality check between two Space instances.
+    /// Parameter are equal if they reference the same object.
     public static func ==(lhs: Space, rhs: Space) -> Bool {
         return lhs === rhs
     }

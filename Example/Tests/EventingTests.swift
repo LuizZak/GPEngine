@@ -252,6 +252,53 @@ class EventingTests: XCTestCase {
         
         waitForExpectations(timeout: 0, handler: nil)
     }
+    
+    func testGlobalEventNotifier() {
+        
+        let receiver = EventReceiverTestClass()
+        
+        _=disp.addListenerForAllEvents(receiver)
+        
+        disp.dispatchEvent(CustomEvent())
+        disp.dispatchEvent(OtherCustomEvent())
+        
+        XCTAssertEqual(receiver.hitCount, 2)
+        
+        // Make sure we're able to unsubscribe the event listener normally
+        disp.removeListener(receiver)
+        
+        disp.dispatchEvent(CustomEvent())
+        
+        XCTAssertEqual(receiver.hitCount, 2)
+    }
+    
+    func testClosureGlobalEventListener() {
+        
+        var count = 0
+        let exp = expectation(description: "")
+        
+        let receiver = ClosureAnyEventListener { event in
+            count += 1
+            
+            if count == 2 {
+                exp.fulfill()
+            }
+        }
+        
+        let key = disp.addListenerForAllEvents(receiver)
+        
+        disp.dispatchEvent(CustomEvent())
+        disp.dispatchEvent(OtherCustomEvent())
+        
+        waitForExpectations(timeout: 0, handler: nil)
+        
+        // Make sure we're able to unsubscribe the event listener normally
+        disp.removeListener(forKey: key)
+        
+        disp.dispatchEvent(CustomEvent())
+        
+        XCTAssertEqual(count, 2)
+    }
 }
 
 // Test class used to capture event receiving

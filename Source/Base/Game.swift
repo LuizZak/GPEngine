@@ -15,7 +15,12 @@ open class Game: GameEventDispatcherDelegate {
     /// The list of systems that can manipulate the spaces
     internal(set) open var systems: [System]
     
-    /// The event dispatcher that handles event handling on the game
+    /// A global event dispatcher.
+    /// Events sent to this event dispatcher are automatically sunk into each
+    /// space's inner event dispatcher automatically.
+    ///
+    /// Do not forward events from a space's event dispatcher to this dispatcher,
+    /// as this will result in an infinite loop.
     internal(set) open var eventDispatcher: GameEventDispatcher = GameEventDispatcher()
     
     public init() {
@@ -25,6 +30,7 @@ open class Game: GameEventDispatcherDelegate {
         eventDispatcher.delegate = self
     }
     
+    /// Sinks events from the main event dispatcher into all spaces
     open func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, willDispatch event: GameEvent) {
         
         // Forward to spaces
@@ -52,11 +58,19 @@ open class Game: GameEventDispatcherDelegate {
     open func addSpace(_ space: Space) {
         if(!spaces.contains(space)) {
             spaces.append(space)
+            
+            // Forward events
+            _=eventDispatcher.addListenerForAllEvents(space.eventDispatcher)
         }
     }
     /// Removes a space from the game
     open func removeSpace(_ space: Space) {
-        spaces.remove(space)
+        if(spaces.contains(space)) {
+            spaces.remove(space)
+            
+            // Dismount event listener
+            eventDispatcher.removeListener(space.eventDispatcher)
+        }
     }
     
     /// Adds a system to the game

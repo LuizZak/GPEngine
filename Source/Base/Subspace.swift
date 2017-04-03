@@ -92,7 +92,7 @@ open class Subspace: Equatable {
     }
     
     /// Function called whenever this subspace's space has been changed
-    func didMoveTo(space newSpace: Space?) {
+    open func didMoveTo(space newSpace: Space?) {
         
     }
     
@@ -103,6 +103,8 @@ open class Subspace: Equatable {
         }
     }
     
+    /// Performs a reference-equality check between two Subspace instances.
+    /// Parameter are equal if they reference the same object.
     public static func ==(lhs: Subspace, rhs: Subspace) -> Bool {
         return lhs === rhs
     }

@@ -6,10 +6,6 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-public func ==(lhs: System, rhs: System) -> Bool {
-    return lhs === rhs
-}
-
 /// Describes a game system, that handles interactions between entities in a
 /// game scene
 open class System: Equatable {
@@ -44,5 +40,11 @@ open class System: Equatable {
     /// order
     open func render(space: Space, interval deltaTime: DeltaTimeInterval) {
         
+    }
+    
+    /// Performs a reference-equality check between two System instances.
+    /// Parameter are equal if they reference the same object.
+    static public func ==(lhs: System, rhs: System) -> Bool {
+        return lhs === rhs
     }
 }

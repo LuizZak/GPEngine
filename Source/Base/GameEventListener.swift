@@ -32,3 +32,20 @@ public struct ClosureEventListener<Event: GameEvent>: GameEventListener {
         }
     }
 }
+
+/// A type-erased closure event listener.
+/// Can be used to subscribe to all events dispatched by an event dispatcher
+public struct ClosureAnyEventListener: GameEventListener {
+    
+    /// Closure to fire by this closure listener
+    public var closure: (GameEvent) -> Void
+    
+    public init(closure: @escaping (GameEvent) -> Void) {
+        self.closure = closure
+    }
+    
+    /// Receives an event fired by the game screen
+    public func receiveEvent(_ event: GameEvent) {
+        closure(event)
+    }
+}
