@@ -26,9 +26,6 @@ class SerializationTests: XCTestCase {
         func serialized() -> JSON {
             return ["field": field]
         }
-        mutating func deserialize(from json: JSON) throws {
-            
-        }
     }
     
     final class SerializableSubspace: Subspace, Serializable {
@@ -44,9 +41,6 @@ class SerializationTests: XCTestCase {
         
         func serialized() -> JSON {
             return ["subspaceField": subspaceField]
-        }
-        func deserialize(from json: JSON) throws {
-            
         }
     }
     

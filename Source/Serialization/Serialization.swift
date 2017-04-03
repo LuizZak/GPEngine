@@ -472,12 +472,27 @@ public struct Serialized: Serializable {
     /// - Returns: A deserialized instance of this component type
     /// - Throws: Any type of error during deserialization.
     public init(json: JSON) throws {
-        typeName = ""
-        presets = []
-        contentType = .custom
-        data = []
+        guard let name = json["typeName"].string else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'typeName'")
+        }
+        guard let type = json["contentType"].string else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'contentType'")
+        }
+        guard let contentType = ContentType(rawValue: type) else {
+            throw DeserializationError.invalidSerialized(message: "Invalid content type \(type)")
+        }
+        if(json["data"].type == .null || json["data"].type == .unknown) {
+            throw DeserializationError.invalidSerialized(message: "Missing 'data'")
+        }
+        if let presets = json["presets"].array {
+            self.presets = try presets.map { try SerializedPreset(json: $0) }
+        } else {
+            self.presets = []
+        }
         
-        try deserialize(from: json)
+        self.typeName = name
+        self.contentType = contentType
+        self.data = json["data"]
     }
     
     fileprivate init() {
@@ -497,33 +512,6 @@ public struct Serialized: Serializable {
             "presets": presets.map { $0.serialized().object },
             "data": data.object
         ]
-    }
-    
-    /// Deserializes state from a given JSON object
-    ///
-    /// - Parameter from: A JSON object containing the results of a previous
-    /// call to an instance of this object type's `serialize()` method.
-    /// - Throws: Any type of error during deserialization.
-    public mutating func deserialize(from json: JSON) throws {
-        guard let name = json["typeName"].string else {
-            throw DeserializationError.invalidSerialized(message: "Missing 'typeName'")
-        }
-        guard let type = json["contentType"].string else {
-            throw DeserializationError.invalidSerialized(message: "Missing 'contentType'")
-        }
-        guard let contentType = ContentType(rawValue: type) else {
-            throw DeserializationError.invalidSerialized(message: "Invalid content type \(type)")
-        }
-        if(json["data"].type == .null || json["data"].type == .unknown) {
-            throw DeserializationError.invalidSerialized(message: "Missing 'data'")
-        }
-        if let presets = json["presets"].array {
-            self.presets = try presets.map { try SerializedPreset(json: $0) }
-        }
-        
-        self.typeName = name
-        self.contentType = contentType
-        self.data = json["data"]
     }
     
     /// The type of content serialized within this serialized object.
@@ -578,44 +566,6 @@ public struct SerializedPreset: Serializable {
     
     /// Deserializes a serialzied preset from a given JSON object
     public init(json: JSON) throws {
-        name = ""
-        type = .custom
-        variables = [:]
-        data = Serialized(typeName: "", contentType: .custom, data: [:])
-        
-        try deserialize(from: json)
-    }
-    
-    /// Serializes this preset object
-    public func serialized() -> JSON {
-        // Encode variables
-        var vars: JSON = [:]
-        
-        for (key, variable) in variables {
-            if let defaultValue = variable.defaultValue {
-                vars[key].object = [
-                    "type": variable.type.rawValue,
-                    "default": defaultValue
-                ]
-            } else {
-                vars[key].string = variable.type.rawValue
-            }
-        }
-        
-        let json: JSON = [
-            "presetName": name,
-            "presetType": type.rawValue,
-            "presetVariables": vars.object,
-            "presetData": data.serialized().object
-        ]
-        
-        return json
-    }
-    
-    /// Deserializeds a preset from a given JSON object.
-    /// The preset information provided cannot represent a preset type itself
-    /// (i.e. `"presetType" != .preset`.
-    mutating public func deserialize(from json: JSON) throws {
         guard let name = json["presetName"].string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'presetName'")
         }
@@ -648,7 +598,7 @@ public struct SerializedPreset: Serializable {
         }
         
         // Expand variables
-        variables.removeAll()
+        variables = [:]
         for (key, value) in vars {
             let typeString: String
             var defaultValue: Any? = nil
@@ -686,6 +636,32 @@ public struct SerializedPreset: Serializable {
             
             variables[key] = Variable(name: key, type: type, defaultValue: defaultValue)
         }
+    }
+    
+    /// Serializes this preset object
+    public func serialized() -> JSON {
+        // Encode variables
+        var vars: JSON = [:]
+        
+        for (key, variable) in variables {
+            if let defaultValue = variable.defaultValue {
+                vars[key].object = [
+                    "type": variable.type.rawValue,
+                    "default": defaultValue
+                ]
+            } else {
+                vars[key].string = variable.type.rawValue
+            }
+        }
+        
+        let json: JSON = [
+            "presetName": name,
+            "presetType": type.rawValue,
+            "presetVariables": vars.object,
+            "presetData": data.serialized().object
+        ]
+        
+        return json
     }
     
     /// Returns a copy of the Serialized data within this preset, using a given
@@ -825,13 +801,6 @@ public protocol Serializable {
     ///
     /// - Returns: The serialized state for this object.
     func serialized() -> JSON
-    
-    /// Deserializes state from a given JSON object
-    ///
-    /// - Parameter json: A JSON object containing the results of a previous
-    /// call to an instance of this object type's `serialize()` method.
-    /// - Throws: Any type of error during deserialization.
-    mutating func deserialize(from json: JSON) throws
 }
 
 /// Protocol to be implemented by objects that can provide the correct types to
