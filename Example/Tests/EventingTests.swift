@@ -25,7 +25,7 @@ class EventingTests: XCTestCase {
         super.tearDown()
     }
     
-    func testMultiEventAdd() {
+    func testMultiEventAdd() { // TODO: I think this test is misconstructed? It's not following the steps described inside
         // Test multiple event hooking
         //
         // 1. Add one listener to two events
@@ -61,7 +61,7 @@ class EventingTests: XCTestCase {
         // 4. Add two listeners to an event type
         // -> The event count should be 1!
         //
-        // 5. Use the removelAllEventsForListener() with one of the listeners
+        // 5. Use the removeListener() with one of the listeners
         // -> The event count should still be 1!
         
         let receiv1 = EventReceiverTestClass()
@@ -92,7 +92,7 @@ class EventingTests: XCTestCase {
         // Test the removeListener(_:)
         // 
         // 1. Add one listener to two different event types
-        // 2. Use the removelAllEventsForListener() with that listener
+        // 2. Use the removeListener() with that listener
         // -> The event count should be 0!
         
         let receiv = EventReceiverTestClass()
