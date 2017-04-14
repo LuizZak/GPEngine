@@ -6,12 +6,17 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
 import XCTest
 
-import GPEngine
+@testable import GPEngine
 
 class SystemTests: XCTestCase {
+    let allTests = [
+        ("testAddSystem", testAddSystem),
+        ("testSystemByType", testSystemByType),
+        ("testRemoveSystem", testRemoveSystem)
+    ]
+    
     var game: Game = Game()
     
     override func setUp() {
@@ -35,7 +40,7 @@ class SystemTests: XCTestCase {
         XCTAssert(game.system(ofType: System.self) != nil, "Systems must be added after a call to GameScene.addSystem()")
     }
     
-    func testsystemByType() {
+    func testSystemByType() {
         let system1 = CustomSystem()
         let system2 = OtherCustomSystem()
         

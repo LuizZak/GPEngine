@@ -7,7 +7,7 @@
 //
 
 import SwiftyJSON
-import enum SwiftyJSON.Type
+import GPEngine
 
 /// Errors that can be throwing during a serialization process.
 ///
@@ -832,3 +832,4 @@ public extension SerializationTypeProvider {
         return String(describing: serializable)
     }
 }
+

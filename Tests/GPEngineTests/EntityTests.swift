@@ -6,12 +6,15 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
 import XCTest
-
-import GPEngine
+@testable import GPEngine
 
 class EntityTests: XCTestCase {
+    let allTests = [
+        ("testComponentAdd", testComponentAdd),
+        ("testComponentRemove", testComponentRemove),
+        ("testComponentGetType", testComponentGetType)
+    ]
     
     func testComponentAdd() {
         let space = Space()

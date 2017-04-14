@@ -7,10 +7,30 @@
 //
 
 import XCTest
-import GPEngine
 import SwiftyJSON
+@testable import GPEngine
+@testable import Serialization
 
 class SerializationTests: XCTestCase {
+    let allTests = [
+        ("testSerializationType", testSerializationType),
+        ("testSerializeEntity", testSerializeEntity),
+        ("testSerializeEntityError", testSerializeEntityError),
+        ("testSerializeSpace", testSerializeSpace),
+        ("testSerializeSpaceEntityError", testSerializeSpaceEntityError),
+        ("testSerializeSpaceSubspaceError", testSerializeSpaceSubspaceError),
+        ("testFullDeserialize", testFullDeserialize),
+        ("testDeserializePreset", testDeserializePreset),
+        ("testReplacePresetVariables", testReplacePresetVariables),
+        ("testSimplePresetDeserialization", testSimplePresetDeserialization),
+        ("testPresetSerializedDataDifferentTypeError", testPresetSerializedDataDifferentTypeError),
+        ("testPresetSerializedDataNotDictionaryError", testPresetSerializedDataNotDictionaryError),
+        ("testPresetCannotRepresentPresets", testPresetCannotRepresentPresets),
+        ("testPresetVariableTypeError", testPresetVariableTypeError),
+        ("testPresetDefaultVariableTypeError", testPresetDefaultVariableTypeError),
+        ("testPresetExpansion", testPresetExpansion),
+        ("testRecursivePresetExpansion", testRecursivePresetExpansion)
+    ]
     
     struct SerializableComponent: Component, Serializable {
         var field: Int

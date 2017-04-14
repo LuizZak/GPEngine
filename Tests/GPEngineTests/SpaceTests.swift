@@ -7,9 +7,14 @@
 //
 
 import XCTest
-import GPEngine
+@testable import GPEngine
 
 class SpaceTests: XCTestCase {
+    let allTests = [
+        ("testAddSubspace", testAddSubspace),
+        ("testRemoveSubspace", testRemoveSubspace),
+        ("testAddSubspaceThatAlreadyHasSpace", testAddSubspaceThatAlreadyHasSpace)
+    ]
     
     func testAddSubspace() {
         let space = Space()

@@ -83,6 +83,12 @@ open class Space: Equatable {
         }
     }
     
+    /// For every entity within this space that matches a specified selector,
+    /// apply a closure passing the entity as a parameter.
+    open func withEntities(matching selector: EntitySelector, do closure: (Entity) throws -> Void) rethrows {
+        try selector.select(from: entities).forEach(closure)
+    }
+    
     /// Removes an entity from this space
     open func removeEntity(_ entity: Entity) {
         entities.append(entity)
@@ -146,6 +152,16 @@ open class Space: Equatable {
     /// specified type
     open func subspaces<S: Subspace>(ofType type: S.Type) -> [S] {
         return subspaces.flatMap { $0 as? S }
+    }
+    
+    /// Applies a given closure to all subspaces that match a specified type
+    /// within this space
+    open func withSubspaces<S: Subspace>(ofType type: S.Type, do closure: (S) throws -> ()) rethrows {
+        for subspace in subspaces {
+            if let s = subspace as? S {
+                try closure(s)
+            }
+        }
     }
     
     /// Performs a reference-equality check between two Space instances.

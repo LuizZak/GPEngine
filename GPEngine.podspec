@@ -33,16 +33,16 @@ See https://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-con
   s.ios.deployment_target = '8.0'
   
   s.subspec 'Core' do |co|
-    co.dependency 'GPEngine/Base'
+    co.dependency 'GPEngine/GPEngine'
   end
   
-  s.subspec 'Base' do |base|
-    base.source_files = 'Source/Base/**/*'
+  s.subspec 'GPEngine' do |base|
+    base.source_files = 'Sources/GPEngine/**/*'
   end
   
   s.subspec 'Serialization' do |ser|
-    ser.source_files = 'Source/Serialization/**/*'
-    ser.dependency 'GPEngine/Base'
+    ser.source_files = 'Sources/Serialization/**/*'
+    ser.dependency 'GPEngine/GPEngine'
     ser.dependency 'SwiftyJSON'
   end
 end

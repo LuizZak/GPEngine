@@ -6,12 +6,26 @@
 //  Copyright (c) 2014 Luiz Fernando Silva. All rights reserved.
 //
 
-import UIKit
 import XCTest
-
-import GPEngine
+@testable import GPEngine
 
 class EventingTests: XCTestCase {
+    let allTests = [
+        ("testMultiEventAdd", testMultiEventAdd),
+        ("testEventRemove", testEventRemove),
+        ("testEventRemoveAll", testEventRemoveAll),
+        ("testEventDispatch", testEventDispatch),
+        ("testMultiListenersEventDispatch", testMultiListenersEventDispatch),
+        ("testRemoveAllListeners", testRemoveAllListeners),
+        ("testKeyInvalidateOnRemoveAllEvents", testKeyInvalidateOnRemoveAllEvents),
+        ("testKeyInvalidateOnRemoveByKey", testKeyInvalidateOnRemoveByKey),
+        ("testKeyInvalidateOnRemoveListener", testKeyInvalidateOnRemoveListener),
+        ("testKeyInvalidateOnDispatcherDealloc", testKeyInvalidateOnDispatcherDealloc),
+        ("testClosureEventListener", testClosureEventListener),
+        ("testGlobalEventNotifier", testGlobalEventNotifier),
+        ("testClosureGlobalEventListener", testClosureGlobalEventListener)
+    ]
+    
     var disp = GameEventDispatcher()
     
     override func setUp() {
