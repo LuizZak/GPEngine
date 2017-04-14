@@ -18,11 +18,31 @@ Xcode 8.2 & Swift 3.0 or higher.
 
 ## Installation
 
+#### CocoaPods
+
 GPEngine is available through [CocoaPods](http://cocoapods.org). To install
 it, simply add the following line to your Podfile:
 
 ```ruby
 pod "GPEngine"
+```
+
+GPEngine is also available in a Swift package:
+
+#### Swift Package Manager
+
+GPEngine is also available as a [Swift Package](https://swift.org/package-manager)
+
+```swift
+import PackageDescription
+
+let package = Package(
+    name: "project_name",
+    targets: [],
+    dependencies: [
+        .Package(url: "https://github.com/LuizZak/GPEngine.git", majorVersion: 2, minor: 2)
+    ]
+)
 ```
 
 ## Author
