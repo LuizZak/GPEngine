@@ -7,7 +7,9 @@
 //
 
 import SwiftyJSON
+#if SWIFT_PACKAGE
 import GPEngine
+#endif
 
 /// Errors that can be throwing during a serialization process.
 ///
