@@ -51,4 +51,18 @@ class SpaceTests: XCTestCase {
         XCTAssertFalse(space1.subspaces.contains(subspace))
         XCTAssert(space2.subspaces.contains(subspace))
     }
+    
+    func testWithSubspacesOfType() {
+        let space = Space()
+        let subspace = Subspace()
+        
+        space.addSubspace(subspace)
+        
+        var fireCount = 0
+        space.withSubspaces(ofType: Subspace.self) { subspace in
+            fireCount += 1
+        }
+        
+        XCTAssertEqual(fireCount, 1)
+    }
 }

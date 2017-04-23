@@ -59,6 +59,54 @@ class EntityTests: XCTestCase {
         XCTAssertNil(entity.component(ofType: TestComponent.self))
         XCTAssertNotNil(entity.component(ofType: OtherTestComponent.self))
     }
+    
+    func testWithComponentsOfType() {
+        let comp1 = TestComponent()
+        let comp2 = OtherTestComponent()
+        let comp3 = OtherTestComponent()
+        let entity = Entity(components: [comp1, comp2, comp3])
+        
+        var fireCount = 0
+        entity.withComponents(ofType: TestComponent.self) { comp in
+            fireCount += 1
+        }
+        
+        XCTAssertEqual(fireCount, 1)
+        
+        fireCount = 0
+        entity.withComponents(ofType: OtherTestComponent.self) { comp in
+            fireCount += 1
+        }
+        
+        XCTAssertEqual(fireCount, 2)
+    }
+    
+    func testWithTwoComponentsOfType() {
+        let comp1 = TestComponent()
+        let comp2 = OtherTestComponent()
+        let entity = Entity(components: [comp1, comp2])
+        
+        var fireCount = 0
+        entity.withComponents(ofTypes: TestComponent.self, OtherTestComponent.self) { (comp1, comp2) in
+            fireCount += 1
+        }
+        
+        XCTAssertEqual(fireCount, 1)
+    }
+    
+    func testWithThreeComponentsOfType() {
+        let comp1 = TestComponent()
+        let comp2 = OtherTestComponent()
+        let comp3 = ThirdTestComponent()
+        let entity = Entity(components: [comp1, comp2, comp3])
+        
+        var fireCount = 0
+        entity.withComponents(ofTypes: TestComponent.self, OtherTestComponent.self, ThirdTestComponent.self) { (comp1, comp2, comp3) in
+            fireCount += 1
+        }
+        
+        XCTAssertEqual(fireCount, 1)
+    }
 }
 
 class TestComponent: Component {
@@ -66,5 +114,9 @@ class TestComponent: Component {
 }
 
 class OtherTestComponent: Component {
+    
+}
+
+class ThirdTestComponent: Component {
     
 }

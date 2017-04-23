@@ -54,11 +54,39 @@ open class Entity: Equatable {
     }
     
     /// Applies a given closure to each component of this entity
-    open func withComponents<T: Component>(ofType type: T.Type, do closure: (T) throws -> ()) rethrows {
+    open func withComponents<C: Component>(ofType type: C.Type, do closure: (C) throws -> ()) rethrows {
         for comp in components {
-            if let c = comp as? T {
+            if let c = comp as? C {
                 try closure(c)
             }
+        }
+    }
+    
+    /// Applies a given closure by fetching the first two components that match
+    /// a specified type and using them as arguments for the closure. A helper
+    /// method that might aid in manipulation of two relevant components added
+    /// to entities.
+    open func withComponents<C1: Component,
+                             C2: Component>(ofTypes type1: C1.Type,
+                                            _ type2: C2.Type,
+                                            do closure: (C1, C2) throws -> ()) rethrows {
+        if let c1 = component(ofType: C1.self), let c2 = component(ofType: C2.self) {
+            try closure(c1, c2)
+        }
+    }
+    
+    /// Applies a given closure by fetching the first three components that match
+    /// a specified type and using them as arguments for the closure. A helper
+    /// method that might aid in manipulation of three relevant components added
+    /// to entities.
+    open func withComponents<C1: Component,
+                             C2: Component,
+                             C3: Component>(ofTypes type1: C1.Type,
+                                            _ type2: C2.Type,
+                                            _ type3: C3.Type,
+                                            do closure: (C1, C2, C3) throws -> ()) rethrows {
+        if let c1 = component(ofType: C1.self), let c2 = component(ofType: C2.self), let c3 = component(ofType: C3.self) {
+            try closure(c1, c2, c3)
         }
     }
     
