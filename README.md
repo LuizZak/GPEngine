@@ -9,8 +9,56 @@ iOS entity-base game framework written in Swift.
 
 The framework uses traditional Entity-component-system as well as the concept of spaces, which is described [in this article](http://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-containers--gamedev-14091)
 
-
 The pod also comes with a subpod `GPEngine/Serialization` which allows serialization of space/subspace/entity/components from and to JSON, using [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) (see [Serialization](#serialization)).
+
+### Concepts
+
+This engine works much like classic ECS engines, but with the added abstraction of `Spaces`.
+
+Spaces are containers for entities that act separetedly such that it lifts a layer of abstraction between entities grouped together. To aid in such abstraction, the soncept of `Subspaces` is also propsed, which aims to group relevant data for systems to act upon spaces/entities separetedly (such as a separate instance of the physics engine, rendering camera position, etc.).
+
+#### Classic ECS layout
+
+```
+╔══════════╗
+║  Engine  ║
+╚═════╤════╝ ╔════════╗╔════════╗╔════════╗
+      ├──────╢ Entity ╟╢ Entity ╟╢ Entity ╟...
+      │      ╚════════╝╚════════╝╚════════╝
+      │      ╔════════╗╔════════╗╔════════╗
+      └──────╢ System ╟╢ System ╟╢ System ╟...
+             ╚════════╝╚════════╝╚════════╝
+```
+
+In this fashion, you cannot easily isolate groups of entities such that they are logically grouped (e.g. split enemies into foreground and background enemies, such that background enemies do not interact with the player). This is achievable through component/type flag specification, but Spaces aim to make that an explicit abstraction:
+
+#### Spaces-based ECS layout
+
+```
+╔══════════╗
+║  Engine  ║
+╚═════╤════╝
+  ╔═══╧═══╗   ╔════════╗╔════════╗╔════════╗
+  ║ Space ╟─┬─╢ Entity ╟╢ Entity ╟╢ Entity ╟...
+  ╚═══╤═══╝ │ ╚════════╝╚════════╝╚════════╝
+      │     │ ╔══════════╗
+      │     └─╢ Subspace ║
+      │       ╚══════════╝
+  ╔═══╧═══╗   ╔════════╗╔════════╗╔════════╗
+  ║ Space ╟─┬─╢ Entity ╟╢ Entity ╟╢ Entity ╟...
+  ╚═══╤═══╝ │ ╚════════╝╚════════╝╚════════╝
+      │     │ ╔══════════╗╔══════════╗
+      │     └─╢ Subspace ╟╢ Subspace ║
+      │       ╚══════════╝╚══════════╝
+      │
+      │      ╔════════╗╔════════╗╔════════╗
+      └──────╢ System ╟╢ System ╟╢ System ╟...
+             ╚════════╝╚════════╝╚════════╝
+```
+
+Here, entities are grouped into Spaces, where each space is fully isolated from each other. Subspaces are also introduced, as these aid in storing state that will be used by Systems to process data. A cool thing about this is that spaces only need to add subspaces that are relevant to them; if a subspace is not meant to be rendered (such as a different game room that is still 'alive' but behind a door), no RenderingSubspace needs to be added to it!
+
+Systems are still global, since they would ideally be stateless (with help of Subspaces). Systems would then query spaces for entities with relevant components, and subspaces needed within, and if available, act upon them using their stated logic. Systems always act on each Space _independently_, as if they where classic isolated ECS engines.
 
 ## Requirements
 
