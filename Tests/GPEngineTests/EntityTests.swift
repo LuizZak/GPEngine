@@ -87,11 +87,16 @@ class EntityTests: XCTestCase {
         let entity = Entity(components: [comp1, comp2])
         
         var fireCount = 0
-        entity.withComponents(ofTypes: TestComponent.self, OtherTestComponent.self) { (comp1, comp2) in
+        entity.withComponents(ofTypes: TestComponent.self, OtherTestComponent.self) { comp1, comp2 in
             fireCount += 1
         }
         
-        XCTAssertEqual(fireCount, 1)
+        // Test type-inferred version
+        entity.withComponents { (comp1: TestComponent, comp2: OtherTestComponent) in
+            fireCount += 1
+        }
+        
+        XCTAssertEqual(fireCount, 2)
     }
     
     func testWithThreeComponentsOfType() {
@@ -101,11 +106,16 @@ class EntityTests: XCTestCase {
         let entity = Entity(components: [comp1, comp2, comp3])
         
         var fireCount = 0
-        entity.withComponents(ofTypes: TestComponent.self, OtherTestComponent.self, ThirdTestComponent.self) { (comp1, comp2, comp3) in
+        entity.withComponents(ofTypes: TestComponent.self, OtherTestComponent.self, ThirdTestComponent.self) { comp1, comp2, comp3 in
             fireCount += 1
         }
         
-        XCTAssertEqual(fireCount, 1)
+        // Test type-inferred version
+        entity.withComponents { (comp1: TestComponent, comp2: OtherTestComponent, comp3: ThirdTestComponent) in
+            fireCount += 1
+        }
+        
+        XCTAssertEqual(fireCount, 2)
     }
 }
 

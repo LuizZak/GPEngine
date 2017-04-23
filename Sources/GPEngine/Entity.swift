@@ -66,6 +66,12 @@ open class Entity: Equatable {
     /// a specified type and using them as arguments for the closure. A helper
     /// method that might aid in manipulation of two relevant components added
     /// to entities.
+    ///
+    /// ```swift
+    /// entity.withComponents(ofTypes: MyComponent.self, MyOtherComponent.self) { c1, c2 in
+    ///     // ...
+    /// }
+    /// ```
     open func withComponents<C1: Component,
                              C2: Component>(ofTypes type1: C1.Type,
                                             _ type2: C2.Type,
@@ -75,10 +81,33 @@ open class Entity: Equatable {
         }
     }
     
+    /// Applies a given closure by fetching the first two components that match
+    /// a specified type and using them as arguments for the closure. A helper
+    /// method that might aid in manipulation of two relevant components added
+    /// to entities.
+    ///
+    /// This is a type-inferred version of withComponents above which can be used
+    /// with typed-closures to drop the type requirements in parameters:
+    ///
+    /// ```swift
+    /// entity.withComponents { (c1: MyComponent, c2: MyOtherComponent) in
+    ///     // ...
+    /// }
+    /// ```
+    open func withComponents<C1: Component, C2: Component>(do closure: (C1, C2) throws -> ()) rethrows {
+        try withComponents(ofTypes: C1.self, C2.self, do: closure)
+    }
+    
     /// Applies a given closure by fetching the first three components that match
     /// a specified type and using them as arguments for the closure. A helper
     /// method that might aid in manipulation of three relevant components added
     /// to entities.
+    ///
+    /// ```swift
+    /// entity.withComponents(ofTypes: MyComponent.self, MyOtherComponent.self, c3: MyYetAnotherComponent.self) { c1, c2, c3 in
+    ///     // ...
+    /// }
+    /// ```
     open func withComponents<C1: Component,
                              C2: Component,
                              C3: Component>(ofTypes type1: C1.Type,
@@ -88,6 +117,23 @@ open class Entity: Equatable {
         if let c1 = component(ofType: C1.self), let c2 = component(ofType: C2.self), let c3 = component(ofType: C3.self) {
             try closure(c1, c2, c3)
         }
+    }
+    
+    /// Applies a given closure by fetching the first three components that match
+    /// a specified type and using them as arguments for the closure. A helper
+    /// method that might aid in manipulation of three relevant components added
+    /// to entities.
+    ///
+    /// This is a type-inferred version of withComponents above which can be used
+    /// with typed-closures to drop the type requirements in parameters:
+    ///
+    /// ```swift
+    /// entity.withComponents { (c1: MyComponent, c2: MyOtherComponent, c3: MyYetAnotherComponent) in
+    ///     // ...
+    /// }
+    /// ```
+    open func withComponents<C1: Component, C2: Component, C3: Component>(do closure: (C1, C2, C3) throws -> ()) rethrows {
+        try withComponents(ofTypes: C1.self, C2.self, C3.self, do: closure)
     }
     
     /// Gets all components in this entity
