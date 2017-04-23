@@ -15,7 +15,7 @@ The pod also comes with a subpod `GPEngine/Serialization` which allows serializa
 
 This engine works much like classic ECS engines, but with the added abstraction of `Spaces`.
 
-Spaces are containers for entities that act separetedly such that it lifts a layer of abstraction between entities grouped together. To aid in such abstraction, the soncept of `Subspaces` is also propsed, which aims to group relevant data for systems to act upon spaces/entities separetedly (such as a separate instance of the physics engine, rendering camera position, etc.).
+Spaces are containers for entities that act separately such that it lifts a layer of abstraction between entities grouped together. To aid in such abstraction, the concept of `Subspaces` is also proposed, which aims to group relevant data for systems to act upon spaces/entities separately (such as a separate instance of the physics engine, rendering camera position, etc.).
 
 #### Classic ECS layout
 
@@ -128,7 +128,7 @@ To deserialize the entity back, use the following process:
 ```swift
 let json = // Retrieve entity JSON from somewhere...
 
-// Retrive it back to a Serialized object
+// Retrieve it back to a Serialized object
 // If this fails, that means you got a bad JSON :(
 let mySerialized = try Serialized.deserialized(from: json)
 
