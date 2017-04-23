@@ -58,7 +58,7 @@ In this fashion, you cannot easily isolate groups of entities such that they are
 
 Here, entities are grouped into Spaces, where each space is fully isolated from each other. Subspaces are also introduced, as these aid in storing state that will be used by Systems to process data. A cool thing about this is that spaces only need to add subspaces that are relevant to them; if a subspace is not meant to be rendered (such as a different game room that is still 'alive' but behind a door), no RenderingSubspace needs to be added to it!
 
-Systems are still global, since they would ideally be stateless (with help of Subspaces). Systems would then query spaces for entities with relevant components, and subspaces needed within, and if available, act upon them using their stated logic. Systems always act on each Space _independently_, as if they where classic isolated ECS engines.
+Systems are still global, since they would ideally be stateless (with help of Subspaces). Systems would then query spaces for entities with relevant components, and subspaces needed within, and if available, act upon them using their stated logic. Systems always act on each Space _independently_, as if they where isolated classic ECS engines.
 
 ## Requirements
 
@@ -105,7 +105,7 @@ GPEngine is available under the MIT license. See the LICENSE file for more info.
 
 (this optional feature is available under `pod 'GPEngine/Serialization'`)
 
-You can use GameSerializer class to serialize an entity or entire spaces (along with subspaces/entities/components).
+You can use the GameSerializer class to serialize an entity or entire spaces (along with subspaces/entities/components).
 
 This allows you to save partial or complete game states, as well as perform data-driven initialization of game states from pre-made JSON structures.
 
