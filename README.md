@@ -15,8 +15,6 @@ The pod also comes with a subpod `GPEngine/Serialization` which allows serializa
 
 This engine works much like classic ECS engines, but with the added abstraction of `Spaces`.
 
-Spaces are containers for entities that act separately such that it lifts a layer of abstraction between entities grouped together. To aid in such abstraction, the concept of `Subspaces` is also proposed, which aims to group relevant data for systems to act upon spaces/entities separately (such as a separate instance of the physics engine, rendering camera position, etc.).
-
 #### Classic ECS layout
 
 ```
@@ -33,6 +31,8 @@ Spaces are containers for entities that act separately such that it lifts a laye
 In this fashion, you cannot easily isolate groups of entities such that they are logically grouped (e.g. split enemies into foreground and background enemies, such that background enemies do not interact with the player). This is achievable through component/type flag specification, but Spaces aim to make that an explicit abstraction:
 
 #### Spaces-based ECS layout
+
+Spaces are containers for entities that act separately such that it lifts a layer of abstraction between entities grouped together. To aid in such abstraction, the concept of `Subspaces` is also proposed, which aims to group relevant data for systems to act upon spaces/entities separately (such as a separate instance of the physics engine, rendering camera position, etc.).
 
 ```
 ╔══════════╗
