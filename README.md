@@ -160,24 +160,17 @@ The GameSerializer calls your type provider with the serialized type names, and 
 
 The protocol by default implements the method for fetching the serialized name of a type and returns `String(describing: Type.self)`.
 
-A simple type provider can be implemented using an array to store every known serializable type in your game:
+A simple type provider can be implemented using an array to store every known serializable type in your game, using a pre-implemented `BasicSerializationTypeProvider` protocol (provided each serializable ends up taking a unique name matching its type):
 
 ```swift
-class Provider: SerializationTypeProvider {
+class Provider: BasicSerializationTypeProvider {
+    // Requirement from `BasicSerializationTypeProvider`
     var serializableTypes: [Serializable.Type] = [
         MySerializableComponent.self,
         MySerializableSubspace.self
     ]
 
-    func deserialized(from name: String) throws -> Serializable.Type {
-        for type in serializableTypes {
-            if(String(describing: type) == name) {
-                return type
-            }
-        }
-        
-        throw DeserializationError.unrecognizedSerializedName
-    }
+    // Now `serializedName(for:)`/`deserialized(from:)` are automatically stubbed using `serializableTypes` array.
 }
 ```
 

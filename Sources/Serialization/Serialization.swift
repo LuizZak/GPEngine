@@ -835,3 +835,21 @@ public extension SerializationTypeProvider {
     }
 }
 
+/// A basic serialization type provider that works by storing serializable types
+/// in an array, and using that array on pre-implemented stubs to `serializedName(for:)` 
+/// and `deserialized(from:)`.
+public protocol BasicSerializationTypeProvider: SerializationTypeProvider {
+    var serializableTypes: [Serializable.Type] { get }
+}
+
+public extension BasicSerializationTypeProvider {
+    func deserialized(from name: String) throws -> Serializable.Type {
+        for type in serializableTypes {
+            if(String(describing: type) == name) {
+                return type
+            }
+        }
+        
+        throw DeserializationError.unrecognizedSerializedName(name: name)
+    }
+}

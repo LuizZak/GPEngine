@@ -70,22 +70,11 @@ class SerializationTests: XCTestCase {
         
     }
     
-    class Provider: SerializationTypeProvider {
-        
-        var types: [Serializable.Type] = [
+    class Provider: BasicSerializationTypeProvider {
+        var serializableTypes: [Serializable.Type] = [
             SerializableComponent.self,
             SerializableSubspace.self
         ]
-        
-        func deserialized(from name: String) throws -> Serializable.Type {
-            for type in types {
-                if(String(describing: type) == name) {
-                    return type
-                }
-            }
-            
-            throw DeserializationError.unrecognizedSerializedName(name: name)
-        }
     }
     
     // MARK: Component
