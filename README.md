@@ -109,7 +109,7 @@ You can use the GameSerializer class to serialize an entity or entire spaces (al
 
 This allows you to save partial or complete game states, as well as perform data-driven initialization of game states from pre-made JSON structures.
 
-(see [Serialization requirements](#serialization-requirements) bellow for info on what's needed to amke stuff serializable).
+(see [Serialization requirements](#serialization-requirements) bellow for info on what's needed to make stuff serializable).
 
 ```swift
 let myProvider = MyTypeProvider() // Implements SerializationTypeProvider
