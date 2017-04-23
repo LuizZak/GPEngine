@@ -138,7 +138,7 @@ let myEntity: Entity = try gameSerializer.extract(from: mySerialized)
 // If we reached here, entity was deserialized correctly! Success!
 ```
 
-Process to serialization/deserialization of `Space`s is similar, and uses the same method names.
+Process to serialize/deserialize of `Space`s is similar, and uses the same method names.
 
 The serialized JSON returned from `Serialized.serialized()` follows the given structure:
 
