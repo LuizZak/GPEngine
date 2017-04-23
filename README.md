@@ -188,6 +188,28 @@ To serialize entities and spaces, you need to follow these requirements:
 - For entities, every `Component` added to the entity must implement the `Serializable` protocol.
 - For spaces, every entity must follow the above rule, as well as every subspace also implementing the `Serializable` protocol.
 
+`Serializable` is a basic protocol for encoding/decoding objects using JSON:
+
+```swift
+/// Describes an object that can be serialized to and back from a JSON object.
+/// Implementers of this protocol should take care of guaranteeing that the inner
+/// state of the object remains the same when deserializing from a previously
+/// serialized object.
+public protocol Serializable {
+    /// Initializes an instance of this type from a given serialized state.
+    ///
+    /// - Parameter json: A state that was previously serialized by an instance
+    /// of this type using `serialized()`
+    /// - Throws: Any type of error during deserialization.
+    init(json: JSON) throws
+    
+    /// Serializes the state of this component into a JSON object.
+    ///
+    /// - Returns: The serialized state for this object.
+    func serialized() -> JSON
+}
+```
+
 To check your entities and spaces are fully serializable, use the `GameSerializer.canSerialize(_:)` & `GameSerializer.diagnoseSerialize(on:)` methods on your entities or spaces.
 
 Systems are aimed to be stateless, so they are not supported to be serialized by default.
