@@ -88,7 +88,7 @@ let package = Package(
     name: "project_name",
     targets: [],
     dependencies: [
-        .Package(url: "https://github.com/LuizZak/GPEngine.git", majorVersion: 2, minor: 2)
+        .Package(url: "https://github.com/LuizZak/GPEngine.git", majorVersion: 2, minor: 3)
     ]
 )
 ```
