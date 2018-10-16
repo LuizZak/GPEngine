@@ -33,7 +33,7 @@ open class Entity: Equatable {
     /// Returns whether the entity has the given component type inside of it
     open func hasComponent(ofType type: Component.Type) -> Bool {
         for comp in self.components {
-            if(type(of: comp) == type) {
+            if(Swift.type(of: comp) == type) {
                 return true
             }
         }
@@ -143,7 +143,7 @@ open class Entity: Equatable {
     
     /// Gets a list of components that match a given component class type
     open func components<T: Component>(ofType type: T.Type) -> [T] {
-        return components.flatMap { $0 as? T }
+        return components.compactMap { $0 as? T }
     }
     
     /// Performs a reference-equality check between two Entity instances.

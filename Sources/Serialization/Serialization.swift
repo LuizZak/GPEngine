@@ -82,7 +82,7 @@ public class GameSerializer {
         
         for comp in entity.components {
             guard let ser = comp as? Serializable else {
-                throw SerializationError.cannotSerialize(reason: "Found component type \(type(of: comp)) is not serializable.")
+                throw SerializationError.cannotSerialize(reason: "Found component type \(Swift.type(of: comp)) is not serializable.")
             }
             
             serializedComps.append(serialize(ser))
@@ -112,7 +112,7 @@ public class GameSerializer {
         
         for subspace in space.subspaces {
             guard let ser = subspace as? Serializable else {
-                throw SerializationError.cannotSerialize(reason: "Found subspace type \(type(of: subspace)) is not serializable.")
+                throw SerializationError.cannotSerialize(reason: "Found subspace type \(Swift.type(of: subspace)) is not serializable.")
             }
             
             serializedSubspaces.append(serialize(ser))
@@ -129,7 +129,7 @@ public class GameSerializer {
     public func serialize(_ serializable: Serializable) -> Serialized {
         let serialized = serializable.serialized()
         let type: Serialized.ContentType
-        let name = typeProvider.serializedName(for: type(of: serializable))
+        let name = typeProvider.serializedName(for: Swift.type(of: serializable))
         
         if serializable is Component {
             type = .component

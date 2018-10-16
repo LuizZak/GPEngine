@@ -63,7 +63,7 @@ Systems are still global, since they would ideally be stateless (with help of Su
 
 ## Requirements
 
-Xcode 8.2 & Swift 3.0 or higher.
+Xcode 10.0 & Swift 4.2 or higher.
 
 ## Installation
 

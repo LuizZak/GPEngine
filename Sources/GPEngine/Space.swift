@@ -151,7 +151,7 @@ open class Space: Equatable {
     /// Returns all instances of Subspace objects in this space that are of a
     /// specified type
     open func subspaces<S: Subspace>(ofType type: S.Type) -> [S] {
-        return subspaces.flatMap { $0 as? S }
+        return subspaces.compactMap { $0 as? S }
     }
     
     /// Applies a given closure to all subspaces that match a specified type
