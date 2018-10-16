@@ -506,38 +506,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		176B6B2A03E8A6824E5A14D185A953F6 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F035CDAEC382504DE7DE564701D8CDC8 /* GPEngine.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/GPEngine/GPEngine-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/GPEngine/GPEngine-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/GPEngine/GPEngine.modulemap";
-				PRODUCT_MODULE_NAME = GPEngine;
-				PRODUCT_NAME = GPEngine;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
 		4A1865A24F2288F0A6192135327A8D32 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 29BAE8D73444CA0F65D60005890B8842 /* Pods-GPEngine_Tests.release.xcconfig */;
@@ -608,40 +576,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
-		};
-		716F98B2B941E846FE74A1FEF271202F /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F035CDAEC382504DE7DE564701D8CDC8 /* GPEngine.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/GPEngine/GPEngine-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/GPEngine/GPEngine-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/GPEngine/GPEngine.modulemap";
-				PRODUCT_MODULE_NAME = GPEngine;
-				PRODUCT_NAME = GPEngine;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 3.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
 		};
 		729BBDA828B928E88A30E5A54AE0AAAC /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -741,6 +675,38 @@
 			};
 			name = Debug;
 		};
+		77B915BD4EF9234A5B8876A3B34C6A9D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F035CDAEC382504DE7DE564701D8CDC8 /* GPEngine.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/GPEngine/GPEngine-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/GPEngine/GPEngine-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/GPEngine/GPEngine.modulemap";
+				PRODUCT_MODULE_NAME = GPEngine;
+				PRODUCT_NAME = GPEngine;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 		7B1A6F8890CBAA5A5BFF72C0227FE507 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C4A7A7D3BB87373CD82A55CE2E83CF13 /* SwiftyJSON.xcconfig */;
@@ -772,6 +738,40 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
+		};
+		96B021AE9E283DF0F1650BB3B4CEFB4F /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F035CDAEC382504DE7DE564701D8CDC8 /* GPEngine.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/GPEngine/GPEngine-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/GPEngine/GPEngine-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/GPEngine/GPEngine.modulemap";
+				PRODUCT_MODULE_NAME = GPEngine;
+				PRODUCT_NAME = GPEngine;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 4.2;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
 		};
 		9B6B989AABD96BB9DECB1784EA5E2534 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -856,8 +856,8 @@
 		CA7AAC4BD4566F30AE40C827341718B4 /* Build configuration list for PBXNativeTarget "GPEngine" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				176B6B2A03E8A6824E5A14D185A953F6 /* Debug */,
-				716F98B2B941E846FE74A1FEF271202F /* Release */,
+				77B915BD4EF9234A5B8876A3B34C6A9D /* Debug */,
+				96B021AE9E283DF0F1650BB3B4CEFB4F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
