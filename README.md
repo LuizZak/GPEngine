@@ -11,6 +11,7 @@ The framework uses traditional Entity-component-system as well as the concept of
 
 The pod also comes with a subpod `GPEngine/Serialization` which allows serialization of space/subspace/entity/components from and to JSON, using [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) (see [Serialization](#serialization)).
 
+
 ### Concepts
 
 This engine works much like classic ECS engines, but with the added abstraction of `Spaces`.
