@@ -1,10 +1,10 @@
 PODS:
-  - GPEngine (2.2.0):
-    - GPEngine/Core (= 2.2.0)
-  - GPEngine/Core (2.2.0):
+  - GPEngine (2.3.1):
+    - GPEngine/Core (= 2.3.1)
+  - GPEngine/Core (2.3.1):
     - GPEngine/GPEngine
-  - GPEngine/GPEngine (2.2.0)
-  - GPEngine/Serialization (2.2.0):
+  - GPEngine/GPEngine (2.3.1)
+  - GPEngine/Serialization (2.3.1):
     - GPEngine/GPEngine
     - SwiftyJSON
   - SwiftyJSON (3.1.4)
@@ -13,14 +13,18 @@ DEPENDENCIES:
   - GPEngine (from `../`)
   - GPEngine/Serialization (from `../`)
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - SwiftyJSON
+
 EXTERNAL SOURCES:
   GPEngine:
     :path: "../"
 
 SPEC CHECKSUMS:
-  GPEngine: 6e963ff1c0940e6908aa37864d928ae09fbfe95b
+  GPEngine: 2ce984993661cc642c18974d6f32988021d34942
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 7241209671f4d499c0f7cff762f4b18dc378b537
+PODFILE CHECKSUM: 6066e9dacc87f35fcd829d417b50c719f967b254
 
-COCOAPODS: 1.2.0
+COCOAPODS: 1.6.0.beta.1

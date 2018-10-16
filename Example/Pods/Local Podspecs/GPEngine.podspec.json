@@ -1,6 +1,6 @@
 {
   "name": "GPEngine",
-  "version": "2.2.0",
+  "version": "2.3.1",
   "summary": "A Space/Entity/Component/System framework for creating games.",
   "description": "A Space/Entity/Component/System game framework.\n\nSee https://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-containers--gamedev-14091 for more information about SECP.",
   "homepage": "https://github.com/LuizZak/GPEngine",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/LuizZak/GPEngine.git",
-    "tag": "2.2.0"
+    "tag": "2.3.1"
   },
   "social_media_url": "https://twitter.com/LuizZak",
   "default_subspecs": "Core",
