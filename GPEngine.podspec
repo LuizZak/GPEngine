@@ -29,6 +29,7 @@ See https://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-con
   s.source           = { :git => 'https://github.com/LuizZak/GPEngine.git', :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/LuizZak'
   s.default_subspec  = 'Core'
+  s.swift_version    = '4.2'
 
   s.ios.deployment_target = '8.0'
   
