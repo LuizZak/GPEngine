@@ -63,7 +63,7 @@ Systems are still global, since they would ideally be stateless (with help of Su
 
 ## Requirements
 
-Xcode 10.0 & Swift 4.2 or higher.
+Xcode 10.2 & Swift 5.0 or higher.
 
 ## Installation
 
@@ -87,16 +87,12 @@ import PackageDescription
 
 let package = Package(
     name: "project_name",
-    targets: [],
     dependencies: [
-        .Package(url: "https://github.com/LuizZak/GPEngine.git", majorVersion: 2, minor: 3)
-    ]
+        .package(url: "https://github.com/LuizZak/GPEngine.git", from: "3.0.0")
+    ],
+    targets: []
 )
 ```
-
-## Author
-
-LuizZak, luizinho_mack@yahoo.com.br
 
 ## License
 
@@ -104,7 +100,7 @@ GPEngine is available under the MIT license. See the LICENSE file for more info.
 
 ### Serialization
 
-(this optional feature is available under `pod 'GPEngine/Serialization'`)
+(this optional feature is available under `pod 'GPEngine/Serialization'`. At this point this is unsupported in SPM due to compatibility issues with SwiftyJSON's SPM package.)
 
 You can use the GameSerializer class to serialize an entity or entire spaces (along with subspaces/entities/components).
 

@@ -41,9 +41,6 @@ public indirect enum EntitySelector {
     /// Does a binary & to filter.
     case typeFlag(Int)
     
-    /// Selects using a custom closure
-    case closure((Entity) -> Bool)
-    
     /// Returns all entities from an array of entities that pass this selector
     @inlinable
     public func select<S: Sequence>(from entities: S) -> LazyFilterSequence<S> where S.Element == Entity {
@@ -53,7 +50,7 @@ public indirect enum EntitySelector {
     /// Evaluates a given entity using this selector
     @inlinable
     public func evaluate(with entity: Entity) -> Bool {
-        switch(self) {
+        switch self {
         case .none:
             return false
             
@@ -93,9 +90,6 @@ public indirect enum EntitySelector {
             
         case .typeFlag(let type):
             return entity.type & type != 0
-            
-        case .closure(let call):
-            return call(entity)
         }
     }
     

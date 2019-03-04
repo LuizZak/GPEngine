@@ -150,22 +150,6 @@ class EntitySelectorTests: XCTestCase {
         XCTAssert(rule.evaluate(with: entity3))
     }
     
-    func testRuleClosure() {
-        let space = Space()
-        let entity1 = Entity(space)
-        
-        let e = expectation(description: "closure called")
-        
-        let rule: EntitySelector = .closure { entity in
-            e.fulfill()
-            return true
-        }
-        
-        XCTAssert(rule.evaluate(with: entity1))
-        
-        waitForExpectations(timeout: 0, handler: nil)
-    }
-    
     func testAndRuleEmpty() {
         let space = Space()
         let entity1 = Entity(space)
@@ -206,25 +190,35 @@ class EntitySelectorTests: XCTestCase {
     
     func testAndShortcut() {
         let space = Space()
-        let entity1 = Entity(space)
+        let entity = SpyEntity(space)
         
-        let rule: EntitySelector = .and([.none, .closure { entity in
-            XCTFail("Should have shortcircuited")
-            return true
-        }])
+        let rule: EntitySelector = .and([.none, .typeFlag(0)])
         
-        XCTAssertFalse(rule.evaluate(with: entity1))
+        XCTAssertFalse(rule.evaluate(with: entity))
+        XCTAssertFalse(entity.didGetType, "Should have shortcircuited")
     }
     
     func testOrShortcut() {
         let space = Space()
-        let entity1 = Entity(space)
+        let entity = SpyEntity(space)
         
-        let rule: EntitySelector = .or([.any, .closure { entity in
-            XCTFail("Should have shortcircuited")
-            return true
-        }])
+        let rule: EntitySelector = .or([.any, .typeFlag(0)])
         
-        XCTAssert(rule.evaluate(with: entity1))
+        XCTAssert(rule.evaluate(with: entity))
+        XCTAssertFalse(entity.didGetType, "Should have shortcircuited")
+    }
+}
+
+private class SpyEntity: Entity {
+    var didGetType = false
+    
+    override var type: Int {
+        get {
+            didGetType = true
+            return super.type
+        }
+        set {
+            super.type = newValue
+        }
     }
 }
