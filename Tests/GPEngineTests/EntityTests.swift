@@ -10,12 +10,6 @@ import XCTest
 @testable import GPEngine
 
 class EntityTests: XCTestCase {
-    let allTests = [
-        ("testComponentAdd", testComponentAdd),
-        ("testComponentRemove", testComponentRemove),
-        ("testComponentGetType", testComponentGetType)
-    ]
-    
     func testComponentAdd() {
         let space = Space()
         let entity = Entity(space)

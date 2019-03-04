@@ -10,21 +10,6 @@ import XCTest
 @testable import GPEngine
 
 class EntitySelectorTests: XCTestCase {
-    let allTests = [
-        ("testRuleAll", testRuleAll),
-        ("testRuleNone", testRuleNone),
-        ("testRuleComponent", testRuleComponent),
-        ("testRuleId", testRuleId),
-        ("testRuleType", testRuleType),
-        ("testRuleAnd", testRuleAnd),
-        ("testRuleOr", testRuleOr),
-        ("testRuleClosure", testRuleClosure),
-        ("testAndRuleEmpty", testAndRuleEmpty),
-        ("testOrRuleEmpty", testOrRuleEmpty),
-        ("testAndShortcut", testAndShortcut),
-        ("testOrShortcut", testOrShortcut)
-    ]
-    
     func testRuleAll() {
         let space = Space()
         let entity1 = Entity(space)

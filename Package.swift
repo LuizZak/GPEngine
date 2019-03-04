@@ -1,14 +1,16 @@
-// swift-tools-version:3.1
+// swift-tools-version:4.2
 
 import PackageDescription
 
 let package = Package(
     name: "GPEngine",
-    targets: [
-        Target(name: "GPEngine"),
-        Target(name: "Serialization", dependencies: ["GPEngine"])
-    ],
     dependencies: [
-        .Package(url: "https://github.com/SwiftyJSON/SwiftyJSON.git", versions: Version(1,0,0)..<Version(3, .max, .max))
-    ]
+    ],
+    targets: [
+        .target(name: "GPEngine"),
+        // .target(name: "Serialization", dependencies: ["GPEngine"])
+        .testTarget(name: "GPEngineTests",
+                    dependencies: ["GPEngine"])
+    ],
+    swiftLanguageVersions: [.v4_2]
 )

@@ -7,15 +7,16 @@
 //
 
 /// Describes a game entity
-open class Entity: Equatable {
+public class Entity {
+    public typealias Id = Int
     
     /// The internal list of components for this entity
     internal(set) public var components : [Component] = []
     
     /// The unique identifier for this entity
-    open var id = 0
+    public var id: Id = 0
     /// A bitmask field used to quickly describe the type of this entity
-    open var type = 0
+    public var type = 0
     
     /// Initializes this entity
     public init(components: [Component] = []) {
@@ -31,9 +32,9 @@ open class Entity: Equatable {
     }
     
     /// Returns whether the entity has the given component type inside of it
-    open func hasComponent(ofType type: Component.Type) -> Bool {
+    public func hasComponent(ofType type: Component.Type) -> Bool {
         for comp in self.components {
-            if(Swift.type(of: comp) == type) {
+            if Swift.type(of: comp) == type {
                 return true
             }
         }
@@ -43,7 +44,7 @@ open class Entity: Equatable {
     
     /// Gets a single component that matches a given component class type
     /// If no components match the passed component type, nil is returned
-    open func component<T: Component>(ofType type: T.Type) -> T? {
+    public func component<T: Component>(ofType type: T.Type) -> T? {
         for comp in self.components {
             if let c = comp as? T {
                 return c
@@ -53,8 +54,8 @@ open class Entity: Equatable {
         return nil
     }
     
-    /// Applies a given closure to each component of this entity
-    open func withComponents<C: Component>(ofType type: C.Type, do closure: (C) throws -> ()) rethrows {
+    /// Applies a given closure to each component of a given type on this entity
+    public func withComponents<C: Component>(ofType type: C.Type, do closure: (C) throws -> ()) rethrows {
         for comp in components {
             if let c = comp as? C {
                 try closure(c)
@@ -72,10 +73,9 @@ open class Entity: Equatable {
     ///     // ...
     /// }
     /// ```
-    open func withComponents<C1: Component,
-                             C2: Component>(ofTypes type1: C1.Type,
-                                            _ type2: C2.Type,
-                                            do closure: (C1, C2) throws -> ()) rethrows {
+    public func withComponents<C1, C2>(ofTypes type1: C1.Type,
+                                       _ type2: C2.Type,
+                                       do closure: (C1, C2) throws -> ()) rethrows where C1: Component, C2: Component  {
         if let c1 = component(ofType: C1.self), let c2 = component(ofType: C2.self) {
             try closure(c1, c2)
         }
@@ -94,7 +94,7 @@ open class Entity: Equatable {
     ///     // ...
     /// }
     /// ```
-    open func withComponents<C1: Component, C2: Component>(do closure: (C1, C2) throws -> ()) rethrows {
+    public func withComponents<C1: Component, C2: Component>(do closure: (C1, C2) throws -> ()) rethrows {
         try withComponents(ofTypes: C1.self, C2.self, do: closure)
     }
     
@@ -108,12 +108,10 @@ open class Entity: Equatable {
     ///     // ...
     /// }
     /// ```
-    open func withComponents<C1: Component,
-                             C2: Component,
-                             C3: Component>(ofTypes type1: C1.Type,
-                                            _ type2: C2.Type,
-                                            _ type3: C3.Type,
-                                            do closure: (C1, C2, C3) throws -> ()) rethrows {
+    public func withComponents<C1, C2, C3>(ofTypes type1: C1.Type,
+                                           _ type2: C2.Type,
+                                           _ type3: C3.Type,
+                                           do closure: (C1, C2, C3) throws -> ()) rethrows where C1: Component, C2: Component, C3: Component {
         if let c1 = component(ofType: C1.self), let c2 = component(ofType: C2.self), let c3 = component(ofType: C3.self) {
             try closure(c1, c2, c3)
         }
@@ -132,23 +130,17 @@ open class Entity: Equatable {
     ///     // ...
     /// }
     /// ```
-    open func withComponents<C1: Component, C2: Component, C3: Component>(do closure: (C1, C2, C3) throws -> ()) rethrows {
+    public func withComponents<C1: Component, C2: Component, C3: Component>(do closure: (C1, C2, C3) throws -> ()) rethrows {
         try withComponents(ofTypes: C1.self, C2.self, C3.self, do: closure)
     }
     
     /// Gets all components in this entity
-    open func getAllComponents() -> [Component] {
+    public func getAllComponents() -> [Component] {
         return components
     }
     
     /// Gets a list of components that match a given component class type
-    open func components<T: Component>(ofType type: T.Type) -> [T] {
+    public func components<T: Component>(ofType type: T.Type) -> [T] {
         return components.compactMap { $0 as? T }
-    }
-    
-    /// Performs a reference-equality check between two Entity instances.
-    /// Parameter are equal if they reference the same object.
-    public static func ==(lhs: Entity, rhs: Entity) -> Bool {
-        return lhs === rhs
     }
 }

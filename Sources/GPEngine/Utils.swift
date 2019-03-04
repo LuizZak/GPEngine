@@ -11,6 +11,7 @@ extension RangeReplaceableCollection {
     /// Removes the first element in this collection where the given closure
     /// evaluates to true.
     /// This method also returns the element that was removed, if any.
+    @discardableResult
     mutating func removeFirst(where closure: (Iterator.Element) throws -> Bool) rethrows -> Iterator.Element? {
         var index = startIndex
         

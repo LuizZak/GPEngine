@@ -10,20 +10,14 @@ import XCTest
 @testable import GPEngine
 
 class SpaceTests: XCTestCase {
-    let allTests = [
-        ("testAddSubspace", testAddSubspace),
-        ("testRemoveSubspace", testRemoveSubspace),
-        ("testAddSubspaceThatAlreadyHasSpace", testAddSubspaceThatAlreadyHasSpace)
-    ]
-    
     func testAddSubspace() {
         let space = Space()
         let subspace = Subspace()
         
         space.addSubspace(subspace)
         
-        XCTAssertEqual(subspace.space, space)
-        XCTAssert(space.subspaces.contains(subspace))
+        XCTAssert(subspace.space === space)
+        XCTAssert(space.subspaces.contains(where: { $0 === subspace }))
     }
     
     func testRemoveSubspace() {
@@ -35,7 +29,7 @@ class SpaceTests: XCTestCase {
         space.removeSubspace(subspace)
         
         XCTAssertNil(subspace.space)
-        XCTAssertFalse(space.subspaces.contains(subspace))
+        XCTAssertFalse(space.subspaces.contains(where: { $0 === subspace }))
     }
     
     func testAddSubspaceThatAlreadyHasSpace() {
@@ -47,9 +41,9 @@ class SpaceTests: XCTestCase {
         
         space2.addSubspace(subspace)
         
-        XCTAssertEqual(subspace.space, space2)
-        XCTAssertFalse(space1.subspaces.contains(subspace))
-        XCTAssert(space2.subspaces.contains(subspace))
+        XCTAssert(subspace.space === space2)
+        XCTAssertFalse(space1.subspaces.contains(where: { $0 === subspace }))
+        XCTAssert(space2.subspaces.contains(where: { $0 === subspace }))
     }
     
     func testWithSubspacesOfType() {

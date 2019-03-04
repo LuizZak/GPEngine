@@ -11,7 +11,7 @@
 ///
 /// Spaces do not interact with each other in any way, and entities across
 /// spaces are also considered isolated from each other.
-open class Space: Equatable {
+open class Space {
     
     /// Whether this space is currently active
     open var active: Bool = true
@@ -35,11 +35,13 @@ open class Space: Equatable {
     /// then added to this space.
     open func addSubspace(_ subspace: Subspace) {
         if let previous = subspace.space {
-            if(previous == self) {
+            if previous === self {
                 return
             }
             
-            previous.subspaces.remove(subspace)
+            if let index = previous.subspaces.firstIndex(where: { $0 === subspace }) {
+                previous.subspaces.remove(at: index)
+            }
         }
         
         subspaces.append(subspace)
@@ -52,7 +54,9 @@ open class Space: Equatable {
     
     /// Removes a subspace from this space
     open func removeSubspace(_ subspace: Subspace) {
-        subspaces.remove(subspace)
+        if let index = subspaces.firstIndex(where: { $0 === subspace }) {
+            subspaces.remove(at: index)
+        }
         
         subspace.space = nil
         subspace.didMoveTo(space: nil)
@@ -71,7 +75,7 @@ open class Space: Equatable {
     
     /// Adds an entity into this space
     open func addEntity(_ entity: Entity) {
-        if(entities.contains(entity)) {
+        if entities.contains(where: { $0 === entity }) {
             return
         }
         
@@ -162,11 +166,5 @@ open class Space: Equatable {
                 try closure(s)
             }
         }
-    }
-    
-    /// Performs a reference-equality check between two Space instances.
-    /// Parameter are equal if they reference the same object.
-    public static func ==(lhs: Space, rhs: Space) -> Bool {
-        return lhs === rhs
     }
 }

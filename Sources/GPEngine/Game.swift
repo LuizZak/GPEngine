@@ -56,7 +56,7 @@ open class Game: GameEventDispatcherDelegate {
     
     /// Adds a space to the game
     open func addSpace(_ space: Space) {
-        if(!spaces.contains(space)) {
+        if !spaces.contains(where: { $0 === space }) {
             spaces.append(space)
             
             // Forward events
@@ -65,8 +65,8 @@ open class Game: GameEventDispatcherDelegate {
     }
     /// Removes a space from the game
     open func removeSpace(_ space: Space) {
-        if(spaces.contains(space)) {
-            spaces.remove(space)
+        if let index = spaces.firstIndex(where: { $0 === space }) {
+            spaces.remove(at: index)
             
             // Dismount event listener
             eventDispatcher.removeListener(space.eventDispatcher)
@@ -81,7 +81,7 @@ open class Game: GameEventDispatcherDelegate {
     /// Adds a system to the game, but only if there are no systems of its type
     /// registered
     open func addSystemOnce<T: System>(_ system: T) {
-        if(self.system(ofType: T.self) == nil) {
+        if self.system(ofType: T.self) == nil {
             systems.append(system)
         }
     }
@@ -106,6 +106,6 @@ open class Game: GameEventDispatcherDelegate {
     
     /// Removes a system from the game
     open func removeSystem(_ system: System) {
-        systems.remove(system)
+        systems.removeFirst(where: { $0 === system })
     }
 }

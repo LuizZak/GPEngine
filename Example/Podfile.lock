@@ -7,7 +7,7 @@ PODS:
   - GPEngine/Serialization (2.3.1):
     - GPEngine/GPEngine
     - SwiftyJSON
-  - SwiftyJSON (3.1.4)
+  - SwiftyJSON (4.2.0)
 
 DEPENDENCIES:
   - GPEngine (from `../`)
@@ -22,9 +22,9 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  GPEngine: d1f7fe0fe756cd3a8c800978000a7f6fdc9311af
-  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
+  GPEngine: 5b78e606954f0c170dd6bbd4274b4039e5aebcf4
+  SwiftyJSON: c4bcba26dd9ec7a027fc8eade48e2c911f229e96
 
-PODFILE CHECKSUM: 8d1ae6ab0d70226de51457955ed2666707777a04
+PODFILE CHECKSUM: 505a8cf012caa06e11acbe9ae14e91840b472ab5
 
-COCOAPODS: 1.6.0.beta.1
+COCOAPODS: 1.6.0

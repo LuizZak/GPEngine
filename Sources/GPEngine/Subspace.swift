@@ -9,7 +9,7 @@
 /// Defines a subspace, which is a part of a game space that contains
 /// an entity selector and data that pertains to a specific portion of a game.
 /// Subspaces are queried by game systems to have operations made upon
-open class Subspace: Equatable {
+open class Subspace {
     
     /// The entity selector for the subspace
     open var selector: EntitySelector
@@ -31,7 +31,7 @@ open class Subspace: Equatable {
         
         if let space = self.space {
             for entity in space.entities {
-                if(testEntity(entity)) {
+                if testEntity(entity) {
                     addEntity(entity)
                 }
             }
@@ -52,9 +52,11 @@ open class Subspace: Equatable {
     
     /// Removes an entity from this subspace
     open func removeEntity(_ entity: Entity) {
-        entities.remove(entity)
-        
-        entityRemoved(entity)
+        if let index = entities.firstIndex(where: { $0 === entity }) {
+            entities.remove(at: index)
+            
+            entityRemoved(entity)
+        }
     }
     
     /// Called to notify an entity has been added into this subspace
@@ -80,12 +82,12 @@ open class Subspace: Equatable {
     /// Manages a given entity in this subspace, removing it if it no longer
     /// fits the entity selector, and adding it in if it fits
     open func manageEntity(_ entity: Entity) {
-        if(entities.contains(entity)) {
-            if(!testEntity(entity)) {
+        if entities.contains(where: { $0 === entity }) {
+            if !testEntity(entity) {
                 removeEntity(entity)
             }
         } else {
-            if(testEntity(entity)) {
+            if testEntity(entity) {
                 addEntity(entity)
             }
         }
@@ -98,14 +100,8 @@ open class Subspace: Equatable {
     
     /// Clears all the entities from this subspace
     open func clearEntities() {
-        while(entities.count > 0) {
+        while entities.count > 0 {
             removeEntity(entities[0])
         }
-    }
-    
-    /// Performs a reference-equality check between two Subspace instances.
-    /// Parameter are equal if they reference the same object.
-    public static func ==(lhs: Subspace, rhs: Subspace) -> Bool {
-        return lhs === rhs
     }
 }

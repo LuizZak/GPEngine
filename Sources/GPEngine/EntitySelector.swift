@@ -45,11 +45,13 @@ public indirect enum EntitySelector {
     case closure((Entity) -> Bool)
     
     /// Returns all entities from an array of entities that pass this selector
-    public func select(from entities: [Entity]) -> [Entity] {
-        return entities.filter(evaluate(with:))
+    @inlinable
+    public func select<S: Sequence>(from entities: S) -> LazyFilterSequence<S> where S.Element == Entity {
+        return entities.lazy.filter(evaluate(with:))
     }
     
     /// Evaluates a given entity using this selector
+    @inlinable
     public func evaluate(with entity: Entity) -> Bool {
         switch(self) {
         case .none:
@@ -63,7 +65,7 @@ public indirect enum EntitySelector {
             
         case .or(let rules):
             for rule in rules {
-                if(rule.evaluate(with: entity)) {
+                if rule.evaluate(with: entity) {
                     return true
                 }
             }
@@ -71,12 +73,12 @@ public indirect enum EntitySelector {
             return false
             
         case .and(let rules):
-            if(rules.count == 0) {
+            if rules.count == 0 {
                 return false
             }
             
             for rule in rules {
-                if(!rule.evaluate(with: entity)) {
+                if !rule.evaluate(with: entity) {
                     return false
                 }
             }
@@ -100,10 +102,11 @@ public indirect enum EntitySelector {
     // MARK: Operators
     
     /// Creates a .and selector based on the combination of two entity selectors
+    @inlinable
     public static func &&(lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
         // Shortcut: If lhs is already an 'and', compose it over the set of
         // rules there
-        switch(lhs) {
+        switch lhs {
         case .and(let rules):
             return .and(rules + [rhs])
         default:
@@ -112,10 +115,11 @@ public indirect enum EntitySelector {
     }
     
     /// Creates an .or selector based on the combination of two entity selectors
+    @inlinable
     public static func ||(lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
         // Shortcut: If lhs is already an 'or', compose it over the set of
         // rules there
-        switch(lhs) {
+        switch lhs {
         case .or(let rules):
             return .or(rules + [rhs])
         default:
@@ -124,9 +128,10 @@ public indirect enum EntitySelector {
     }
     
     /// Creates a .not selector based on the given selector
+    @inlinable
     public static prefix func !(rule: EntitySelector) -> EntitySelector {
         // Shrotcut: If the rule is already a 'not' rule, just unwrap it
-        switch(rule) {
+        switch rule {
         case .not(let rule):
             return rule
         default:

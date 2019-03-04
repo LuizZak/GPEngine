@@ -11,12 +11,6 @@ import XCTest
 @testable import GPEngine
 
 class SystemTests: XCTestCase {
-    let allTests = [
-        ("testAddSystem", testAddSystem),
-        ("testSystemByType", testSystemByType),
-        ("testRemoveSystem", testRemoveSystem)
-    ]
-    
     var game: Game = Game()
     
     override func setUp() {
@@ -36,8 +30,8 @@ class SystemTests: XCTestCase {
         
         // Test system add
         XCTAssertEqual(game.systems.count, 1)
-        XCTAssertEqual(game.systems.first, system)
-        XCTAssert(game.system(ofType: System.self) != nil, "Systems must be added after a call to GameScene.addSystem()")
+        XCTAssert(game.systems.first === system)
+        XCTAssert(game.system(ofType: CustomSystem.self) != nil, "Systems must be added after a call to GameScene.addSystem()")
     }
     
     func testSystemByType() {
@@ -63,14 +57,34 @@ class SystemTests: XCTestCase {
         
         // Test system add
         XCTAssertEqual(game.systems.count, 0)
-        XCTAssert(game.system(ofType: System.self) == nil, "Systems must be removed after a call to GameScene.removeSystem()")
+        XCTAssert(game.system(ofType: CustomSystem.self) == nil, "Systems must be removed after a call to GameScene.removeSystem()")
     }
 }
 
 class CustomSystem: System {
+    required init() {
+        
+    }
     
+    func render(space: Space, interval deltaTime: DeltaTimeInterval) {
+        
+    }
+    
+    func update(space: Space, interval deltaTime: DeltaTimeInterval) {
+        
+    }
 }
 
 class OtherCustomSystem: System {
+    required init() {
+        
+    }
     
+    func render(space: Space, interval deltaTime: DeltaTimeInterval) {
+        
+    }
+    
+    func update(space: Space, interval deltaTime: DeltaTimeInterval) {
+        
+    }
 }

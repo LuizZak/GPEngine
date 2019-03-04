@@ -9,13 +9,13 @@
 // Represents a game event that is broadcaster through a game screen
 public protocol GameEvent {
     
-    /// Gets a unique string that is meant to describe this game event.
-    /// Defaults to the name of the dynamic type of the implementer.
-    static var eventIdentifier: String { get }
+    /// Gets a unique number that is meant to identify this game event.
+    /// Defaults to the address in memory of the event's type.
+    static var eventIdentifier: Int { get }
 }
 
 extension GameEvent {
-    public static var eventIdentifier: String {
-        return String(describing: self)
+    public static var eventIdentifier: Int {
+        return unsafeBitCast(self, to: Int.self)
     }
 }
