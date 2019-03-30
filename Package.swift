@@ -1,16 +1,20 @@
-// swift-tools-version:4.2
+// swift-tools-version:5.0
 
 import PackageDescription
 
 let package = Package(
     name: "GPEngine",
-    dependencies: [
+    products: [
+        .library(name: "GPEngine", targets: ["GPEngine"]),
+        .library(name: "GPSerialization", targets: ["Serialization"])
     ],
     targets: [
         .target(name: "GPEngine"),
-        // .target(name: "Serialization", dependencies: ["GPEngine"])
+        .target(name: "Serialization"),
         .testTarget(name: "GPEngineTests",
-                    dependencies: ["GPEngine"])
+                    dependencies: ["GPEngine"]),
+        .testTarget(name: "SerializationTests",
+                    dependencies: ["GPEngine", "Serialization"])
     ],
-    swiftLanguageVersions: [.v4_2]
+    swiftLanguageVersions: [.v5]
 )
