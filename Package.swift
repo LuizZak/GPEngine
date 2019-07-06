@@ -10,7 +10,8 @@ let package = Package(
     ],
     targets: [
         .target(name: "GPEngine"),
-        .target(name: "Serialization"),
+        .target(name: "Serialization",
+                dependencies: ["GPEngine"]),
         .testTarget(name: "GPEngineTests",
                     dependencies: ["GPEngine"]),
         .testTarget(name: "SerializationTests",
