@@ -32,3 +32,4 @@ Packages
 xcuserdata
 GPEngine.xcodeproj
 DerivedData/
+.swiftpm/
