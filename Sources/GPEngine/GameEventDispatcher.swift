@@ -83,7 +83,7 @@ open class GameEventDispatcher: Equatable {
     
     /// Removes an event listener with a given key from this event dispatcher
     open func removeListener(forKey key: EventListenerKey) {
-        if(!key.valid.value) {
+        if !key.valid.value {
             return
         }
         

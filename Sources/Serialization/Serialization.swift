@@ -369,7 +369,7 @@ public class GameSerializer {
     ///
     /// Useful during debugging.
     public static func diagnoseSerialize(on space: Space) {
-        if(canSerialize(space)) {
+        if canSerialize(space) {
             print("Space is serializable!")
             return
         }
