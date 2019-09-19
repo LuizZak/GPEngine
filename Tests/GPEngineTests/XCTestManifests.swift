@@ -12,7 +12,6 @@ extension EntitySelectorTests {
         ("testOrShortcut", testOrShortcut),
         ("testRuleAll", testRuleAll),
         ("testRuleAnd", testRuleAnd),
-        ("testRuleClosure", testRuleClosure),
         ("testRuleComponent", testRuleComponent),
         ("testRuleId", testRuleId),
         ("testRuleNone", testRuleNone),
