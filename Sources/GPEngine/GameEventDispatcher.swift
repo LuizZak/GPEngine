@@ -65,17 +65,17 @@ open class GameEventDispatcher: Equatable {
         let key: EventListenerKey
         
         // Try to find the key bonded to the event
-        if var list = self.events[eventId] {
+        if var list = events[eventId] {
             key = uniqueKey(forEvent: eventId, forList: list)
             
             list.append((listener, key))
-            self.events[eventId] = list
+            events[eventId] = list
         }
-            // If none exist, start a new one
+        // If none exist, start a new one
         else {
             key = uniqueKey(forEvent: eventId, forList: [])
             
-            self.events[eventId] = [(listener, key)]
+            events[eventId] = [(listener, key)]
         }
         
         return key
@@ -98,8 +98,8 @@ open class GameEventDispatcher: Equatable {
         events[key.eventIdentifier] = list
         key.valid.value = false
         
-        if(list.count == 0) {
-            self.events.removeValue(forKey: key.eventIdentifier)
+        if list.count == 0 {
+            events.removeValue(forKey: key.eventIdentifier)
         }
     }
     
@@ -108,19 +108,19 @@ open class GameEventDispatcher: Equatable {
     open func removeListener<T: GameEventListener>(_ listener: T, forEventType eventType: GameEvent.Type) where T: Equatable {
         let eventId = eventType.eventIdentifier
         
-        self.internalRemoveEventListener(listener, eventId)
+        internalRemoveEventListener(listener, eventId)
     }
     
     /// Removes a given event listener from all events it is currently 
     /// listening to
     open func removeListener<T: GameEventListener>(_ listener: T) where T: Equatable {
         var i: Int = 0
-        while i < self.events.keys.count {
-            let c: Int = self.events.count
+        while i < events.keys.count {
+            let c: Int = events.count
             
-            self.internalRemoveEventListener(listener, Array(self.events.keys)[i])
+            internalRemoveEventListener(listener, Array(events.keys)[i])
             
-            if c == self.events.count {
+            if c == events.count {
                 i += 1
             }
         }
@@ -131,19 +131,19 @@ open class GameEventDispatcher: Equatable {
     open func removeListener<T: GameEventListener>(_ listener: T, forEventType eventType: GameEvent.Type) where T: AnyObject {
         let eventId = eventType.eventIdentifier
         
-        self.internalRemoveEventListener(listener, eventId)
+        internalRemoveEventListener(listener, eventId)
     }
     
     /// Removes a given event listener from all events it is currently
     /// listening to
     open func removeListener<T: GameEventListener>(_ listener: T) where T: AnyObject {
         var i: Int = 0
-        while i < self.events.keys.count {
-            let c: Int = self.events.count
+        while i < events.keys.count {
+            let c: Int = events.count
             
-            self.internalRemoveEventListener(listener, Array(self.events.keys)[i])
+            internalRemoveEventListener(listener, Array(events.keys)[i])
             
-            if c == self.events.count {
+            if c == events.count {
                 i += 1
             }
         }
@@ -172,7 +172,7 @@ open class GameEventDispatcher: Equatable {
     // identifier
     fileprivate func internalRemoveEventListener<T: GameEventListener>(_ listener: T, _ eventIdentifier: Int) where T: Equatable {
         // Try to find the key bonded to the event
-        guard var list = self.events[eventIdentifier] else {
+        guard var list = events[eventIdentifier] else {
             return
         }
         
@@ -183,10 +183,10 @@ open class GameEventDispatcher: Equatable {
         list[index].key.valid.value = false
         list.remove(at: index)
         
-        self.events[eventIdentifier] = list
+        events[eventIdentifier] = list
         
         if list.count == 0 {
-            self.events.removeValue(forKey: eventIdentifier)
+            events.removeValue(forKey: eventIdentifier)
         }
     }
     
@@ -194,7 +194,7 @@ open class GameEventDispatcher: Equatable {
     // identifier
     fileprivate func internalRemoveEventListener<T: GameEventListener>(_ listener: T, _ eventIdentifier: Int) where T: AnyObject {
         // Try to find the key bonded to the event
-        guard var list = self.events[eventIdentifier] else {
+        guard var list = events[eventIdentifier] else {
             return
         }
         
@@ -205,10 +205,10 @@ open class GameEventDispatcher: Equatable {
         list[index].key.valid.value = false
         list.remove(at: index)
         
-        self.events[eventIdentifier] = list
+        events[eventIdentifier] = list
         
         if list.count == 0 {
-            self.events.removeValue(forKey: eventIdentifier)
+            events.removeValue(forKey: eventIdentifier)
         }
     }
     
@@ -227,7 +227,7 @@ open class GameEventDispatcher: Equatable {
     }
     
     private func dispatchEvent(_ event: GameEvent, forKeys key: Int) {
-        guard let list = self.events[key] else {
+        guard let list = events[key] else {
             return
         }
         

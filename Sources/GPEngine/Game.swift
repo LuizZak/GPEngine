@@ -106,6 +106,6 @@ open class Game: GameEventDispatcherDelegate {
     
     /// Removes a system from the game
     open func removeSystem(_ system: System) {
-        systems.removeFirst(where: { $0 === system })
+        systems.removeFirst { $0 === system }
     }
 }
