@@ -48,6 +48,10 @@ class SerializationTests: XCTestCase {
     struct UnserializableComponent: Component {
         
     }
+
+    final class UnserializableSubspace: Subspace {
+
+    }
     
     class Provider: BasicSerializationTypeProvider {
         var serializableTypes: [Serializable.Type] = [
@@ -112,6 +116,24 @@ class SerializationTests: XCTestCase {
         } catch {
             XCTAssert(error is SerializationError)
         }
+    }
+
+    func testCanSerializeEntity() {
+        let entity = Entity()
+
+        XCTAssertTrue(GameSerializer.canSerialize(entity))
+    }
+
+    func testCanSerializeEntityChecksComponents() {
+        let entity = Entity(components: [SerializableComponent(field: 1)])
+
+        XCTAssertTrue(GameSerializer.canSerialize(entity))
+    }
+
+    func testCanSerializeEntityFailsOnNonSerializableComponent() {
+        let entity = Entity(components: [UnserializableComponent()])
+
+        XCTAssertFalse(GameSerializer.canSerialize(entity))
     }
     
     // MARK: Space
@@ -219,6 +241,33 @@ class SerializationTests: XCTestCase {
         XCTAssertEqual(space.entities[0].id, 1)
         XCTAssertEqual(space.entities[0].type, 2)
         XCTAssertEqual(space.entities[0].component(ofType: SerializableComponent.self)?.field, 20)
+    }
+
+    func testCanSerializeSpace() {
+        let space = Space()
+
+        XCTAssertTrue(GameSerializer.canSerialize(space))
+    }
+
+    func testCanSerializeSpaceChecksComponents() {
+        let space = Space()
+        space.addEntity(Entity(components: [SerializableComponent(field: 1)]))
+
+        XCTAssertTrue(GameSerializer.canSerialize(space))
+    }
+
+    func testCanSerializeSpaceFailsOnNonSerializableComponent() {
+        let space = Space()
+        space.addEntity(Entity(components: [UnserializableComponent()]))
+
+        XCTAssertFalse(GameSerializer.canSerialize(space))
+    }
+
+    func testCanSerializeSpaceFailsOnNonSerializableSubspace() {
+        let space = Space()
+        space.addSubspace(UnserializableSubspace())
+
+        XCTAssertFalse(GameSerializer.canSerialize(space))
     }
     
     // MARK: Presets
