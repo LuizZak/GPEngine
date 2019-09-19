@@ -314,6 +314,33 @@ class SerializationTests: XCTestCase {
             XCTFail("\(error)")
         }
     }
+
+    func testPresetSerialization() {
+        let expected: JSON = [
+            "presetName" : "PresetName",
+            "presetType" : "component",
+            "presetVariables" : [
+                "var" : [
+                    "default" : 1,
+                    "type" : "number"
+                ]
+            ],
+            "presetData" : [
+                "typeName" : "TypeName",
+                "data" : [:],
+                "presets" : [],
+                "contentType" : "component"
+            ]
+        ]
+        let preset = SerializedPreset(name: "PresetName",
+                                      type: .component,
+                                      variables: ["var": SerializedPreset.Variable(name: "var", type: .number, defaultValue: 1)],
+                                      data: Serialized(typeName: "TypeName", contentType: .component, data: [:]))
+
+        let result = preset.serialized()
+
+        XCTAssertEqual(expected, result)
+    }
     
     func testSimplePresetDeserialization() {
         do {
