@@ -618,7 +618,7 @@ class SerializationTests: XCTestCase {
             ]
             
             let serialized = try Serialized(json: json)
-            let _: Space=try serializer.extract(from: serialized)
+            let _: Space = try serializer.extract(from: serialized)
             XCTFail("Should not have succeeded")
         } catch {
             // Success!

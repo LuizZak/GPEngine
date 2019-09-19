@@ -156,7 +156,7 @@ public class GameSerializer {
     /// using the variables within the `serialized.data` property to feed the
     /// preset variables.
     public func deserializePreset(in serialized: Serialized) throws -> Serialized {
-        if(serialized.contentType != .preset) {
+        if serialized.contentType != .preset {
             throw DeserializationError.invalidSerialized(message: "Does not represent a preset")
         }
         
@@ -187,11 +187,11 @@ public class GameSerializer {
         }
         
         // Detect preset on this object
-        if(serialized.contentType == .preset) {
+        if serialized.contentType == .preset {
             return try extract(from: deserializePreset(in: serialized))
         }
         
-        if(serialized.typeName != "Entity" || serialized.contentType != .entity) {
+        if serialized.typeName != "Entity" || serialized.contentType != .entity {
             throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Entity instance")
         }
         
@@ -229,11 +229,11 @@ public class GameSerializer {
         }
         
         // Detect preset on this object
-        if(serialized.contentType == .preset) {
+        if serialized.contentType == .preset {
             return try extract(from: deserializePreset(in: serialized))
         }
         
-        if(serialized.typeName != "Space" || serialized.contentType != .space) {
+        if serialized.typeName != "Space" || serialized.contentType != .space {
             throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Space instance")
         }
         
@@ -277,7 +277,7 @@ public class GameSerializer {
         }
         
         // Detect preset on this object
-        if(serialized.contentType == .preset) {
+        if serialized.contentType == .preset {
             return try extract(from: deserializePreset(in: serialized))
         }
         
@@ -299,7 +299,7 @@ public class GameSerializer {
         }
         
         // Detect preset on this object
-        if(serialized.contentType == .preset) {
+        if serialized.contentType == .preset {
             return try extract(from: deserializePreset(in: serialized))
         }
         
@@ -321,7 +321,7 @@ public class GameSerializer {
         }
         
         // Detect preset on this object
-        if(serialized.contentType == .preset) {
+        if serialized.contentType == .preset {
             return try extract(from: deserializePreset(in: serialized))
         }
         
@@ -429,7 +429,7 @@ public class GameSerializer {
             let last = stack.removeLast()
             
             // Only remove if there's anything to remove
-            if(last != presets.count) {
+            if last != presets.count {
                 presets = Array(presets[last..<presets.count])
             }
         }
@@ -482,7 +482,7 @@ public struct Serialized: Serializable {
         guard let contentType = ContentType(rawValue: type) else {
             throw DeserializationError.invalidSerialized(message: "Invalid content type \(type)")
         }
-        if(json["data"].type == .null || json["data"].type == .unknown) {
+        if json["data"].type == .null || json["data"].type == .unknown {
             throw DeserializationError.invalidSerialized(message: "Missing 'data'")
         }
         if let presets = json["presets"].array {
@@ -585,7 +585,7 @@ public struct SerializedPreset: Serializable {
         }
         
         let presetData = json["presetData"]
-        if(presetData.type != .dictionary) {
+        if presetData.type != .dictionary {
             throw DeserializationError.invalidSerialized(message: "Expected 'presetData' to contain a dictionary in preset '\(name)'")
         }
         
@@ -594,7 +594,7 @@ public struct SerializedPreset: Serializable {
         self.data = try Serialized(json: presetData)
         
         // Match serialized content types
-        if(self.type != self.data.contentType) {
+        if self.type != self.data.contentType {
             throw DeserializationError.invalidSerialized(message: "Expected preset data of type '\(type)', but received preset with contentType '\(self.data.contentType)' in preset '\(name)'")
         }
         
@@ -630,7 +630,7 @@ public struct SerializedPreset: Serializable {
             
             // Check type of default value
             if let def = defaultValue {
-                if(JSON(def).type != type.jsonType) {
+                if JSON(def).type != type.jsonType {
                     throw DeserializationError.invalidSerialized(message: "Default value for variable '\(name)' has a different type than the variable in preset '\(name)'")
                 }
             }
@@ -680,7 +680,7 @@ public struct SerializedPreset: Serializable {
         for (key, value) in values {
             // Find matching definition
             if let def = variables[key] {
-                if(def.type.jsonType != JSON(value).type) {
+                if def.type.jsonType != JSON(value).type {
                     throw VariableReplaceError.missmatchedType(valueName: key, expected: def.type.jsonType, received: JSON(value).type)
                 }
             }
@@ -844,7 +844,7 @@ public protocol BasicSerializationTypeProvider: SerializationTypeProvider {
 public extension BasicSerializationTypeProvider {
     func deserialized(from name: String) throws -> Serializable.Type {
         for type in serializableTypes {
-            if(String(describing: type) == name) {
+            if String(describing: type) == name {
                 return type
             }
         }
