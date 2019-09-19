@@ -466,6 +466,33 @@ class SerializationTests: XCTestCase {
             XCTAssert(error is SerializedPreset.VariableReplaceError)
         }
     }
+
+    func testPresetMissingVariableError() {
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [
+                    "var": "number"
+                ],
+                "presetData": [
+                    "contentType": "entity",
+                    "typeName": "Entity",
+                    "data": [
+                        "from-preset": [ "presetVariable": "var" ]
+                    ]
+                ]
+            ]
+
+            let preset = try SerializedPreset(json: json)
+
+            _=try preset.expandPreset(withVariables: [:])
+
+            XCTFail("Should have thrown error")
+        } catch {
+            XCTAssert(error is SerializedPreset.VariableReplaceError)
+        }
+    }
     
     func testPresetDefaultVariableTypeError() {
         do {
