@@ -505,19 +505,19 @@ public struct Serialized: Serializable {
     /// - Returns: A deserialized instance of this component type
     /// - Throws: Any type of error during deserialization.
     public init(json: JSON) throws {
-        guard let name = json["typeName"].string else {
+        guard let name = json[CodingKeys.typeName].string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'typeName'")
         }
-        guard let type = json["contentType"].string else {
+        guard let type = json[CodingKeys.contentType].string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'contentType'")
         }
         guard let contentType = ContentType(rawValue: type) else {
             throw DeserializationError.invalidSerialized(message: "Invalid content type \(type)")
         }
-        if json["data"].type == .null || json["data"].type == .unknown {
+        if json[CodingKeys.data].type == .null || json[CodingKeys.data].type == .unknown {
             throw DeserializationError.invalidSerialized(message: "Missing 'data'")
         }
-        if let presets = json["presets"].array {
+        if let presets = json[CodingKeys.presets].array {
             self.presets = try presets.map { try SerializedPreset(json: $0) }
         } else {
             self.presets = []
@@ -525,7 +525,7 @@ public struct Serialized: Serializable {
         
         self.typeName = name
         self.contentType = contentType
-        self.data = json["data"]
+        self.data = json[CodingKeys.data]
     }
     
     fileprivate init() {
@@ -540,10 +540,10 @@ public struct Serialized: Serializable {
     /// - Returns: The serialized state for this object.
     public func serialized() -> JSON {
         return [
-            "typeName": typeName,
-            "contentType": contentType.rawValue,
-            "presets": presets.map { $0.serialized().object },
-            "data": data.object
+            CodingKeys.typeName.rawValue: typeName,
+            CodingKeys.contentType.rawValue: contentType.rawValue,
+            CodingKeys.presets.rawValue: presets.map { $0.serialized().object },
+            CodingKeys.data.rawValue: data.object
         ]
     }
     
@@ -569,11 +569,15 @@ public struct Serialized: Serializable {
         case custom
     }
 
-    public enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey, JSONSubscriptType {
         case typeName
         case contentType
         case presets
         case data
+
+        public var jsonKey: JSONKey {
+            return .key(rawValue)
+        }
     }
 }
 
