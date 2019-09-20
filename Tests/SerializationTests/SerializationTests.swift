@@ -54,9 +54,9 @@ class SerializationTests: XCTestCase {
     }
     
     class Provider: BasicSerializationTypeProvider {
-        var serializableTypes: [Serializable.Type] = [
-            SerializableComponent.self,
-            SerializableSubspace.self
+        var serializableTypes: [(Serializable.Type, (JSON) throws -> Serializable)] = [
+            (SerializableComponent.self, SerializableComponent.init),
+            (SerializableSubspace.self, SerializableSubspace.init)
         ]
     }
     

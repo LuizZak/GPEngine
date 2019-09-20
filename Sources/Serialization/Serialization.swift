@@ -280,13 +280,12 @@ public class GameSerializer {
         if serialized.contentType == .preset {
             return try extract(from: deserializePreset(in: serialized))
         }
-        
-        let type = try typeProvider.deserialized(from: serialized.typeName)
-        if type is T.Type {
-            return try type.init(json: serialized.data) as! T
+
+        if let value = try typeProvider.createDeserializable(from: serialized.typeName, json: serialized.data) as? T {
+            return value
         }
-        
-        throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
+
+        throw DeserializationError.invalidSerialized(message: "Serialized value returned by type provider is not of type \(T.self)")
     }
     
     /// Extracts a Component type from a serialized object
@@ -302,13 +301,12 @@ public class GameSerializer {
         if serialized.contentType == .preset {
             return try extract(from: deserializePreset(in: serialized))
         }
-        
-        let type = try typeProvider.deserialized(from: serialized.typeName)
-        if type is Component.Type {
-            return try type.init(json: serialized.data) as! Component
+
+        if let value = try typeProvider.createDeserializable(from: serialized.typeName, json: serialized.data) as? Component {
+            return value
         }
-        
-        throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
+
+        throw DeserializationError.invalidSerialized(message: "Serialized value returned by type provider is not of type \(Component.self)")
     }
     
     /// Extracts a Subspace type from a serialized object
@@ -325,12 +323,11 @@ public class GameSerializer {
             return try extract(from: deserializePreset(in: serialized))
         }
         
-        let type = try typeProvider.deserialized(from: serialized.typeName)
-        if type is Subspace.Type {
-            return try type.init(json: serialized.data) as! Subspace
+        if let value = try typeProvider.createDeserializable(from: serialized.typeName, json: serialized.data) as? Subspace {
+            return value
         }
-        
-        throw DeserializationError.unrecognizedSerializedName(name: serialized.typeName)
+
+        throw DeserializationError.invalidSerialized(message: "Serialized value returned by type provider is not of type \(Subspace.self)")
     }
     
     /// Returns if a game space is serializable.
@@ -817,15 +814,18 @@ public protocol SerializationTypeProvider {
     /// - Parameter serializable: The static type of a Serializable.
     /// - Returns: A string that can uniquely identify the type of the serializable.
     func serializedName(for serializable: Serializable.Type) -> String
-    
-    /// Asks the implementer for the deserialized version of a Serializable with
-    /// a matching name.
+
+    /// Asks the implementer for a deserialized type with a given name, with the
+    /// given JSON data.
     ///
-    /// - Parameter name: A name of a Serializable to use during deserialization.
-    /// - Returns: A type of Serializable that can then be deserialized.
-    /// - Throws: Some error found during search for the serializable type.
-    /// Can be thrown when the implementer does not recognize the name passed in.
-    func deserialized(from name: String) throws -> Serializable.Type
+    /// - Parameter name: The name of the serialized object.
+    /// - Parameter json: A JSON object describing the serialized object.
+    /// - Returns: A deserialized object of the given type, with the given JSON
+    /// data.
+    /// - Throws: Some error found durign the search for the serializable type.
+    /// Errors must be thrown when the implementer does not recognize the serializable
+    /// name passed in.
+    func createDeserializable(from name: String, json: JSON) throws -> Serializable
 }
 
 public extension SerializationTypeProvider {
@@ -838,17 +838,17 @@ public extension SerializationTypeProvider {
 /// in an array, and using that array on pre-implemented stubs to `serializedName(for:)` 
 /// and `deserialized(from:)`.
 public protocol BasicSerializationTypeProvider: SerializationTypeProvider {
-    var serializableTypes: [Serializable.Type] { get }
+    var serializableTypes: [(Serializable.Type, (JSON) throws -> Serializable)] { get }
 }
 
 public extension BasicSerializationTypeProvider {
-    func deserialized(from name: String) throws -> Serializable.Type {
-        for type in serializableTypes {
+    func createDeserializable(from name: String, json: JSON) throws -> Serializable {
+        for (type, constructor) in serializableTypes {
             if String(describing: type) == name {
-                return type
+                return try constructor(json)
             }
         }
-        
+
         throw DeserializationError.unrecognizedSerializedName(name: name)
     }
 }
