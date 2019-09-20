@@ -681,7 +681,7 @@ public struct SerializedPreset: Serializable {
             // Find matching definition
             if let def = variables[key] {
                 if def.type.jsonType != JSON(value).type {
-                    throw VariableReplaceError.missmatchedType(valueName: key, expected: def.type.jsonType, received: JSON(value).type)
+                    throw VariableReplaceError.mismatchedType(valueName: key, expected: def.type.jsonType, received: JSON(value).type)
                 }
             }
         }
@@ -771,7 +771,7 @@ public struct SerializedPreset: Serializable {
     public enum VariableReplaceError: Error, CustomStringConvertible {
         case unkownVariable(variableName: String)
         case missingValue(valueName: String)
-        case missmatchedType(valueName: String, expected: Type, received: Type)
+        case mismatchedType(valueName: String, expected: Type, received: Type)
         
         public var description: String {
             switch(self) {
@@ -779,7 +779,7 @@ public struct SerializedPreset: Serializable {
                 return "Unrecognized variable name \(name)"
             case .missingValue(let name):
                 return "Values dictionary provided misses required value for variable '\(name)'"
-            case .missmatchedType(let name, let expected, let received):
+            case .mismatchedType(let name, let expected, let received):
                 return "Value for variable '\(name)' provided is \(received), but expected \(expected)"
             }
         }

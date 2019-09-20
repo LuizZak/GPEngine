@@ -421,7 +421,7 @@ class SerializationTests: XCTestCase {
                 "presetData": [
                     "contentType": "entity",
                     "typeName": "Entity",
-                    "data": [ ]
+                    "data": []
                 ]
             ]
             
@@ -472,8 +472,7 @@ class SerializationTests: XCTestCase {
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [:],
-                "presetData": [
-                ]
+                "presetData": []
             ]
             
             _=try SerializedPreset(json: json)
@@ -702,9 +701,7 @@ class SerializationTests: XCTestCase {
                                     "presetData": [
                                         "contentType": "entity",
                                         "typeName": "Entity",
-                                        "data": [
-                                            :
-                                        ]
+                                        "data": [:]
                                     ]
                                 ]
                             ],
@@ -715,9 +712,7 @@ class SerializationTests: XCTestCase {
                                     [
                                         "contentType": "preset",
                                         "typeName": "Player",
-                                        "data": [
-                                            :
-                                        ]
+                                        "data": [:]
                                     ]
                                 ]
                             ]
