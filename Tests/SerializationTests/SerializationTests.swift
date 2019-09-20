@@ -366,25 +366,43 @@ class SerializationTests: XCTestCase {
 
     func testPresetSerialization() {
         let expected: JSON = [
-            "presetName" : "PresetName",
-            "presetType" : "component",
-            "presetVariables" : [
-                "var" : [
-                    "default" : 1,
-                    "type" : "number"
-                ]
+            "presetName": "PresetName",
+            "presetVariables": [
+                "var1": [
+                    "type": "number",
+                    "default": 1
+                ],
+                "var2": "number"
             ],
-            "presetData" : [
-                "typeName" : "TypeName",
-                "data" : [:],
-                "presets" : [],
-                "contentType" : "component"
-            ]
+            "presetData": [
+                "typeName": "TypeName",
+                "presets": [
+                    [
+                        "presetData": [
+                            "presets": [],
+                            "contentType": "entity",
+                            "data": [:],
+                            "typeName": "Entity"
+                        ],
+                        "presetVariables": [:],
+                        "presetType": "entity",
+                        "presetName": "Player"
+                    ]
+                ],
+                "data": [:],
+                "contentType": "component"
+            ],
+            "presetType": "component"
         ]
+        let innerPreset = SerializedPreset(name: "Player",
+                                           type: .entity,
+                                           variables: [:],
+                                           data: Serialized(typeName: "Entity", contentType: .entity, data: [:]))
         let preset = SerializedPreset(name: "PresetName",
                                       type: .component,
-                                      variables: ["var": SerializedPreset.Variable(name: "var", type: .number, defaultValue: 1)],
-                                      data: Serialized(typeName: "TypeName", contentType: .component, data: [:]))
+                                      variables: ["var1": SerializedPreset.Variable(name: "var1", type: .number, defaultValue: 1),
+                                                  "var2": SerializedPreset.Variable(name: "var2", type: .number)],
+                                      data: Serialized(typeName: "TypeName", presets: [innerPreset], contentType: .component, data: [:]))
 
         let result = preset.serialized()
 
