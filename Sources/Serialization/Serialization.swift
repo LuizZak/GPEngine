@@ -70,13 +70,7 @@ public class GameSerializer {
     public func serialize(_ entity: Entity) throws -> Serialized {
         let type = Serialized.ContentType.entity
         let name = String(describing: Entity.self)
-        
-        // Start serializing entity
-        var data: JSON = [
-            "id": entity.id,
-            "type": entity.type
-        ]
-        
+
         var serializedComps: [Serialized] = []
         
         for comp in entity.components {
@@ -86,10 +80,10 @@ public class GameSerializer {
             
             serializedComps.append(serialize(ser))
         }
+
+        let serializedEntity = SerializedEntity(id: entity.id, type: entity.type, components: serializedComps)
         
-        data["components"].arrayObject = serializedComps.map { $0.serialized().object }
-        
-        return Serialized(typeName: name, contentType: type, data: data)
+        return Serialized(typeName: name, contentType: type, data: serializedEntity.serialized())
     }
     
     /// Serializes a game space passed in.
@@ -98,9 +92,7 @@ public class GameSerializer {
     public func serialize(_ space: Space) throws -> Serialized {
         let type = Serialized.ContentType.space
         let name = String(describing: Space.self)
-        
-        var data: JSON = [:]
-        
+
         var serializedEntities: [Serialized] = []
         
         for entity in space.entities {
@@ -116,11 +108,10 @@ public class GameSerializer {
             
             serializedSubspaces.append(serialize(ser))
         }
+
+        let serializedSpace = SerializedSpace(entities: serializedEntities, subspaces: serializedSubspaces)
         
-        data["entities"].arrayObject = serializedEntities.map { $0.serialized().object }
-        data["subspaces"].arrayObject = serializedSubspaces.map { $0.serialized().object }
-        
-        return Serialized(typeName: name, contentType: type, data: data)
+        return Serialized(typeName: name, contentType: type, data: serializedSpace.serialized())
     }
     
     /// Serializes a given serializable object, returning an encapsulated
@@ -194,27 +185,15 @@ public class GameSerializer {
         if serialized.typeName != "Entity" || serialized.contentType != .entity {
             throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Entity instance")
         }
-        
-        guard let id = serialized.data["id"].int else {
-            throw DeserializationError.invalidSerialized(message: "Missing 'id'")
-        }
-        guard let type = serialized.data["type"].int else {
-            throw DeserializationError.invalidSerialized(message: "Missing 'type'")
-        }
-        guard let components = serialized.data["components"].array else {
-            throw DeserializationError.invalidSerialized(message: "Missing 'components'")
-        }
-        
-        let serialComps: [Serialized] = try components.map {
-            try Serialized(json: $0)
-        }
-        let comps: [Component] = try serialComps.map {
+
+        let serializedEntity = try SerializedEntity(json: serialized.data)
+        let comps: [Component] = try serializedEntity.components.map {
             try extract(from: $0)
         }
         
         let entity = Entity(components: comps)
-        entity.id = id
-        entity.type = type
+        entity.id = serializedEntity.id
+        entity.type = serializedEntity.type
         
         return entity
     }
@@ -236,23 +215,14 @@ public class GameSerializer {
         if serialized.typeName != "Space" || serialized.contentType != .space {
             throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Space instance")
         }
-        
-        guard let entitiesJson = serialized.data["entities"].array else {
-            throw DeserializationError.invalidSerialized(message: "Missing 'entities'")
-        }
-        guard let subspacesJson = serialized.data["subspaces"].array else {
-            throw DeserializationError.invalidSerialized(message: "Missing 'subspaces'")
-        }
-        
-        let entities: [Entity] = try entitiesJson.map {
-            try Serialized(json: $0)
-        }.map {
+
+        let serializedSpace = try SerializedSpace(json: serialized.data)
+
+        let entities: [Entity] = try serializedSpace.entities.map {
             try extract(from: $0)
         }
         
-        let subspaces: [Subspace] = try subspacesJson.map {
-            try Serialized(json: $0)
-        }.map {
+        let subspaces: [Subspace] = try serializedSpace.subspaces.map {
             try extract(from: $0)
         }
         
@@ -442,6 +412,71 @@ public class GameSerializer {
     }
 }
 
+private struct SerializedEntity: Serializable {
+    var id: Int
+    var type: Int
+    var components: [Serialized]
+
+    init(json: JSON) throws {
+        guard let id = json["id"].int else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'id'")
+        }
+        guard let type = json["type"].int else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'type'")
+        }
+        guard let components = json["components"].array else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'components'")
+        }
+
+        self.id = id
+        self.type = type
+        self.components = try components.map { try Serialized(json: $0) }
+    }
+
+    init(id: Int, type: Int, components: [Serialized]) {
+        self.id = id
+        self.type = type
+        self.components = components
+    }
+
+    func serialized() -> JSON {
+        return [
+            "id": id,
+            "type": type,
+            "components": components.map { $0.serialized().object }
+        ]
+    }
+}
+
+private struct SerializedSpace: Serializable {
+    var entities: [Serialized]
+    var subspaces: [Serialized]
+
+    init(json: JSON) throws {
+        guard let entitiesJson = json["entities"].array else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'entities'")
+        }
+        guard let subspacesJson = json["subspaces"].array else {
+            throw DeserializationError.invalidSerialized(message: "Missing 'subspaces'")
+        }
+
+        entities = try entitiesJson.map { try Serialized(json: $0) }
+        subspaces = try subspacesJson.map { try Serialized(json: $0) }
+    }
+
+    init(entities: [Serialized], subspaces: [Serialized]) {
+        self.entities = entities
+        self.subspaces = subspaces
+    }
+
+    func serialized() -> JSON {
+        return [
+            "entities": entities.map { $0.serialized().object },
+            "subspaces": subspaces.map { $0.serialized().object }
+        ]
+    }
+}
+
 /// Represents a serialized object.
 /// A Serialized container is itself serializable, as well.
 public struct Serialized: Serializable {
@@ -532,6 +567,13 @@ public struct Serialized: Serializable {
         case serialized
         case preset
         case custom
+    }
+
+    public enum CodingKeys: String, CodingKey {
+        case typeName
+        case contentType
+        case presets
+        case data
     }
 }
 
@@ -781,6 +823,13 @@ public struct SerializedPreset: Serializable {
             }
         }
     }
+
+    public enum CodingKeys: String, CodingKey {
+        case name
+        case type
+        case variables
+        case data
+    }
 }
 
 /// Describes an object that can be serialized to and back from a JSON object.
@@ -788,13 +837,6 @@ public struct SerializedPreset: Serializable {
 /// state of the object remains the same when deserializing from a previously
 /// serialized object.
 public protocol Serializable {
-    /// Initializes an instance of this type from a given serialized state.
-    ///
-    /// - Parameter json: A state that was previously serialized by an instance
-    /// of this type using `serialized()`
-    /// - Throws: Any type of error during deserialization.
-    init(json: JSON) throws
-    
     /// Serializes the state of this component into a JSON object.
     ///
     /// - Returns: The serialized state for this object.
