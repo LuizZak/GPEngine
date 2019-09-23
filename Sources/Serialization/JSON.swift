@@ -1,24 +1,24 @@
-public enum MyJSON: Codable {
-    case dictionary([String: MyJSON])
-    case array([MyJSON])
+public enum JSON: Codable {
+    case dictionary([String: JSON])
+    case array([JSON])
     case string(String)
     case number(Double)
     case bool(Bool)
     case null
 
     public init(from decoder: Decoder) throws {
-        if let container = try? decoder.container(keyedBy: _JSONKey.self) {
-            var dict: [String: MyJSON] = [:]
+        if let container = try? decoder.container(keyedBy: JSONKey.self) {
+            var dict: [String: JSON] = [:]
             for key in container.allKeys {
-                dict[key.stringValue] = try container.decode(MyJSON.self, forKey: key)
+                dict[key.stringValue] = try container.decode(JSON.self, forKey: key)
             }
             self = .dictionary(dict)
             return
         }
         if var container = try? decoder.unkeyedContainer() {
-            var array: [MyJSON] = []
+            var array: [JSON] = []
             while !container.isAtEnd {
-                array.append(try container.decode(MyJSON.self))
+                array.append(try container.decode(JSON.self))
             }
             self = .array(array)
             return
@@ -36,14 +36,14 @@ public enum MyJSON: Codable {
             self = .null
         } else {
             throw DecodingError.dataCorruptedError(in: singleValue,
-                                                   debugDescription: "Not a valid MyJSON value")
+                                                   debugDescription: "Not a valid JSON value")
         }
     }
 
     public func encode(to encoder: Encoder) throws {
         switch self {
         case .dictionary(let dict):
-            var container = encoder.container(keyedBy: _JSONKey.self)
+            var container = encoder.container(keyedBy: JSONKey.self)
             for (key, value) in dict {
                 try container.encode(value, forKey: .string(key))
             }
@@ -79,10 +79,10 @@ public enum MyJSON: Codable {
     }
 }
 
-extension MyJSON: Equatable { }
+extension JSON: Equatable { }
 
-public extension MyJSON {
-    var dictionary: [String: MyJSON]? {
+public extension JSON {
+    var dictionary: [String: JSON]? {
         switch self {
         case .dictionary(let dict):
             return dict
@@ -90,7 +90,7 @@ public extension MyJSON {
             return nil
         }
     }
-    var array: [MyJSON]? {
+    var array: [JSON]? {
         switch self {
         case .array(let array):
             return array
@@ -140,51 +140,51 @@ public extension MyJSON {
     }
 }
 
-extension MyJSON: ExpressibleByArrayLiteral {
-    public init(arrayLiteral elements: MyJSON...) {
+extension JSON: ExpressibleByArrayLiteral {
+    public init(arrayLiteral elements: JSON...) {
         self = .array(elements)
     }
 }
 
-extension MyJSON: ExpressibleByDictionaryLiteral {
-    public init(dictionaryLiteral elements: (String, MyJSON)...) {
-        var dict: [String: MyJSON] = [:]
+extension JSON: ExpressibleByDictionaryLiteral {
+    public init(dictionaryLiteral elements: (String, JSON)...) {
+        var dict: [String: JSON] = [:]
         elements.forEach { dict[$0] = $1 }
         self = .dictionary(dict)
     }
 }
 
-extension MyJSON: ExpressibleByFloatLiteral {
+extension JSON: ExpressibleByFloatLiteral {
     public init(floatLiteral value: Double) {
         self = .number(value)
     }
 }
 
-extension MyJSON: ExpressibleByIntegerLiteral {
+extension JSON: ExpressibleByIntegerLiteral {
     public init(integerLiteral value: Int) {
         self = .number(Double(value))
     }
 }
 
-extension MyJSON: ExpressibleByBooleanLiteral {
+extension JSON: ExpressibleByBooleanLiteral {
     public init(booleanLiteral value: Bool) {
         self = .bool(value)
     }
 }
 
-extension MyJSON: ExpressibleByStringLiteral {
+extension JSON: ExpressibleByStringLiteral {
     public init(stringLiteral value: String) {
         self = .string(value)
     }
 }
 
-extension MyJSON: ExpressibleByNilLiteral {
+extension JSON: ExpressibleByNilLiteral {
     public init(nilLiteral: ()) {
         self = .null
     }
 }
 
-public enum _JSONKey: CodingKey {
+public enum JSONKey: CodingKey {
     case int(Int)
     case string(String)
 
@@ -214,10 +214,10 @@ public enum _JSONKey: CodingKey {
     }
 }
 
-extension MyJSON: Collection {
-    public enum _JSONIndexKey: Comparable {
+extension JSON: Collection {
+    public enum JSONIndexKey: Comparable {
         case array(Int)
-        case dictionary(Dictionary<String, MyJSON>.Index)
+        case dictionary(Dictionary<String, JSON>.Index)
         case null
 
         static public func == (lhs: Index, rhs: Index) -> Bool {
@@ -244,8 +244,8 @@ extension MyJSON: Collection {
         }
     }
 
-    public typealias Index = _JSONIndexKey
-    public typealias Element = (String, MyJSON)
+    public typealias Index = JSONIndexKey
+    public typealias Element = (String, JSON)
 
     public var startIndex: Index {
         switch self {
@@ -280,7 +280,7 @@ extension MyJSON: Collection {
         }
     }
 
-    public subscript(position: Index) -> (String, MyJSON) {
+    public subscript(position: Index) -> (String, JSON) {
         switch (self, position) {
         case (.array(let array), .array(let index)):
             return (String(index), array[index])
@@ -291,7 +291,7 @@ extension MyJSON: Collection {
         }
     }
 
-    public subscript(key: String) -> MyJSON? {
+    public subscript(key: String) -> JSON? {
         get {
             switch self {
             case .dictionary(let dict):
@@ -311,7 +311,7 @@ extension MyJSON: Collection {
         }
     }
 
-    public subscript(index: Int) -> MyJSON {
+    public subscript(index: Int) -> JSON {
         get {
             switch self {
             case .array(let array):

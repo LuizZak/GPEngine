@@ -20,11 +20,11 @@ class SerializationTests: XCTestCase {
             self.field = field
         }
         
-        init(json: MyJSON) throws {
+        init(json: JSON) throws {
             field = json["field"]?.int ?? 0
         }
         
-        func serialized() -> MyJSON {
+        func serialized() -> JSON {
             return ["field": .number(Double(field))]
         }
     }
@@ -36,11 +36,11 @@ class SerializationTests: XCTestCase {
             self.subspaceField = subspaceField
         }
         
-        init(json: MyJSON) throws {
+        init(json: JSON) throws {
             subspaceField = json["subspaceField"]?.int ?? 0
         }
         
-        func serialized() -> MyJSON {
+        func serialized() -> JSON {
             return ["subspaceField": .number(Double(subspaceField))]
         }
     }
@@ -54,7 +54,7 @@ class SerializationTests: XCTestCase {
     }
     
     class Provider: BasicSerializationTypeProvider {
-        var serializableTypes: [(Serializable.Type, (MyJSON) throws -> Serializable)] = [
+        var serializableTypes: [(Serializable.Type, (JSON) throws -> Serializable)] = [
             (SerializableComponent.self, SerializableComponent.init),
             (SerializableSubspace.self, SerializableSubspace.init)
         ]
@@ -196,7 +196,7 @@ class SerializationTests: XCTestCase {
     func testFullDeserialize() throws {
         let serializer = GameSerializer(typeProvider: Provider())
         
-        let json: MyJSON = [
+        let json: JSON = [
             "contentType": "space",
             "typeName": "Space", // Must always be 'Space' for spaces
             "data": [
@@ -273,7 +273,7 @@ class SerializationTests: XCTestCase {
     // MARK: Presets
     func testDeserializePreset() {
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -315,7 +315,7 @@ class SerializationTests: XCTestCase {
     
     func testReplacePresetVariables() {
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -365,7 +365,7 @@ class SerializationTests: XCTestCase {
     }
 
     func testPresetSerialization() {
-        let expected: MyJSON = [
+        let expected: JSON = [
             "presetName": "PresetName",
             "presetType": "entity",
             "presetVariables": [
@@ -411,7 +411,7 @@ class SerializationTests: XCTestCase {
     
     func testSimplePresetDeserialization() {
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -445,7 +445,7 @@ class SerializationTests: XCTestCase {
         // inner 'contentType', an error should be raised.
         
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [:],
@@ -468,7 +468,7 @@ class SerializationTests: XCTestCase {
         // Presets can only contain dictionaries within their 'presetData' key
         
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [:],
@@ -487,7 +487,7 @@ class SerializationTests: XCTestCase {
         // Presets are not allowed to represent 'preset' typed contents
         
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "preset",
                 "presetVariables": [:],
@@ -508,7 +508,7 @@ class SerializationTests: XCTestCase {
     
     func testPresetVariableTypeError() {
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -535,7 +535,7 @@ class SerializationTests: XCTestCase {
 
     func testPresetMissingVariableError() {
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -562,7 +562,7 @@ class SerializationTests: XCTestCase {
     
     func testPresetDefaultVariableTypeError() {
         do {
-            let json: MyJSON = [
+            let json: JSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -589,7 +589,7 @@ class SerializationTests: XCTestCase {
         do {
             let serializer = GameSerializer(typeProvider: Provider())
             
-            let json: MyJSON = [
+            let json: JSON = [
                 "contentType": "space",
                 "typeName": "Space",
                 
@@ -680,7 +680,7 @@ class SerializationTests: XCTestCase {
         do {
             let serializer = GameSerializer(typeProvider: Provider())
             
-            let json: MyJSON = [
+            let json: JSON = [
                 "contentType": "space",
                 "typeName": "Space",
                 "presets": [
