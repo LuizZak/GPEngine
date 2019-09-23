@@ -152,7 +152,7 @@ public class GameSerializer {
         }
         
         // Fetch variables from data and expand preset on them
-        guard let vars = serialized.data.dictionaryObject else {
+        guard let vars = serialized.data.dictionary else {
             throw DeserializationError.invalidSerialized(message: "Data for a serialized preset must be a dictionary")
         }
         
@@ -164,7 +164,7 @@ public class GameSerializer {
     }
     
     /// Deserializes a given serialized instance
-    public func deserialize(from json: JSON) throws -> Serialized {
+    public func deserialize(from json: MyJSON) throws -> Serialized {
         return try Serialized(json: json)
     }
     
@@ -417,14 +417,14 @@ private struct SerializedEntity: Serializable {
     var type: Int
     var components: [Serialized]
 
-    init(json: JSON) throws {
-        guard let id = json["id"].int else {
+    init(json: MyJSON) throws {
+        guard let id = json["id"]?.int else {
             throw DeserializationError.invalidSerialized(message: "Missing 'id'")
         }
-        guard let type = json["type"].int else {
+        guard let type = json["type"]?.int else {
             throw DeserializationError.invalidSerialized(message: "Missing 'type'")
         }
-        guard let components = json["components"].array else {
+        guard let components = json["components"]?.array else {
             throw DeserializationError.invalidSerialized(message: "Missing 'components'")
         }
 
@@ -439,11 +439,11 @@ private struct SerializedEntity: Serializable {
         self.components = components
     }
 
-    func serialized() -> JSON {
+    func serialized() -> MyJSON {
         return [
-            "id": id,
-            "type": type,
-            "components": components.map { $0.serialized().object }
+            "id": .number(Double(id)),
+            "type": .number(Double(type)),
+            "components": .array(components.map { $0.serialized() })
         ]
     }
 }
@@ -452,11 +452,11 @@ private struct SerializedSpace: Serializable {
     var entities: [Serialized]
     var subspaces: [Serialized]
 
-    init(json: JSON) throws {
-        guard let entitiesJson = json["entities"].array else {
+    init(json: MyJSON) throws {
+        guard let entitiesJson = json["entities"]?.array else {
             throw DeserializationError.invalidSerialized(message: "Missing 'entities'")
         }
-        guard let subspacesJson = json["subspaces"].array else {
+        guard let subspacesJson = json["subspaces"]?.array else {
             throw DeserializationError.invalidSerialized(message: "Missing 'subspaces'")
         }
 
@@ -469,10 +469,10 @@ private struct SerializedSpace: Serializable {
         self.subspaces = subspaces
     }
 
-    func serialized() -> JSON {
+    func serialized() -> MyJSON {
         return [
-            "entities": entities.map { $0.serialized().object },
-            "subspaces": subspaces.map { $0.serialized().object }
+            "entities": .array(entities.map { $0.serialized() }),
+            "subspaces": .array(subspaces.map { $0.serialized() })
         ]
     }
 }
@@ -488,9 +488,9 @@ public struct Serialized: Serializable {
     /// Any presets that where specified in the original JSON object
     public var presets: [SerializedPreset]
     /// The serialized object
-    public var data: JSON
+    public var data: MyJSON
     
-    init(typeName: String, presets: [SerializedPreset] = [], contentType: ContentType, data: JSON) {
+    init(typeName: String, presets: [SerializedPreset] = [], contentType: ContentType, data: MyJSON) {
         self.typeName = typeName
         self.presets = presets
         self.contentType = contentType
@@ -504,20 +504,20 @@ public struct Serialized: Serializable {
     /// of this type using `serialized()`
     /// - Returns: A deserialized instance of this component type
     /// - Throws: Any type of error during deserialization.
-    public init(json: JSON) throws {
-        guard let name = json[CodingKeys.typeName].string else {
+    public init(json: MyJSON) throws {
+        guard let name = json[CodingKeys.typeName.rawValue]?.string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'typeName'")
         }
-        guard let type = json[CodingKeys.contentType].string else {
+        guard let type = json[CodingKeys.contentType.rawValue]?.string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'contentType'")
         }
         guard let contentType = ContentType(rawValue: type) else {
             throw DeserializationError.invalidSerialized(message: "Invalid content type \(type)")
         }
-        if json[CodingKeys.data].type == .null || json[CodingKeys.data].type == .unknown {
+        if json[CodingKeys.data.rawValue]?.type == .null {
             throw DeserializationError.invalidSerialized(message: "Missing 'data'")
         }
-        if let presets = json[CodingKeys.presets].array {
+        if let presets = json[CodingKeys.presets.rawValue]?.array {
             self.presets = try presets.map { try SerializedPreset(json: $0) }
         } else {
             self.presets = []
@@ -525,7 +525,7 @@ public struct Serialized: Serializable {
         
         self.typeName = name
         self.contentType = contentType
-        self.data = json[CodingKeys.data]
+        self.data = json[CodingKeys.data.rawValue] ?? [:]
     }
     
     fileprivate init() {
@@ -538,12 +538,12 @@ public struct Serialized: Serializable {
     /// Serializes the state of this component into a JSON object.
     ///
     /// - Returns: The serialized state for this object.
-    public func serialized() -> JSON {
+    public func serialized() -> MyJSON {
         return [
-            CodingKeys.typeName.rawValue: typeName,
-            CodingKeys.contentType.rawValue: contentType.rawValue,
-            CodingKeys.presets.rawValue: presets.map { $0.serialized().object },
-            CodingKeys.data.rawValue: data.object
+            CodingKeys.typeName.rawValue: .string(typeName),
+            CodingKeys.contentType.rawValue: .string(contentType.rawValue),
+            CodingKeys.presets.rawValue: .array(presets.map { $0.serialized() }),
+            CodingKeys.data.rawValue: data
         ]
     }
     
@@ -609,17 +609,17 @@ public struct SerializedPreset: Serializable {
     }
     
     /// Deserializes a serialzied preset from a given JSON object
-    public init(json: JSON) throws {
-        guard let name = json["presetName"].string else {
+    public init(json: MyJSON) throws {
+        guard let name = json["presetName"]?.string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'presetName'")
         }
-        guard let type = json["presetType"].string else {
+        guard let type = json["presetType"]?.string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'presetType' in preset '\(name)'")
         }
         guard let presetType = Serialized.ContentType(rawValue: type) else {
             throw DeserializationError.invalidSerialized(message: "Invalid preset type '\(type)' in preset '\(name)'")
         }
-        guard let vars = json["presetVariables"].dictionary else {
+        guard let vars = json["presetVariables"]?.dictionary else {
             throw DeserializationError.invalidSerialized(message: "Missing 'presetVariables' in preset '\(name)'")
         }
         
@@ -627,7 +627,9 @@ public struct SerializedPreset: Serializable {
             throw DeserializationError.invalidSerialized(message: "Presets cannot represent preset types themselves in preset '\(name)'")
         }
         
-        let presetData = json["presetData"]
+        guard let presetData = json["presetData"] else {
+            throw DeserializationError.invalidSerialized(message: "Expected 'presetData' to contain a dictionary in preset '\(name)'")
+        }
         if presetData.type != .dictionary {
             throw DeserializationError.invalidSerialized(message: "Expected 'presetData' to contain a dictionary in preset '\(name)'")
         }
@@ -645,19 +647,19 @@ public struct SerializedPreset: Serializable {
         variables = [:]
         for (key, value) in vars {
             let typeString: String
-            var defaultValue: Any? = nil
+            var defaultValue: MyJSON? = nil
             if value.type == .dictionary {
-                guard let tString = value["type"].string else {
+                guard let tString = value["type"]?.string else {
                     throw DeserializationError.invalidSerialized(message: "Missing 'type' on variable '\(key)' in preset '\(name)'")
                 }
                 
                 // Currently we only support default values of string and number
-                if value["default"].type == .string {
-                    defaultValue = value["default"].string
-                } else if value["default"].type == .number {
-                    defaultValue = value["default"].double
+                if value["default"]?.type == .string {
+                    defaultValue = value["default"]
+                } else if value["default"]?.type == .number {
+                    defaultValue = value["default"]
                 } else {
-                    throw DeserializationError.invalidSerialized(message: "Unsuported variable type '\(value["default"].type)' in variable '\(name)' in preset '\(name)'")
+                    throw DeserializationError.invalidSerialized(message: "Unsuported variable type '\(value["default"]?.type as Any)' in variable '\(name)' in preset '\(name)'")
                 }
                 
                 typeString = tString
@@ -673,7 +675,7 @@ public struct SerializedPreset: Serializable {
             
             // Check type of default value
             if let def = defaultValue {
-                if JSON(def).type != type.jsonType {
+                if type.jsonType != def.type {
                     throw DeserializationError.invalidSerialized(message: "Default value for variable '\(name)' has a different type than the variable in preset '\(name)'")
                 }
             }
@@ -683,26 +685,26 @@ public struct SerializedPreset: Serializable {
     }
     
     /// Serializes this preset object
-    public func serialized() -> JSON {
+    public func serialized() -> MyJSON {
         // Encode variables
-        var vars: JSON = [:]
+        var vars: MyJSON = [:]
         
         for (key, variable) in variables {
             if let defaultValue = variable.defaultValue {
-                vars[key].object = [
-                    "type": variable.type.rawValue,
+                vars[key] = [
+                    "type": .string(variable.type.rawValue),
                     "default": defaultValue
                 ]
             } else {
-                vars[key].string = variable.type.rawValue
+                vars[key] = .string(variable.type.rawValue)
             }
         }
         
-        let json: JSON = [
-            "presetName": name,
-            "presetType": type.rawValue,
-            "presetVariables": vars.object,
-            "presetData": data.serialized().object
+        let json: MyJSON = [
+            "presetName": .string(name),
+            "presetType": .string(type.rawValue),
+            "presetVariables": vars,
+            "presetData": data.serialized()
         ]
         
         return json
@@ -716,15 +718,15 @@ public struct SerializedPreset: Serializable {
     ///
     /// Throws an error, if encounters preset variables with incorrect values or
     /// that have no matching variables.
-    public func expandPreset(withVariables values: [String: Any]) throws -> Serialized {
+    public func expandPreset(withVariables values: [String: MyJSON]) throws -> Serialized {
         var json = data.data
         
         // Verify variables
         for (key, value) in values {
             // Find matching definition
             if let def = variables[key] {
-                if def.type.jsonType != JSON(value).type {
-                    throw VariableReplaceError.mismatchedType(valueName: key, expected: def.type.jsonType, received: JSON(value).type)
+                if def.type.jsonType != value.type {
+                    throw VariableReplaceError.mismatchedType(valueName: key, expected: def.type.jsonType, received: value.type)
                 }
             }
         }
@@ -735,17 +737,17 @@ public struct SerializedPreset: Serializable {
         return Serialized(typeName: data.typeName, contentType: data.contentType, data: json)
     }
     
-    private func expandPreset(recursiveOn json: inout JSON, withVariables values: [String: Any]) throws {
+    private func expandPreset(recursiveOn json: inout MyJSON, withVariables values: [String: MyJSON]) throws {
         // A preset replacement!
-        if let varName = json["presetVariable"].string {
+        if let varName = json["presetVariable"]?.string {
             if let value = values[varName] {
-                json = JSON(value)
+                json = value
                 return
             } else {
                 // Search for default
                 if let def = variables[varName] {
                     if let value = def.defaultValue {
-                        json = JSON(value)
+                        json = value
                         return
                     }
                 }
@@ -761,7 +763,7 @@ public struct SerializedPreset: Serializable {
                 json[key] = value
             }
         } else if json.type == .array {
-            for i in 0..<json.arrayValue.count {
+            for i in 0..<(json.array?.count ?? 0) {
                 var value = json[i]
                 try expandPreset(recursiveOn: &value, withVariables: values)
                 json[i] = value
@@ -779,7 +781,7 @@ public struct SerializedPreset: Serializable {
         
         /// The default value, if available.
         /// Must match type specified on `type` field above.
-        public var defaultValue: Any?
+        public var defaultValue: MyJSON?
     }
     
     /// Allowed scalar values to expand a preset variable to.
@@ -793,8 +795,8 @@ public struct SerializedPreset: Serializable {
         
         /// Fetches the equivalent SwiftyJSON.Type enumeration value for this
         /// variable
-        var jsonType: Type {
-            switch(self) {
+        var jsonType: MyJSON.JSONType {
+            switch self {
             case .number:
                 return .number
             case .string:
@@ -814,7 +816,7 @@ public struct SerializedPreset: Serializable {
     public enum VariableReplaceError: Error, CustomStringConvertible {
         case unkownVariable(variableName: String)
         case missingValue(valueName: String)
-        case mismatchedType(valueName: String, expected: Type, received: Type)
+        case mismatchedType(valueName: String, expected: MyJSON.JSONType, received: MyJSON.JSONType)
         
         public var description: String {
             switch(self) {
@@ -844,7 +846,7 @@ public protocol Serializable {
     /// Serializes the state of this component into a JSON object.
     ///
     /// - Returns: The serialized state for this object.
-    func serialized() -> JSON
+    func serialized() -> MyJSON
 }
 
 /// Protocol to be implemented by objects that can provide the correct types to
@@ -871,7 +873,7 @@ public protocol SerializationTypeProvider {
     /// - Throws: Some error found durign the search for the serializable type.
     /// Errors must be thrown when the implementer does not recognize the serializable
     /// name passed in.
-    func createDeserializable(from name: String, json: JSON) throws -> Serializable
+    func createDeserializable(from name: String, json: MyJSON) throws -> Serializable
 }
 
 public extension SerializationTypeProvider {
@@ -884,11 +886,11 @@ public extension SerializationTypeProvider {
 /// in an array, and using that array on pre-implemented stubs to `serializedName(for:)` 
 /// and `deserialized(from:)`.
 public protocol BasicSerializationTypeProvider: SerializationTypeProvider {
-    var serializableTypes: [(Serializable.Type, (JSON) throws -> Serializable)] { get }
+    var serializableTypes: [(Serializable.Type, (MyJSON) throws -> Serializable)] { get }
 }
 
 public extension BasicSerializationTypeProvider {
-    func createDeserializable(from name: String, json: JSON) throws -> Serializable {
+    func createDeserializable(from name: String, json: MyJSON) throws -> Serializable {
         for (type, constructor) in serializableTypes {
             if String(describing: type) == name {
                 return try constructor(json)

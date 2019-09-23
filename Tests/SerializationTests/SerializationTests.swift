@@ -20,12 +20,12 @@ class SerializationTests: XCTestCase {
             self.field = field
         }
         
-        init(json: JSON) throws {
-            field = json["field"].intValue
+        init(json: MyJSON) throws {
+            field = json["field"]?.int ?? 0
         }
         
-        func serialized() -> JSON {
-            return ["field": field]
+        func serialized() -> MyJSON {
+            return ["field": .number(Double(field))]
         }
     }
     
@@ -36,12 +36,12 @@ class SerializationTests: XCTestCase {
             self.subspaceField = subspaceField
         }
         
-        init(json: JSON) throws {
-            subspaceField = json["subspaceField"].intValue
+        init(json: MyJSON) throws {
+            subspaceField = json["subspaceField"]?.int ?? 0
         }
         
-        func serialized() -> JSON {
-            return ["subspaceField": subspaceField]
+        func serialized() -> MyJSON {
+            return ["subspaceField": .number(Double(subspaceField))]
         }
     }
     
@@ -54,7 +54,7 @@ class SerializationTests: XCTestCase {
     }
     
     class Provider: BasicSerializationTypeProvider {
-        var serializableTypes: [(Serializable.Type, (JSON) throws -> Serializable)] = [
+        var serializableTypes: [(Serializable.Type, (MyJSON) throws -> Serializable)] = [
             (SerializableComponent.self, SerializableComponent.init),
             (SerializableSubspace.self, SerializableSubspace.init)
         ]
@@ -196,7 +196,7 @@ class SerializationTests: XCTestCase {
     func testFullDeserialize() throws {
         let serializer = GameSerializer(typeProvider: Provider())
         
-        let json: JSON = [
+        let json: MyJSON = [
             "contentType": "space",
             "typeName": "Space", // Must always be 'Space' for spaces
             "data": [
@@ -273,7 +273,7 @@ class SerializationTests: XCTestCase {
     // MARK: Presets
     func testDeserializePreset() {
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -315,7 +315,7 @@ class SerializationTests: XCTestCase {
     
     func testReplacePresetVariables() {
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -356,16 +356,16 @@ class SerializationTests: XCTestCase {
             let data = expanded.data
             
             // Verify data
-            XCTAssertEqual(data["components", 0, "data", "x"], 10)
-            XCTAssertEqual(data["components", 0, "data", "y"], 20)
-            XCTAssertEqual(data["components", 0, "data", "z"], 30)
+            XCTAssertEqual(data["components"]?[0]["data"]?["x"]?.double, 10)
+            XCTAssertEqual(data["components"]?[0]["data"]?["y"]?.double, 20)
+            XCTAssertEqual(data["components"]?[0]["data"]?["z"]?.double, 30)
         } catch {
             XCTFail("\(error)")
         }
     }
 
     func testPresetSerialization() {
-        let expected: JSON = [
+        let expected: MyJSON = [
             "presetName": "PresetName",
             "presetType": "entity",
             "presetVariables": [
@@ -411,7 +411,7 @@ class SerializationTests: XCTestCase {
     
     func testSimplePresetDeserialization() {
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -432,7 +432,7 @@ class SerializationTests: XCTestCase {
             XCTAssertEqual(preset.variables.count, 2)
             XCTAssertEqual(preset.variables["var1"]?.name, "var1")
             XCTAssertEqual(preset.variables["var1"]?.type, .number)
-            XCTAssertEqual(preset.variables["var1"]?.defaultValue as? Double, Double(0))
+            XCTAssertEqual(preset.variables["var1"]?.defaultValue, .number(0))
             XCTAssertEqual(preset.variables["var2"]?.name, "var2")
             XCTAssertEqual(preset.variables["var2"]?.type, .string)
         } catch {
@@ -445,7 +445,7 @@ class SerializationTests: XCTestCase {
         // inner 'contentType', an error should be raised.
         
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [:],
@@ -468,7 +468,7 @@ class SerializationTests: XCTestCase {
         // Presets can only contain dictionaries within their 'presetData' key
         
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [:],
@@ -487,7 +487,7 @@ class SerializationTests: XCTestCase {
         // Presets are not allowed to represent 'preset' typed contents
         
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "preset",
                 "presetVariables": [:],
@@ -508,7 +508,7 @@ class SerializationTests: XCTestCase {
     
     func testPresetVariableTypeError() {
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -535,7 +535,7 @@ class SerializationTests: XCTestCase {
 
     func testPresetMissingVariableError() {
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -562,7 +562,7 @@ class SerializationTests: XCTestCase {
     
     func testPresetDefaultVariableTypeError() {
         do {
-            let json: JSON = [
+            let json: MyJSON = [
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
@@ -589,7 +589,7 @@ class SerializationTests: XCTestCase {
         do {
             let serializer = GameSerializer(typeProvider: Provider())
             
-            let json: JSON = [
+            let json: MyJSON = [
                 "contentType": "space",
                 "typeName": "Space",
                 
@@ -680,7 +680,7 @@ class SerializationTests: XCTestCase {
         do {
             let serializer = GameSerializer(typeProvider: Provider())
             
-            let json: JSON = [
+            let json: MyJSON = [
                 "contentType": "space",
                 "typeName": "Space",
                 "presets": [
