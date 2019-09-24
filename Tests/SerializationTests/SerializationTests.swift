@@ -25,7 +25,7 @@ class SerializationTests: XCTestCase {
         }
         
         func serialized() -> JSON {
-            return ["field": .number(Double(field))]
+            return ["field": field.json]
         }
     }
     
@@ -41,7 +41,7 @@ class SerializationTests: XCTestCase {
         }
         
         func serialized() -> JSON {
-            return ["subspaceField": .number(Double(subspaceField))]
+            return ["subspaceField": subspaceField.json]
         }
     }
     

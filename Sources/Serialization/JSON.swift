@@ -331,3 +331,31 @@ extension JSON: Collection {
         }
     }
 }
+
+public protocol JSONConvertible {
+    var json: JSON { get }
+}
+
+extension JSON: JSONConvertible {
+    public var json: JSON { self }
+}
+extension String: JSONConvertible {
+    public var json: JSON { .string(self) }
+}
+extension Double: JSONConvertible {
+    public var json: JSON { .number(self) }
+}
+extension Int: JSONConvertible {
+    public var json: JSON { .number(Double(self)) }
+}
+extension Bool: JSONConvertible {
+    public var json: JSON { .bool(self) }
+}
+extension Array: JSONConvertible where Element: JSONConvertible {
+    public var json: JSON { .array(self.map { $0.json }) }
+}
+extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertible {
+    public var json: JSON {
+        .dictionary(self.mapValues { $0.json })
+    }
+}

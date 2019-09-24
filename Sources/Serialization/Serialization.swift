@@ -441,9 +441,9 @@ private struct SerializedEntity: Serializable {
 
     func serialized() -> JSON {
         return [
-            "id": .number(Double(id)),
-            "type": .number(Double(type)),
-            "components": .array(components.map { $0.serialized() })
+            "id": id.json,
+            "type": type.json,
+            "components": components.map { $0.serialized() }.json
         ]
     }
 }
@@ -471,8 +471,8 @@ private struct SerializedSpace: Serializable {
 
     func serialized() -> JSON {
         return [
-            "entities": .array(entities.map { $0.serialized() }),
-            "subspaces": .array(subspaces.map { $0.serialized() })
+            "entities": entities.map { $0.serialized() }.json,
+            "subspaces": subspaces.map { $0.serialized() }.json
         ]
     }
 }
@@ -540,9 +540,9 @@ public struct Serialized: Serializable {
     /// - Returns: The serialized state for this object.
     public func serialized() -> JSON {
         return [
-            CodingKeys.typeName.rawValue: .string(typeName),
-            CodingKeys.contentType.rawValue: .string(contentType.rawValue),
-            CodingKeys.presets.rawValue: .array(presets.map { $0.serialized() }),
+            CodingKeys.typeName.rawValue: typeName.json,
+            CodingKeys.contentType.rawValue: contentType.rawValue.json,
+            CodingKeys.presets.rawValue: presets.map { $0.serialized() }.json,
             CodingKeys.data.rawValue: data
         ]
     }
@@ -688,7 +688,7 @@ public struct SerializedPreset: Serializable {
         for (key, variable) in variables {
             if let defaultValue = variable.defaultValue {
                 vars[key] = [
-                    "type": .string(variable.type.rawValue),
+                    "type": variable.type.rawValue.json,
                     "default": defaultValue
                 ]
             } else {
@@ -697,8 +697,8 @@ public struct SerializedPreset: Serializable {
         }
         
         let json: JSON = [
-            "presetName": .string(name),
-            "presetType": .string(type.rawValue),
+            "presetName": name.json,
+            "presetType": type.rawValue.json,
             "presetVariables": vars,
             "presetData": data.serialized()
         ]
