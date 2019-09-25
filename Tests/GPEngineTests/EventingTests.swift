@@ -18,7 +18,7 @@ class EventingTests: XCTestCase {
         disp = GameEventDispatcher()
     }
 
-    func testMultiEventAdd() {
+    func testMultiEventAdd() { // TODO: This test may be misconstructed: The test doesn't perform the script it claims in the comments
         // Test multiple event hooking
         //
         // 1. Add one listener to two events
@@ -37,10 +37,9 @@ class EventingTests: XCTestCase {
         XCTAssertEqual(disp.eventCount, 2)
         
         disp.removeListener(forKey: key1)
-        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
-        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
+        disp.dispatchEvent(OtherCustomEvent())
         
-        XCTAssertEqual(receiv.hitCount, 0)
+        XCTAssertEqual(receiv.hitCount, 1)
     }
     
     func testEventRemove() {
