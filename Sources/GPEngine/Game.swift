@@ -11,9 +11,9 @@
 open class Game: GameEventDispatcherDelegate {
     
     /// The list of spaces currently registered on this game
-    internal(set) open var spaces: [Space]
+    open internal(set) var spaces: [Space]
     /// The list of systems that can manipulate the spaces
-    internal(set) open var systems: [System]
+    open internal(set) var systems: [System]
     
     /// A global event dispatcher.
     /// Events sent to this event dispatcher are automatically sunk into each
@@ -21,7 +21,7 @@ open class Game: GameEventDispatcherDelegate {
     ///
     /// Do not forward events from a space's event dispatcher to this dispatcher,
     /// as this will result in an infinite loop.
-    internal(set) open var eventDispatcher: GameEventDispatcher = GameEventDispatcher()
+    open internal(set) var eventDispatcher = GameEventDispatcher()
     
     public init() {
         spaces = [Space]()
@@ -41,16 +41,16 @@ open class Game: GameEventDispatcherDelegate {
     
     /// Updates this game object, with a specified time since the last frame in 
     /// milliseconds
-    open func update(_ dt: DeltaTimeInterval) {
+    open func update(_ deltaTime: DeltaTimeInterval) {
         for system in systems {
-            system.update(spaces: spaces.filter { $0.active }, interval: dt)
+            system.update(spaces: spaces.filter { $0.active }, interval: deltaTime)
         }
     }
     
     /// Renders this game object
-    open func render(_ dt: DeltaTimeInterval) {
+    open func render(_ deltaTime: DeltaTimeInterval) {
         for system in systems {
-            system.render(spaces: spaces.filter { $0.active }, interval: dt)
+            system.render(spaces: spaces.filter { $0.active }, interval: deltaTime)
         }
     }
     
@@ -60,7 +60,7 @@ open class Game: GameEventDispatcherDelegate {
             spaces.append(space)
             
             // Forward events
-            _=eventDispatcher.addListenerForAllEvents(space.eventDispatcher)
+            _ = eventDispatcher.addListenerForAllEvents(space.eventDispatcher)
         }
     }
     /// Removes a space from the game
@@ -90,8 +90,8 @@ open class Game: GameEventDispatcherDelegate {
     /// none was found
     open func system<T: System>(ofType type: T.Type) -> T? {
         for system in systems {
-            if let s = system as? T {
-                return s
+            if let system = system as? T {
+                return system
             }
         }
         

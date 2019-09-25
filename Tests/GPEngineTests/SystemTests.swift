@@ -11,7 +11,7 @@ import XCTest
 @testable import GPEngine
 
 class SystemTests: XCTestCase {
-    var game: Game = Game()
+    var game = Game()
     
     override func setUp() {
         super.setUp()

@@ -20,7 +20,8 @@ extension GameEventDispatcherDelegate {
     }
 }
 
-fileprivate let __globalEventsKey: Int = 0
+// swiftlint:disable:next identifier_name
+private let __globalEventsKey: Int = 0
 
 /// A class that is responsible for handling dispatching of events and their
 /// associated receivers
@@ -98,7 +99,7 @@ open class GameEventDispatcher: Equatable {
         events[key.eventIdentifier] = list
         key.valid.value = false
         
-        if list.count == 0 {
+        if list.isEmpty {
             events.removeValue(forKey: key.eventIdentifier)
         }
     }
@@ -114,13 +115,13 @@ open class GameEventDispatcher: Equatable {
     /// Removes a given event listener from all events it is currently 
     /// listening to
     open func removeListener<T: GameEventListener>(_ listener: T) where T: Equatable {
-        var i: Int = 0
+        var i = 0
         while i < events.keys.count {
-            let c: Int = events.count
+            let count = events.count
             
             internalRemoveEventListener(listener, Array(events.keys)[i])
             
-            if c == events.count {
+            if count == events.count {
                 i += 1
             }
         }
@@ -137,13 +138,13 @@ open class GameEventDispatcher: Equatable {
     /// Removes a given event listener from all events it is currently
     /// listening to
     open func removeListener<T: GameEventListener>(_ listener: T) where T: AnyObject {
-        var i: Int = 0
+        var i = 0
         while i < events.keys.count {
-            let c: Int = events.count
+            let count = events.count
             
             internalRemoveEventListener(listener, Array(events.keys)[i])
             
-            if c == events.count {
+            if count == events.count {
                 i += 1
             }
         }
@@ -176,7 +177,7 @@ open class GameEventDispatcher: Equatable {
             return
         }
         
-        guard let index = list.firstIndex(where: { l, key in l as? T == listener }) else {
+        guard let index = list.firstIndex(where: { lstnr, _ in lstnr as? T == listener }) else {
             return
         }
         
@@ -185,7 +186,7 @@ open class GameEventDispatcher: Equatable {
         
         events[eventIdentifier] = list
         
-        if list.count == 0 {
+        if list.isEmpty {
             events.removeValue(forKey: eventIdentifier)
         }
     }
@@ -198,7 +199,7 @@ open class GameEventDispatcher: Equatable {
             return
         }
         
-        guard let index = list.firstIndex(where: { l, key in l as? T === listener }) else {
+        guard let index = list.firstIndex(where: { lstnr, _ in lstnr as? T === listener }) else {
             return
         }
         
@@ -207,7 +208,7 @@ open class GameEventDispatcher: Equatable {
         
         events[eventIdentifier] = list
         
-        if list.count == 0 {
+        if list.isEmpty {
             events.removeValue(forKey: eventIdentifier)
         }
     }
@@ -238,7 +239,7 @@ open class GameEventDispatcher: Equatable {
     
     /// Performs a reference-equality check between two GameEventDispatcher instances.
     /// Parameter are equal if they reference the same object.
-    public static func ==(lhs: GameEventDispatcher, rhs: GameEventDispatcher) -> Bool {
+    public static func == (lhs: GameEventDispatcher, rhs: GameEventDispatcher) -> Bool {
         return lhs === rhs
     }
 }
@@ -264,7 +265,7 @@ public struct EventListenerKey: Equatable {
     /// Simple wrapper so we maintain EventListenerKey as a value-type, while
     /// also making invalidations of one event listener key be shared across all
     /// other copies of the same key.
-    final internal class InnerValid: ExpressibleByBooleanLiteral {
+    internal final class InnerValid: ExpressibleByBooleanLiteral {
         var value: Bool
         init(booleanLiteral value: Bool) {
             self.value = value
@@ -279,7 +280,7 @@ public struct EventListenerKey: Equatable {
     var eventIdentifier: Int
     var key: Int
     
-    public static func ==(lhs: EventListenerKey, rhs: EventListenerKey) -> Bool {
+    public static func == (lhs: EventListenerKey, rhs: EventListenerKey) -> Bool {
         return lhs.valid.value == rhs.valid.value && lhs.key == rhs.key
     }
 }

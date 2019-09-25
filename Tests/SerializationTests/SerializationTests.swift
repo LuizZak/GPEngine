@@ -99,7 +99,7 @@ class SerializationTests: XCTestCase {
         XCTAssertEqual(2, deserialized.components.count)
         let deserializedComps = deserialized.components(ofType: SerializableComponent.self)
         
-        XCTAssert(deserializedComps.elementsEqual(originalComponents, by: { $0.field == $1.field }))
+        XCTAssert(deserializedComps.elementsEqual(originalComponents) { $0.field == $1.field })
     }
     
     func testSerializeEntityError() throws {
@@ -111,8 +111,8 @@ class SerializationTests: XCTestCase {
         let original = Entity(components: [UnserializableComponent()])
         
         do {
-            _=try serializer.serialize(original)
-            XCTFail()
+            _ = try serializer.serialize(original)
+            XCTFail("Should not have serialized successfully")
         } catch {
             XCTAssert(error is SerializationError)
         }
@@ -169,8 +169,8 @@ class SerializationTests: XCTestCase {
         original.addEntity(Entity(components: [UnserializableComponent()]))
         
         do {
-            _=try serializer.serialize(original)
-            XCTFail()
+            _ = try serializer.serialize(original)
+            XCTFail("Should not have serialzied successfully")
         } catch {
             XCTAssert(error is SerializationError)
         }
@@ -186,8 +186,8 @@ class SerializationTests: XCTestCase {
         original.addSubspace(Subspace()) // Default Subspace is unserializable by default
         
         do {
-            _=try serializer.serialize(original)
-            XCTFail()
+            _ = try serializer.serialize(original)
+            XCTFail("Should not have serialzied successfully")
         } catch {
             XCTAssert(error is SerializationError)
         }
@@ -456,7 +456,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _=try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json)
             
             XCTFail("Should have thrown error")
         } catch {
@@ -475,7 +475,7 @@ class SerializationTests: XCTestCase {
                 "presetData": []
             ]
             
-            _=try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json)
             
             XCTFail("Should have thrown error")
         } catch {
@@ -498,7 +498,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _=try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json)
             
             XCTFail("Should have thrown error")
         } catch {
@@ -525,7 +525,7 @@ class SerializationTests: XCTestCase {
             
             let preset = try SerializedPreset(json: json)
             
-            _=try preset.expandPreset(withVariables: [ "var": "but i'm a string!" ])
+            _ = try preset.expandPreset(withVariables: [ "var": "but i'm a string!" ])
             
             XCTFail("Should have thrown error")
         } catch {
@@ -552,7 +552,7 @@ class SerializationTests: XCTestCase {
 
             let preset = try SerializedPreset(json: json)
 
-            _=try preset.expandPreset(withVariables: [:])
+            _ = try preset.expandPreset(withVariables: [:])
 
             XCTFail("Should have thrown error")
         } catch {
@@ -575,7 +575,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _=try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json)
             
             XCTFail("Should have failed")
         } catch {

@@ -70,7 +70,7 @@ public indirect enum EntitySelector {
             return false
             
         case .and(let rules):
-            if rules.count == 0 {
+            if rules.isEmpty {
                 return false
             }
             
@@ -97,7 +97,7 @@ public indirect enum EntitySelector {
     
     /// Creates a .and selector based on the combination of two entity selectors
     @inlinable
-    public static func &&(lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
+    public static func && (lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
         // Shortcut: If lhs is already an 'and', compose it over the set of
         // rules there
         switch lhs {
@@ -110,7 +110,7 @@ public indirect enum EntitySelector {
     
     /// Creates an .or selector based on the combination of two entity selectors
     @inlinable
-    public static func ||(lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
+    public static func || (lhs: EntitySelector, rhs: EntitySelector) -> EntitySelector {
         // Shortcut: If lhs is already an 'or', compose it over the set of
         // rules there
         switch lhs {
@@ -123,7 +123,7 @@ public indirect enum EntitySelector {
     
     /// Creates a .not selector based on the given selector
     @inlinable
-    public static prefix func !(rule: EntitySelector) -> EntitySelector {
+    public static prefix func ! (rule: EntitySelector) -> EntitySelector {
         // Shrotcut: If the rule is already a 'not' rule, just unwrap it
         switch rule {
         case .not(let rule):

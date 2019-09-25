@@ -18,7 +18,7 @@ class EventingTests: XCTestCase {
         disp = GameEventDispatcher()
     }
 
-    func testMultiEventAdd() { // TODO: I think this test is misconstructed? It's not following the steps described inside
+    func testMultiEventAdd() {
         // Test multiple event hooking
         //
         // 1. Add one listener to two events
@@ -32,11 +32,13 @@ class EventingTests: XCTestCase {
         let receiv = EventReceiverTestClass()
         
         let key1 = disp.addListener(receiv, forEventType: CustomEvent.self)
-        _=disp.addListener(receiv, forEventType: OtherCustomEvent.self)
+        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
         
         XCTAssertEqual(disp.eventCount, 2)
         
         disp.removeListener(forKey: key1)
+        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
+        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
         
         XCTAssertEqual(receiv.hitCount, 0)
     }
@@ -90,8 +92,8 @@ class EventingTests: XCTestCase {
         
         let receiv = EventReceiverTestClass()
         
-        _=disp.addListener(receiv, forEventType: CustomEvent.self)
-        _=disp.addListener(receiv, forEventType: OtherCustomEvent.self)
+        _ = disp.addListener(receiv, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
         
         disp.removeListener(receiv)
         
@@ -107,7 +109,7 @@ class EventingTests: XCTestCase {
         
         let receiv = EventReceiverTestClass()
         
-        _=disp.addListener(receiv, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv, forEventType: CustomEvent.self)
         disp.dispatchEvent(CustomEvent())
         
         XCTAssert(receiv.received, "The entity should have received the event")
@@ -123,8 +125,8 @@ class EventingTests: XCTestCase {
         let receiv1 = EventReceiverTestClass()
         let receiv2 = EventReceiverTestClass()
         
-        _=disp.addListener(receiv1, forEventType: CustomEvent.self)
-        _=disp.addListener(receiv2, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv2, forEventType: CustomEvent.self)
         
         disp.dispatchEvent(CustomEvent())
         
@@ -141,8 +143,8 @@ class EventingTests: XCTestCase {
         let receiv1 = EventReceiverTestClass()
         let receiv2 = EventReceiverTestClass()
         
-        _=disp.addListener(receiv1, forEventType: CustomEvent.self)
-        _=disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
+        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
         
         disp.removeAllEvents()
         
@@ -159,7 +161,7 @@ class EventingTests: XCTestCase {
         
         disp.removeAllEvents()
         
-        _=disp.addListener(receiv1, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         
         disp.removeListener(forKey: key1)
         
@@ -176,7 +178,7 @@ class EventingTests: XCTestCase {
         
         disp.removeListener(forKey: key1)
         
-        _=disp.addListener(receiv1, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         
         disp.removeListener(forKey: key1)
         
@@ -193,7 +195,7 @@ class EventingTests: XCTestCase {
         
         disp.removeListener(receiv1)
         
-        _=disp.addListener(receiv1, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         
         disp.removeListener(forKey: key1)
         
@@ -213,11 +215,11 @@ class EventingTests: XCTestCase {
             
             key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
             
-            _=disp.addListener(receiv1, forEventType: CustomEvent.self)
+            _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         } // disp is invalidated here!
         
         // Use outer event dispatcher
-        _=disp.addListener(receiv1, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         
         disp.removeListener(forKey: key1)
         
@@ -238,8 +240,8 @@ class EventingTests: XCTestCase {
             XCTFail("Should not have fired")
         }
         
-        _=disp.addListener(receiv1, forEventType: CustomEvent.self)
-        _=disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
+        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
+        _ = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
         
         disp.dispatchEvent(CustomEvent())
         
@@ -250,7 +252,7 @@ class EventingTests: XCTestCase {
         
         let receiver = EventReceiverTestClass()
         
-        _=disp.addListenerForAllEvents(receiver)
+        _ = disp.addListenerForAllEvents(receiver)
         
         disp.dispatchEvent(CustomEvent())
         disp.dispatchEvent(OtherCustomEvent())
@@ -270,7 +272,7 @@ class EventingTests: XCTestCase {
         var count = 0
         let exp = expectation(description: "")
         
-        let receiver = ClosureAnyEventListener { event in
+        let receiver = ClosureAnyEventListener { _ in
             count += 1
             
             if count == 2 {

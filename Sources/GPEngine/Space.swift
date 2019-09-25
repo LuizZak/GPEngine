@@ -23,7 +23,7 @@ open class Space {
     
     /// The event dispatcher that handles event handling specificly on this
     /// space
-    internal(set) open var eventDispatcher = GameEventDispatcher()
+    open internal(set) var eventDispatcher = GameEventDispatcher()
     
     public init() {
         entities = [Entity]()
@@ -65,8 +65,8 @@ open class Space {
     /// Gets a subspace with a specified type from this space
     open func subspace<S: Subspace>(_ type: S.Type) -> S? {
         for subspace in subspaces {
-            if let s = subspace as? S {
-                return s
+            if let subspace = subspace as? S {
+                return subspace
             }
         }
         
@@ -121,15 +121,15 @@ open class Space {
     /// Removes a given component type from an entity
     open func removeComponent<C: Component>(type: C.Type, from entity: Entity) {
         // Type-casting already performed by removeFirstComponent
-        removeFirstComponent(from: entity, where: { (c: C) -> Bool in true })
+        removeFirstComponent(from: entity) { (_: C) -> Bool in true }
     }
     
     /// Removes the first component that returns true for a given closure.
     open func removeFirstComponent<C: Component>(from entity: Entity, where closure: (C) throws -> Bool) rethrows {
         var components = entity.components
         let rem = try components.removeFirst { component -> Bool in
-            if let c = component as? C {
-                return try closure(c)
+            if let component = component as? C {
+                return try closure(component)
             }
             return false
         }
@@ -160,10 +160,10 @@ open class Space {
     
     /// Applies a given closure to all subspaces that match a specified type
     /// within this space
-    open func withSubspaces<S: Subspace>(ofType type: S.Type, do closure: (S) throws -> ()) rethrows {
+    open func withSubspaces<S: Subspace>(ofType type: S.Type, do closure: (S) throws -> Void) rethrows {
         for subspace in subspaces {
-            if let s = subspace as? S {
-                try closure(s)
+            if let subspace = subspace as? S {
+                try closure(subspace)
             }
         }
     }

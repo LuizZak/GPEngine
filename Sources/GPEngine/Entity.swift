@@ -11,7 +11,7 @@ public class Entity {
     public typealias Id = Int
     
     /// The internal list of components for this entity
-    internal(set) public var components : [Component] = []
+    public internal(set) var components: [Component] = []
     
     /// The unique identifier for this entity
     public var id: Id = 0
@@ -46,8 +46,8 @@ public class Entity {
     /// If no components match the passed component type, nil is returned
     public func component<T: Component>(ofType type: T.Type) -> T? {
         for comp in self.components {
-            if let c = comp as? T {
-                return c
+            if let component = comp as? T {
+                return component
             }
         }
         
@@ -55,10 +55,10 @@ public class Entity {
     }
     
     /// Applies a given closure to each component of a given type on this entity
-    public func withComponents<C: Component>(ofType type: C.Type, do closure: (C) throws -> ()) rethrows {
+    public func withComponents<C: Component>(ofType type: C.Type, do closure: (C) throws -> Void) rethrows {
         for comp in components {
-            if let c = comp as? C {
-                try closure(c)
+            if let component = comp as? C {
+                try closure(component)
             }
         }
     }
@@ -75,9 +75,9 @@ public class Entity {
     /// ```
     public func withComponents<C1, C2>(ofTypes type1: C1.Type,
                                        _ type2: C2.Type,
-                                       do closure: (C1, C2) throws -> ()) rethrows where C1: Component, C2: Component  {
-        if let c1 = component(ofType: C1.self), let c2 = component(ofType: C2.self) {
-            try closure(c1, c2)
+                                       do closure: (C1, C2) throws -> Void) rethrows where C1: Component, C2: Component {
+        if let comp1 = component(ofType: C1.self), let comp2 = component(ofType: C2.self) {
+            try closure(comp1, comp2)
         }
     }
     
@@ -94,7 +94,7 @@ public class Entity {
     ///     // ...
     /// }
     /// ```
-    public func withComponents<C1: Component, C2: Component>(do closure: (C1, C2) throws -> ()) rethrows {
+    public func withComponents<C1: Component, C2: Component>(do closure: (C1, C2) throws -> Void) rethrows {
         try withComponents(ofTypes: C1.self, C2.self, do: closure)
     }
     
@@ -111,9 +111,9 @@ public class Entity {
     public func withComponents<C1, C2, C3>(ofTypes type1: C1.Type,
                                            _ type2: C2.Type,
                                            _ type3: C3.Type,
-                                           do closure: (C1, C2, C3) throws -> ()) rethrows where C1: Component, C2: Component, C3: Component {
-        if let c1 = component(ofType: C1.self), let c2 = component(ofType: C2.self), let c3 = component(ofType: C3.self) {
-            try closure(c1, c2, c3)
+                                           do closure: (C1, C2, C3) throws -> Void) rethrows where C1: Component, C2: Component, C3: Component {
+        if let comp1 = component(ofType: C1.self), let comp2 = component(ofType: C2.self), let comp3 = component(ofType: C3.self) {
+            try closure(comp1, comp2, comp3)
         }
     }
     
@@ -130,7 +130,7 @@ public class Entity {
     ///     // ...
     /// }
     /// ```
-    public func withComponents<C1: Component, C2: Component, C3: Component>(do closure: (C1, C2, C3) throws -> ()) rethrows {
+    public func withComponents<C1: Component, C2: Component, C3: Component>(do closure: (C1, C2, C3) throws -> Void) rethrows {
         try withComponents(ofTypes: C1.self, C2.self, C3.self, do: closure)
     }
     

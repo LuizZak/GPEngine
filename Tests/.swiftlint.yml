@@ -1,0 +1,28 @@
+disabled_rules: # rule identifiers to exclude from running
+  - line_length
+  - file_length
+  - type_body_length
+  - function_body_length
+  - type_name
+  - cyclomatic_complexity
+  - implicitly_unwrapped_optional
+  - force_unwrapping
+  - force_cast
+
+opt_in_rules:
+  - xctfail_message
+  - single_test_class
+  - quick_discouraged_call
+  - discouraged_direct_init
+  - quick_discouraged_focused_test
+  - quick_discouraged_pending_test
+
+discouraged_direct_init:
+  types:
+    - Bundle
+    - UIDevice
+    - UIWindow
+
+excluded:
+  - GPEngineTests/XCTestManifests.swift
+  - SerializationTests/XCTestManifests.swift

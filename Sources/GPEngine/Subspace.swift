@@ -100,7 +100,7 @@ open class Subspace {
     
     /// Clears all the entities from this subspace
     open func clearEntities() {
-        while entities.count > 0 {
+        while !entities.isEmpty {
             removeEntity(entities[0])
         }
     }

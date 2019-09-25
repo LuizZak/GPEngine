@@ -27,8 +27,8 @@ public struct ClosureEventListener<Event: GameEvent>: GameEventListener {
     
     /// Receives an event fired by the game screen
     public func receiveEvent(_ event: GameEvent) {
-        if let e = event as? Event {
-            closure(e)
+        if let event = event as? Event {
+            closure(event)
         }
     }
 }

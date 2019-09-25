@@ -636,6 +636,7 @@ public struct SerializedPreset: Serializable {
         
         // Match serialized content types
         if self.type != self.data.contentType {
+            // swiftlint:disable:next line_length
             throw DeserializationError.invalidSerialized(message: "Expected preset data of type '\(type)', but received preset with contentType '\(self.data.contentType)' in preset '\(name)'")
         }
         
@@ -643,7 +644,7 @@ public struct SerializedPreset: Serializable {
         variables = [:]
         for (key, value) in vars {
             let typeString: String
-            var defaultValue: JSON? = nil
+            var defaultValue: JSON?
             if value.type == .dictionary {
                 guard let tString = value["type"]?.string else {
                     throw DeserializationError.invalidSerialized(message: "Missing 'type' on variable '\(key)' in preset '\(name)'")
@@ -662,6 +663,7 @@ public struct SerializedPreset: Serializable {
             } else if let string = value.string {
                 typeString = string
             } else {
+                // swiftlint:disable:next line_length
                 throw DeserializationError.invalidSerialized(message: "Preset variable value must either be string or dictionary, received \(value.type) in variable '\(key)' in preset '\(name)'")
             }
             
@@ -815,7 +817,7 @@ public struct SerializedPreset: Serializable {
         case mismatchedType(valueName: String, expected: JSON.JSONType, received: JSON.JSONType)
         
         public var description: String {
-            switch(self) {
+            switch self {
             case .unkownVariable(let name):
                 return "Unrecognized variable name \(name)"
             case .missingValue(let name):

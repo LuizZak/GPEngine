@@ -17,7 +17,7 @@ class SpaceTests: XCTestCase {
         space.addSubspace(subspace)
         
         XCTAssert(subspace.space === space)
-        XCTAssert(space.subspaces.contains(where: { $0 === subspace }))
+        XCTAssert(space.subspaces.contains { $0 === subspace })
     }
     
     func testRemoveSubspace() {
@@ -29,7 +29,7 @@ class SpaceTests: XCTestCase {
         space.removeSubspace(subspace)
         
         XCTAssertNil(subspace.space)
-        XCTAssertFalse(space.subspaces.contains(where: { $0 === subspace }))
+        XCTAssertFalse(space.subspaces.contains { $0 === subspace })
     }
     
     func testAddSubspaceThatAlreadyHasSpace() {
@@ -42,8 +42,8 @@ class SpaceTests: XCTestCase {
         space2.addSubspace(subspace)
         
         XCTAssert(subspace.space === space2)
-        XCTAssertFalse(space1.subspaces.contains(where: { $0 === subspace }))
-        XCTAssert(space2.subspaces.contains(where: { $0 === subspace }))
+        XCTAssertFalse(space1.subspaces.contains { $0 === subspace })
+        XCTAssert(space2.subspaces.contains { $0 === subspace })
     }
     
     func testWithSubspacesOfType() {
@@ -53,7 +53,7 @@ class SpaceTests: XCTestCase {
         space.addSubspace(subspace)
         
         var fireCount = 0
-        space.withSubspaces(ofType: Subspace.self) { subspace in
+        space.withSubspaces(ofType: Subspace.self) { _ in
             fireCount += 1
         }
         

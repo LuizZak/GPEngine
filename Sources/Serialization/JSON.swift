@@ -220,19 +220,20 @@ extension JSON: Collection {
         case dictionary(Dictionary<String, JSON>.Index)
         case null
 
-        static public func == (lhs: Index, rhs: Index) -> Bool {
+        public static func == (lhs: Index, rhs: Index) -> Bool {
             switch (lhs, rhs) {
             case (.array(let left), .array(let right)):
                 return left == right
             case (.dictionary(let left), .dictionary(let right)):
                 return left == right
-            case (.null, .null): return true
+            case (.null, .null):
+                return true
             default:
                 return false
             }
         }
 
-        static public func < (lhs: Index, rhs: Index) -> Bool {
+        public static func < (lhs: Index, rhs: Index) -> Bool {
             switch (lhs, rhs) {
             case (.array(let left), .array(let right)):
                 return left < right
