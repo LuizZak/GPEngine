@@ -17,7 +17,7 @@ public enum SerializationError: Error, CustomStringConvertible {
     case cannotSerialize(reason: String)
     
     public var description: String {
-        switch(self) {
+        switch self {
         case .cannotSerialize(let reason):
             return "Serialization error: \(reason)"
         }
@@ -42,7 +42,7 @@ public enum DeserializationError: Error, CustomStringConvertible {
     case invalidSerialized(message: String)
     
     public var description: String {
-        switch(self) {
+        switch self {
         case .notImplemented:
             return "Deserialization error: method not implemented"
         case .unrecognizedSerializedName(let name):
