@@ -297,7 +297,7 @@ extension JSON: Collection {
             case .dictionary(let dict):
                 return dict[key]
             default:
-                return .null
+                return nil
             }
         }
         set {
@@ -329,6 +329,78 @@ extension JSON: Collection {
                 break
             }
         }
+    }
+
+    public subscript(path path: JSONIndexer...) -> JSONSubscriptAccess {
+        return JSONSubscriptAccess(base: self, accesses: path.map { $0.jsonIndex })
+    }
+}
+
+public protocol JSONIndexer {
+    var jsonIndex: JSONSubscriptAccess.JSONAccess { get }
+}
+
+extension String: JSONIndexer {
+    public var jsonIndex: JSONSubscriptAccess.JSONAccess {
+        return .dictionary(self)
+    }
+}
+
+extension Int: JSONIndexer {
+    public var jsonIndex: JSONSubscriptAccess.JSONAccess {
+        return .index(self)
+    }
+}
+
+public struct JSONSubscriptAccess {
+    var base: JSON
+    var accesses: [JSONAccess]
+
+    public var json: JSON? {
+        switch value {
+        case .value(let json):
+            return json
+        default:
+            return nil
+        }
+    }
+
+    public var value: AccessResult {
+        var json: JSON = base
+
+        for (i, access) in accesses.enumerated() {
+            switch access {
+            case .dictionary(let key):
+                if let value = json[key] {
+                    json = value
+                } else if json.type == .dictionary {
+                    return .keyNotFound(Array(accesses[0...i]))
+                } else {
+                    return .notADictionary(Array(accesses[0..<i]))
+                }
+            case .index(let index):
+                if let array = json.array, index < array.count {
+                    json = array[index]
+                } else if json.type == .array {
+                    return .keyNotFound(Array(accesses[0...i]))
+                } else {
+                    return .notAnArray(Array(accesses[0..<i]))
+                }
+            }
+        }
+
+        return .value(json)
+    }
+
+    public enum JSONAccess: Equatable {
+        case index(Int)
+        case dictionary(String)
+    }
+    public enum AccessResult: Equatable {
+        case value(JSON)
+        case notAnArray([JSONAccess])
+        case notADictionary([JSONAccess])
+        case keyNotFound([JSONAccess])
     }
 }
 
