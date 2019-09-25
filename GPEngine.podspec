@@ -44,6 +44,5 @@ See https://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-con
   s.subspec 'Serialization' do |ser|
     ser.source_files = 'Sources/Serialization/**/*'
     ser.dependency 'GPEngine/GPEngine'
-    ser.dependency 'SwiftyJSON'
   end
 end
