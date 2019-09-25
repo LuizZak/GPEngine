@@ -59,7 +59,7 @@ public class GameSerializer {
     public var typeProvider: SerializationTypeProvider
     
     /// Preset context for presets found during deserialization
-    var presetContext = PresetContext()
+    private let presetContext = PresetContext()
     
     public init(typeProvider: SerializationTypeProvider) {
         self.typeProvider = typeProvider
@@ -370,7 +370,7 @@ public class GameSerializer {
     
     /// A preset context holds information about presets available during
     /// expansion of serialized objects
-    class PresetContext {
+    private class PresetContext {
         /// The presets available within this context
         var presets: [SerializedPreset] = []
         
