@@ -23,7 +23,6 @@ class SpaceTests: XCTestCase {
     func testRemoveSubspace() {
         let space = Space()
         let subspace = Subspace()
-        
         space.addSubspace(subspace)
         
         space.removeSubspace(subspace)
@@ -38,7 +37,6 @@ class SpaceTests: XCTestCase {
         let subspace = Subspace()
         
         space1.addSubspace(subspace)
-        
         space2.addSubspace(subspace)
         
         XCTAssert(subspace.space === space2)
@@ -49,7 +47,6 @@ class SpaceTests: XCTestCase {
     func testWithSubspacesOfType() {
         let space = Space()
         let subspace = Subspace()
-        
         space.addSubspace(subspace)
         
         var fireCount = 0
