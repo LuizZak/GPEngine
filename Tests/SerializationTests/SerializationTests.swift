@@ -320,8 +320,8 @@ class SerializationTests: XCTestCase {
                 "presetType": "entity",
                 "presetVariables": [
                     "x": "number",
-                    "y": "number",
-                    "z": [ "type": "number", "default": 30 ]
+                    "y": "bool",
+                    "z": [ "type": "string", "default": "abc" ]
                 ],
                 "presetData": [
                     "contentType": "entity",
@@ -350,15 +350,15 @@ class SerializationTests: XCTestCase {
                 try preset.expandPreset(withVariables:
                     [
                         "x": 10,
-                        "y": 20
+                        "y": false
                     ])
             
             let data = expanded.data
             
             // Verify data
             XCTAssertEqual(data["components"]?[0]["data"]?["x"]?.double, 10)
-            XCTAssertEqual(data["components"]?[0]["data"]?["y"]?.double, 20)
-            XCTAssertEqual(data["components"]?[0]["data"]?["z"]?.double, 30)
+            XCTAssertEqual(data["components"]?[0]["data"]?["y"]?.bool, false)
+            XCTAssertEqual(data["components"]?[0]["data"]?["z"]?.string, "abc")
         } catch {
             XCTFail("\(error)")
         }

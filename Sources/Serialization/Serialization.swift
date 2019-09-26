@@ -789,6 +789,7 @@ public struct SerializedPreset: Serializable {
     /// - string: Unicode string
     public enum VariableType: String {
         case number
+        case bool
         case string
         
         /// Fetches the equivalent SwiftyJSON.Type enumeration value for this
@@ -797,6 +798,8 @@ public struct SerializedPreset: Serializable {
             switch self {
             case .number:
                 return .number
+            case .bool:
+                return .bool
             case .string:
                 return .string
             }

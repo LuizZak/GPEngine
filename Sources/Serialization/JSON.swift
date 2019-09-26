@@ -114,6 +114,14 @@ public extension JSON {
             return nil
         }
     }
+    var bool: Bool? {
+        switch self {
+        case .bool(let bool):
+            return bool
+        default:
+            return nil
+        }
+    }
     var int: Int? {
         switch self {
         case .number(let number):
