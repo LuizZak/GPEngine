@@ -37,7 +37,7 @@ public indirect enum EntitySelector {
     /// Selects if an entity corresponds to a given id
     case id(Int)
     
-    /// Selects if the entty's type flag conforms to a given type.
+    /// Selects if the entity's type flag conforms to a given type.
     /// Does a binary & to filter.
     case typeFlag(Int)
     
