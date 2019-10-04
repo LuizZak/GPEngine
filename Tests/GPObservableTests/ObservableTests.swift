@@ -40,8 +40,22 @@ class ObservableTests: XCTestCase {
         
         XCTAssertFalse(didCallListener)
     }
+
+    func testEncodeObservable() throws {
+        let encoder = JSONEncoder()
+        let decoder = JSONDecoder()
+        let test = CodableTest()
+        let data = try encoder.encode(test)
+        let decoded = try decoder.decode(CodableTest.self, from: data)
+
+        XCTAssertEqual(test, decoded)
+    }
 }
 
 class Test {
+    @Observable var value: Int = 0
+}
+
+struct CodableTest: Codable, Equatable {
     @Observable var value: Int = 0
 }

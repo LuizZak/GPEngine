@@ -1,5 +1,5 @@
 @propertyWrapper
-public class Observable<T> {
+public final class Observable<T> {
     private var nextKey = 0
     private var listeners: [ListenerEntry] = []
     
@@ -58,5 +58,23 @@ public class Observable<T> {
         var isWeakKeyed: Bool {
             return weakKey != nil
         }
+    }
+}
+
+extension Observable: Encodable where T: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        try wrappedValue.encode(to: encoder)
+    }
+}
+
+extension Observable: Decodable where T: Decodable {
+    public convenience init(from decoder: Decoder) throws {
+        self.init(wrappedValue: try T.init(from: decoder))
+    }
+}
+
+extension Observable: Equatable where T: Equatable {
+    public static func == (lhs: Observable, rhs: Observable) -> Bool {
+        return lhs.wrappedValue == rhs.wrappedValue
     }
 }
