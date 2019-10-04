@@ -13,6 +13,11 @@ import XCTest
 #endif
 
 class SerializationTests: XCTestCase {
+    struct SerializableCodableComponent: Component, Serializable, Codable {
+        var field1: Int
+        var field2: String
+    }
+    
     struct SerializableComponent: Component, Serializable {
         var field: Int
         
@@ -55,6 +60,7 @@ class SerializationTests: XCTestCase {
     
     class Provider: BasicSerializationTypeProvider {
         var serializableTypes: [(Serializable.Type, (JSON) throws -> Serializable)] = [
+            (SerializableCodableComponent.self, SerializableCodableComponent.init),
             (SerializableComponent.self, SerializableComponent.init),
             (SerializableSubspace.self, SerializableSubspace.init)
         ]
@@ -72,6 +78,19 @@ class SerializationTests: XCTestCase {
         let ser: SerializableComponent = try serializer.extract(from: object)
         
         XCTAssertEqual(ser.field, original.field)
+    }
+    
+    func testSerializationCodableType() throws {
+        let serializer = GameSerializer(typeProvider: Provider())
+        
+        let original = SerializableCodableComponent(field1: 10, field2: "abc")
+        let object = serializer.serialize(original)
+        XCTAssertEqual(object.contentType, .component)
+        
+        let ser: SerializableCodableComponent = try serializer.extract(from: object)
+        
+        XCTAssertEqual(ser.field1, original.field1)
+        XCTAssertEqual(ser.field2, original.field2)
     }
     
     // MARK: Entity

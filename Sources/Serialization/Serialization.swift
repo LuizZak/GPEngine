@@ -6,6 +6,7 @@
 //
 //
 
+import Foundation
 #if SWIFT_PACKAGE
 import GPEngine
 #endif
@@ -848,6 +849,24 @@ public protocol Serializable {
     ///
     /// - Returns: The serialized state for this object.
     func serialized() -> JSON
+}
+
+public extension Serializable where Self: Decodable {
+    init(json: JSON) throws {
+        let encoder = JSONEncoder()
+        let decoder = JSONDecoder()
+        let data = try encoder.encode(json)
+        self = try decoder.decode(Self.self, from: data)
+    }
+}
+
+public extension Serializable where Self: Encodable {
+    func serialized() -> JSON {
+        let encoder = JSONEncoder()
+        let decoder = JSONDecoder()
+        let data = try! encoder.encode(self)
+        return try! decoder.decode(JSON.self, from: data)
+    }
 }
 
 /// Protocol to be implemented by objects that can provide the correct types to
