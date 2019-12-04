@@ -40,6 +40,7 @@ extension SerializationTests {
         ("testPresetVariableTypeError", testPresetVariableTypeError),
         ("testRecursivePresetExpansion", testRecursivePresetExpansion),
         ("testReplacePresetVariables", testReplacePresetVariables),
+        ("testSerializationCodableType", testSerializationCodableType),
         ("testSerializationType", testSerializationType),
         ("testSerializeEntity", testSerializeEntity),
         ("testSerializeEntityError", testSerializeEntityError),

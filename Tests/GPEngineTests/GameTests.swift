@@ -114,6 +114,18 @@ class GameTests: XCTestCase {
 
         XCTAssert(didInvokeEvent)
     }
+    
+    func testGameEventDispatcherUnregistersSpaceOnRemoval() {
+        var didInvokeEvent = false
+        let space = Space()
+        _ = space.eventDispatcher.addListener(ClosureEventListener<TestEvent> { _ in didInvokeEvent = true },
+                                              forEventType: TestEvent.self)
+        sut.addSpace(space)
+        sut.removeSpace(space)
+        sut.gameEventDispatcher(sut.eventDispatcher, willDispatch: TestEvent())
+
+        XCTAssertFalse(didInvokeEvent)
+    }
 }
 
 private class TestSystem: System {

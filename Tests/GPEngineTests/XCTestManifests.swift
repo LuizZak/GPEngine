@@ -65,6 +65,7 @@ extension GameTests {
         ("testAddSpaceAddsSpaceOnlyOnce", testAddSpaceAddsSpaceOnlyOnce),
         ("testAddSystem", testAddSystem),
         ("testAddSystemOnce", testAddSystemOnce),
+        ("testGameEventDispatcherUnregistersSpaceOnRemoval", testGameEventDispatcherUnregistersSpaceOnRemoval),
         ("testGameEventDispatcherWillDispatchEvent", testGameEventDispatcherWillDispatchEvent),
         ("testHasSystem", testHasSystem),
         ("testRemoveSpace", testRemoveSpace),
