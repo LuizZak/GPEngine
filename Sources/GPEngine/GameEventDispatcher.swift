@@ -8,6 +8,7 @@
 
 /// Delegation for a game event dispatcher
 protocol GameEventDispatcherDelegate: class {
+    
     /// Called when an event dispatcher is about to dispatch an event.
     /// This delegate method is called regardless if there are any listeners
     /// to the event passed.
@@ -15,6 +16,7 @@ protocol GameEventDispatcherDelegate: class {
 }
 
 extension GameEventDispatcherDelegate {
+    
     func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, willDispatch event: GameEvent) {
         
     }
