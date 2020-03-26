@@ -89,6 +89,14 @@ class JSONTests: XCTestCase {
         XCTAssertEqual(try json[path: "a", 0].number(), 1)
     }
     
+    func testPathToInteger() {
+        let json: JSON = [
+            "a": [ 1.0 ]
+        ]
+        
+        XCTAssertEqual(try json[path: "a", 0].integer(), 1)
+    }
+    
     func testPathToString() {
         let json: JSON = [
             "a": [ "b" ]

@@ -418,6 +418,23 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
+    public func integer() throws -> Int {
+        switch self {
+        case .value(let v):
+            if let double = v.double {
+                return Int(double)
+            }
+            
+            throw Error.invalidValueType
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
+        }
+    }
+    
     public func string() throws -> String {
         switch self {
         case .value(let v):

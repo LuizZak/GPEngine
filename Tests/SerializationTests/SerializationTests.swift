@@ -26,7 +26,7 @@ class SerializationTests: XCTestCase {
         }
         
         init(json: JSON) throws {
-            field = json["field"]?.int ?? 0
+            field = try json[path: "field"].integer()
         }
         
         func serialized() -> JSON {
@@ -42,7 +42,7 @@ class SerializationTests: XCTestCase {
         }
         
         init(json: JSON) throws {
-            subspaceField = json["subspaceField"]?.int ?? 0
+            subspaceField = try json[path: "subspaceField"].integer()
         }
         
         func serialized() -> JSON {
