@@ -343,34 +343,30 @@ extension JSON: Collection {
     public subscript(path path: JSONIndexer...) -> JSONSubscriptAccess {
         let accesses = path.map { $0.jsonIndex }
         
-        let value: JSONSubscriptAccess.AccessResult = {
-            var json: JSON = self
-            
-            for (i, access) in accesses.enumerated() {
-                switch access {
-                case .dictionary(let key):
-                    if let value = json[key] {
-                        json = value
-                    } else if json.type == .dictionary {
-                        return .keyNotFound(Array(accesses[...i]))
-                    } else {
-                        return .notADictionary(Array(accesses[..<i]))
-                    }
-                case .index(let index):
-                    if let array = json.array, index < array.count {
-                        json = array[index]
-                    } else if json.type == .array {
-                        return .keyNotFound(Array(accesses[...i]))
-                    } else {
-                        return .notAnArray(Array(accesses[..<i]))
-                    }
+        var json: JSON = self
+        
+        for (i, access) in accesses.enumerated() {
+            switch access {
+            case .dictionary(let key):
+                if let value = json[key] {
+                    json = value
+                } else if json.type == .dictionary {
+                    return .keyNotFound(Array(accesses[...i]))
+                } else {
+                    return .notADictionary(Array(accesses[..<i]))
+                }
+            case .index(let index):
+                if let array = json.array, index < array.count {
+                    json = array[index]
+                } else if json.type == .array {
+                    return .keyNotFound(Array(accesses[...i]))
+                } else {
+                    return .notAnArray(Array(accesses[..<i]))
                 }
             }
-            
-            return .value(json)
-        }()
-
-        return JSONSubscriptAccess(base: self, value: value)
+        }
+        
+        return .value(json)
     }
 }
 
@@ -390,11 +386,14 @@ extension Int: JSONIndexer {
     }
 }
 
-public struct JSONSubscriptAccess {
-    var base: JSON
-
+public enum JSONSubscriptAccess: Equatable {
+    case value(JSON)
+    case notAnArray([JSONAccess])
+    case notADictionary([JSONAccess])
+    case keyNotFound([JSONAccess])
+    
     public var json: JSON? {
-        switch value {
+        switch self {
         case .value(let json):
             return json
         default:
@@ -402,10 +401,8 @@ public struct JSONSubscriptAccess {
         }
     }
     
-    public var value: AccessResult
-    
     public func number() throws -> Double {
-        switch value {
+        switch self {
         case .value(let v):
             if let double = v.double {
                 return double
@@ -422,7 +419,7 @@ public struct JSONSubscriptAccess {
     }
     
     public func string() throws -> String {
-        switch value {
+        switch self {
         case .value(let v):
             if let string = v.string {
                 return string
@@ -438,8 +435,8 @@ public struct JSONSubscriptAccess {
         }
     }
     
-    public func boolean() throws -> Bool {
-        switch value {
+    public func bool() throws -> Bool {
+        switch self {
         case .value(let v):
             if let bool = v.bool {
                 return bool
@@ -456,7 +453,7 @@ public struct JSONSubscriptAccess {
     }
     
     public func isNull() throws -> Bool {
-        switch value {
+        switch self {
         case .value(let v):
             return v == .null
             
@@ -469,7 +466,7 @@ public struct JSONSubscriptAccess {
     }
     
     public func array() throws -> [JSON] {
-        switch value {
+        switch self {
         case .value(let v):
             if let array = v.array {
                 return array
@@ -486,7 +483,7 @@ public struct JSONSubscriptAccess {
     }
     
     public func dictionary() throws -> [String: JSON] {
-        switch value {
+        switch self {
         case .value(let v):
             if let dictionary = v.dictionary {
                 return dictionary
@@ -505,13 +502,6 @@ public struct JSONSubscriptAccess {
     public enum JSONAccess: Equatable {
         case index(Int)
         case dictionary(String)
-    }
-    
-    public enum AccessResult: Equatable {
-        case value(JSON)
-        case notAnArray([JSONAccess])
-        case notADictionary([JSONAccess])
-        case keyNotFound([JSONAccess])
     }
     
     public enum Error: Swift.Error {
