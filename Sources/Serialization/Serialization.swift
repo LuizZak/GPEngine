@@ -739,20 +739,22 @@ public struct SerializedPreset: Serializable {
     private func expandPreset(recursiveOn json: inout JSON, withVariables values: [String: JSON]) throws {
         // A preset replacement!
         if let varName = json["presetVariable"]?.string {
+            guard let varDef = variables[varName] else {
+                throw VariableReplaceError.unknownVariable(variableName: varName)
+            }
+            
             if let value = values[varName] {
                 json = value
-                return
             } else {
                 // Search for default
-                if let def = variables[varName] {
-                    if let value = def.defaultValue {
-                        json = value
-                        return
-                    }
+                guard let value = varDef.defaultValue else {
+                    throw VariableReplaceError.missingValue(valueName: varName)
                 }
                 
-                throw VariableReplaceError.missingValue(valueName: varName)
+                json = value
             }
+            
+            return
         }
         
         // Traverse into the values...
@@ -816,13 +818,13 @@ public struct SerializedPreset: Serializable {
     /// - missmatchedType: A value that was fed to the variables dictionary
     /// mismatches the expected type
     public enum VariableReplaceError: Error, CustomStringConvertible {
-        case unkownVariable(variableName: String)
+        case unknownVariable(variableName: String)
         case missingValue(valueName: String)
         case mismatchedType(valueName: String, expected: JSON.JSONType, received: JSON.JSONType)
         
         public var description: String {
             switch self {
-            case .unkownVariable(let name):
+            case .unknownVariable(let name):
                 return "Unrecognized variable name \(name)"
             case .missingValue(let name):
                 return "Values dictionary provided misses required value for variable '\(name)'"

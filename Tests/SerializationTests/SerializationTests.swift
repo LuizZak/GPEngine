@@ -551,6 +551,31 @@ class SerializationTests: XCTestCase {
             XCTAssert(error is SerializedPreset.VariableReplaceError)
         }
     }
+    
+    func testPresetNonExistentVariableError() {
+        do {
+            let json: JSON = [
+                "presetName": "Player",
+                "presetType": "entity",
+                "presetVariables": [:],
+                "presetData": [
+                    "contentType": "entity",
+                    "typeName": "Entity",
+                    "data": [
+                        "from-preset": [ "presetVariable": "var" ]
+                    ]
+                ]
+            ]
+
+            let preset = try SerializedPreset(json: json)
+
+            _ = try preset.expandPreset(withVariables: ["var": "abc"])
+
+            XCTFail("Should have thrown error")
+        } catch {
+            XCTAssert(error is SerializedPreset.VariableReplaceError)
+        }
+    }
 
     func testPresetMissingVariableError() {
         do {
@@ -604,92 +629,88 @@ class SerializationTests: XCTestCase {
     
     // MARK: Preset expansion in serialized object
     
-    func testPresetExpansion() {
-        do {
-            let serializer = GameSerializer(typeProvider: Provider())
+    func testPresetExpansion() throws {
+        let serializer = GameSerializer(typeProvider: Provider())
+        
+        let json: JSON = [
+            "contentType": "space",
+            "typeName": "Space",
             
-            let json: JSON = [
-                "contentType": "space",
-                "typeName": "Space",
-                
-                // Presets are defined here, for an entity and a subspace...
-                "presets": [
-                    [
-                        "presetName": "Player",
-                        "presetType": "entity",
-                        "presetVariables": [
-                            "var": "number"
-                        ],
-                        "presetData": [
-                            "contentType": "entity",
-                            "typeName": "Entity",
-                            "data": [
-                                "id": 1,
-                                "type": 2,
-                                "components": [
-                                    [
-                                        "contentType": "component",
-                                        "typeName": "SerializableComponent",
-                                        "data": [
-                                            "field": [ "presetVariable": "var" ]
-                                        ]
+            // Presets are defined here, for an entity and a subspace...
+            "presets": [
+                [
+                    "presetName": "Player",
+                    "presetType": "entity",
+                    "presetVariables": [
+                        "var": "number"
+                    ],
+                    "presetData": [
+                        "contentType": "entity",
+                        "typeName": "Entity",
+                        "data": [
+                            "id": 1,
+                            "type": 2,
+                            "components": [
+                                [
+                                    "contentType": "component",
+                                    "typeName": "SerializableComponent",
+                                    "data": [
+                                        "field": [ "presetVariable": "var" ]
                                     ]
                                 ]
                             ]
                         ]
+                    ]
+                ],
+                [
+                    "presetName": "ASubspace",
+                    "presetType": "subspace",
+                    "presetVariables": [
+                        "var": "number"
                     ],
+                    "presetData": [
+                        "contentType": "subspace",
+                        "typeName": "SerializableSubspace",
+                        "data": [
+                            "subspaceField": [ "presetVariable": "var" ]
+                        ]
+                    ]
+                ]
+            ],
+            
+            // Presets are expanded here!
+            "data": [
+                "subspaces": [
                     [
-                        "presetName": "ASubspace",
-                        "presetType": "subspace",
-                        "presetVariables": [
-                            "var": "number"
-                        ],
-                        "presetData": [
-                            "contentType": "subspace",
-                            "typeName": "SerializableSubspace",
-                            "data": [
-                                "subspaceField": [ "presetVariable": "var" ]
-                            ]
+                        "contentType": "preset",
+                        "typeName": "ASubspace",
+                        "data": [
+                            "var": 10
                         ]
                     ]
                 ],
-                
-                // Presets are expanded here!
-                "data": [
-                    "subspaces": [
-                        [
-                            "contentType": "preset",
-                            "typeName": "ASubspace",
-                            "data": [
-                                "var": 10
-                            ]
-                        ]
-                    ],
-                    "entities": [
-                        [
-                            "contentType": "preset",
-                            "typeName": "Player",
-                            "data": [
-                                "var": 20
-                            ]
+                "entities": [
+                    [
+                        "contentType": "preset",
+                        "typeName": "Player",
+                        "data": [
+                            "var": 20
                         ]
                     ]
                 ]
             ]
-            
-            let serialized = try Serialized(json: json)
-            let space: Space = try serializer.extract(from: serialized)
-            
-            XCTAssertEqual(space.subspaces.count, 1)
-            XCTAssertEqual(space.subspace(SerializableSubspace.self)?.subspaceField, 10)
-            
-            XCTAssertEqual(space.entities.count, 1)
-            XCTAssertEqual(space.entities[0].id, 1)
-            XCTAssertEqual(space.entities[0].type, 2)
-            XCTAssertEqual(space.entities[0].component(ofType: SerializableComponent.self)?.field, 20)
-        } catch {
-            XCTFail("\(error)")
-        }
+        ]
+        
+        let serialized = try Serialized(json: json)
+        let space: Space = try serializer.extract(from: serialized)
+        
+        XCTAssertEqual(space.subspaces.count, 1)
+        XCTAssertEqual(space.subspace(SerializableSubspace.self)?.subspaceField, 10)
+        
+        XCTAssertEqual(space.entities.count, 1)
+        XCTAssertEqual(space.entities[0].id, 1)
+        XCTAssertEqual(space.entities[0].type, 2)
+        XCTAssertEqual(space.entities[0].component(ofType: SerializableComponent.self)?.field, 20)
     }
     
     func testRecursivePresetExpansion() {
