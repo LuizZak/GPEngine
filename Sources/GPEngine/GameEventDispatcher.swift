@@ -141,7 +141,10 @@ open class GameEventDispatcher: Equatable {
     fileprivate func uniqueKey(forEvent event: Int, forList keys: [(GameEventListener, EventListenerKey)]) -> EventListenerKey {
         let maxKey = keys.max(by: { $0.1.key < $1.1.key })?.1.key ?? 0
         
-        return EventListenerKey(valid: true, eventIdentifier: event, key: maxKey + 1)
+        return EventListenerKey(valid: true,
+                                dispatcher: self,
+                                eventIdentifier: event,
+                                key: maxKey + 1)
     }
     
     // Internal method that removes an event listener bounded to a given event
@@ -232,11 +235,13 @@ public struct EventListenerKey: Equatable {
     /// to removeListener(forKey:)
     internal var valid: InnerValid = true
     
+    weak var dispatcher: GameEventDispatcher?
     var eventIdentifier: Int
     var key: Int
     
     public static func == (lhs: EventListenerKey, rhs: EventListenerKey) -> Bool {
         return lhs.valid.value == rhs.valid.value
+            && lhs.dispatcher == rhs.dispatcher
             && lhs.eventIdentifier == rhs.eventIdentifier
             && lhs.key == rhs.key
     }

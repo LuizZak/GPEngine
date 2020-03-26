@@ -90,7 +90,6 @@ class EventingTests: XCTestCase {
         // -> The event count should be 0!
         
         let receiv = EventReceiverTestClass()
-        
         _ = disp.addListener(receiv, forEventType: CustomEvent.self)
         _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
         
@@ -107,8 +106,8 @@ class EventingTests: XCTestCase {
         // -> The listener should be called!
         
         let receiv = EventReceiverTestClass()
-        
         _ = disp.addListener(receiv, forEventType: CustomEvent.self)
+        
         disp.dispatchEvent(CustomEvent())
         
         XCTAssert(receiv.received, "The entity should have received the event")
@@ -123,7 +122,6 @@ class EventingTests: XCTestCase {
         
         let receiv1 = EventReceiverTestClass()
         let receiv2 = EventReceiverTestClass()
-        
         _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         _ = disp.addListener(receiv2, forEventType: CustomEvent.self)
         
@@ -141,7 +139,6 @@ class EventingTests: XCTestCase {
         
         let receiv1 = EventReceiverTestClass()
         let receiv2 = EventReceiverTestClass()
-        
         _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         _ = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
         
@@ -150,79 +147,68 @@ class EventingTests: XCTestCase {
         XCTAssertEqual(disp.eventCount, 0, "The event dispatcher must be clear after a removeAllEvents() call")
     }
     
+    func testRemoveListenerForKeyIgnoresInvalidatedKeys() {
+        let receiv = EventReceiverTestClass()
+        let key = disp.addListener(receiv, forEventType: CustomEvent.self)
+        key.valid.value = false
+        
+        disp.removeListener(forKey: key)
+        
+        XCTAssertEqual(disp.eventCount, 1)
+    }
+    
     func testKeyInvalidateOnRemoveAllEvents() {
         // Tests that an event listener key invalidates when calling
         // dispatcher.removeAllEvents
         
-        let receiv1 = EventReceiverTestClass()
-        
-        let key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
+        let receiver = EventReceiverTestClass()
+        let key = disp.addListener(receiver, forEventType: CustomEvent.self)
         
         disp.removeAllListeners()
         
-        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        
-        disp.removeListener(forKey: key1)
-        
-        XCTAssertEqual(disp.eventCount, 1)
+        XCTAssertFalse(key.valid.value)
     }
     
     func testKeyInvalidateOnRemoveByKey() {
         // Tests that an event listener key invalidates when calling
         // dispatcher.removeListener(forKey:)
         
-        let receiv1 = EventReceiverTestClass()
+        let receiver = EventReceiverTestClass()
+        let key = disp.addListener(receiver, forEventType: CustomEvent.self)
         
-        let key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
+        disp.removeListener(forKey: key)
         
-        disp.removeListener(forKey: key1)
-        
-        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        
-        disp.removeListener(forKey: key1)
-        
-        XCTAssertEqual(disp.eventCount, 1)
+        XCTAssertFalse(key.valid.value)
     }
     
     func testKeyInvalidateOnRemoveListener() {
         // Tests that an event listener key invalidates when calling
         // dispatcher.removeListener(_:)
         
-        let receiv1 = EventReceiverTestClass()
+        let receiver = EventReceiverTestClass()
+        let key = disp.addListener(receiver, forEventType: CustomEvent.self)
         
-        let key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
+        disp.removeListener(receiver)
         
-        disp.removeListener(receiv1)
-        
-        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        
-        disp.removeListener(forKey: key1)
-        
-        XCTAssertEqual(disp.eventCount, 1)
+        XCTAssertFalse(key.valid.value)
     }
     
     func testKeyInvalidateOnDispatcherDealloc() {
         // Tests that an event listener key invalidates when the event
         // dispatcher deinits
         
-        var key1: EventListenerKey!
-        
-        let receiv1 = EventReceiverTestClass()
+        var key: EventListenerKey!
+        let receiver = EventReceiverTestClass()
         
         autoreleasepool {
             let disp = GameEventDispatcher()
             
-            key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
+            key = disp.addListener(receiver, forEventType: CustomEvent.self)
             
-            _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
+            _ = disp.addListener(receiver, forEventType: CustomEvent.self)
         } // disp is invalidated here!
         
-        // Use outer event dispatcher
-        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        
-        disp.removeListener(forKey: key1)
-        
-        XCTAssertEqual(disp.eventCount, 1)
+        XCTAssertFalse(key.valid.value)
     }
     
     func testClosureEventListener() {
@@ -230,15 +216,12 @@ class EventingTests: XCTestCase {
         // types using a generic type
         
         let exp = expectation(description: "")
-        
         let receiv1 = ClosureEventListener<CustomEvent> { _ in
             exp.fulfill()
         }
-        
         let receiv2 = ClosureEventListener<OtherCustomEvent> { _ in
             XCTFail("Should not have fired")
         }
-        
         _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         _ = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
         
@@ -250,7 +233,6 @@ class EventingTests: XCTestCase {
     func testGlobalEventNotifier() {
         
         let receiver = EventReceiverTestClass()
-        
         _ = disp.addListenerForAllEvents(receiver)
         
         disp.dispatchEvent(CustomEvent())
@@ -292,6 +274,18 @@ class EventingTests: XCTestCase {
         disp.dispatchEvent(CustomEvent())
         
         XCTAssertEqual(count, 2)
+    }
+    
+    func testRemoveEventIgnoresEventKeysFromOtherDispatchers() {
+        let disp1 = GameEventDispatcher()
+        let disp2 = GameEventDispatcher()
+        let receiv = EventReceiverTestClass()
+        _ = disp1.addListener(receiv, forEventType: CustomEvent.self)
+        let key = disp2.addListener(receiv, forEventType: CustomEvent.self)
+        
+        disp1.removeListener(forKey: key)
+        
+        XCTAssertTrue(key.valid.value)
     }
 }
 
