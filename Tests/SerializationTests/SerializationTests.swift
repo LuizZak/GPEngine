@@ -114,7 +114,7 @@ class SerializationTests: XCTestCase {
         XCTAssertEqual(deserialized.id, 20)
         XCTAssertEqual(deserialized.type, 3)
         
-        // Check deserialzied components
+        // Check deserialized components
         XCTAssertEqual(2, deserialized.components.count)
         let deserializedComps = deserialized.components(ofType: SerializableComponent.self)
         
