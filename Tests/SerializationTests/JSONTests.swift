@@ -63,4 +63,21 @@ class JSONTests: XCTestCase {
 
         XCTAssertEqual(json[path: "b", 0].value, .notAnArray([.dictionary("b")]))
     }
+    
+    func testEncodeRoundtrip() throws {
+        let json: JSON = [
+            "a": 123.0,
+            "b": true,
+            "c": [
+                1,
+                "d",
+                .null
+            ]
+        ]
+        
+        let data = try JSONEncoder().encode(json)
+        let result = try JSONDecoder().decode(JSON.self, from: data)
+        
+        XCTAssertEqual(json, result)
+    }
 }

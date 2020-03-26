@@ -156,7 +156,7 @@ extension JSON: ExpressibleByArrayLiteral {
 
 extension JSON: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, JSON)...) {
-        var dict: [String: JSON] = [:]
+        var dict: [String: JSON] = .init(minimumCapacity: elements.count)
         elements.forEach { dict[$0] = $1 }
         self = .dictionary(dict)
     }
@@ -383,17 +383,17 @@ public struct JSONSubscriptAccess {
                 if let value = json[key] {
                     json = value
                 } else if json.type == .dictionary {
-                    return .keyNotFound(Array(accesses[0...i]))
+                    return .keyNotFound(Array(accesses[...i]))
                 } else {
-                    return .notADictionary(Array(accesses[0..<i]))
+                    return .notADictionary(Array(accesses[..<i]))
                 }
             case .index(let index):
                 if let array = json.array, index < array.count {
                     json = array[index]
                 } else if json.type == .array {
-                    return .keyNotFound(Array(accesses[0...i]))
+                    return .keyNotFound(Array(accesses[...i]))
                 } else {
-                    return .notAnArray(Array(accesses[0..<i]))
+                    return .notAnArray(Array(accesses[..<i]))
                 }
             }
         }
