@@ -31,7 +31,7 @@ open class GameEventDispatcher: Equatable {
     
     weak var delegate: GameEventDispatcherDelegate?
     
-    /// Represents the dictionary of event receivers listening specific events
+    /// Represents the dictionary of event receivers listening to specific events
     fileprivate var events: [Int: [(listener: GameEventListener, key: EventListenerKey)]] = [:]
     
     /// Gets the number of events currently registered on this GameEventDispatcher
@@ -42,7 +42,7 @@ open class GameEventDispatcher: Equatable {
     }
     
     deinit {
-        removeAllEvents()
+        removeAllListeners()
     }
     
     /// Adds an event listener that will receive all events dispatched.
@@ -126,7 +126,7 @@ open class GameEventDispatcher: Equatable {
     }
     
     /// Removes all the events currently registered on this event dispatcher
-    open func removeAllEvents() {
+    open func removeAllListeners() {
         // Invalidate all keys
         for (_, list) in events {
             for (_, key) in list {
@@ -236,6 +236,8 @@ public struct EventListenerKey: Equatable {
     var key: Int
     
     public static func == (lhs: EventListenerKey, rhs: EventListenerKey) -> Bool {
-        return lhs.valid.value == rhs.valid.value && lhs.key == rhs.key
+        return lhs.valid.value == rhs.valid.value
+            && lhs.eventIdentifier == rhs.eventIdentifier
+            && lhs.key == rhs.key
     }
 }

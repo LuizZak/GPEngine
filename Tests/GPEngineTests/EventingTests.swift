@@ -145,7 +145,7 @@ class EventingTests: XCTestCase {
         _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         _ = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
         
-        disp.removeAllEvents()
+        disp.removeAllListeners()
         
         XCTAssertEqual(disp.eventCount, 0, "The event dispatcher must be clear after a removeAllEvents() call")
     }
@@ -158,7 +158,7 @@ class EventingTests: XCTestCase {
         
         let key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
         
-        disp.removeAllEvents()
+        disp.removeAllListeners()
         
         _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
         
