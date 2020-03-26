@@ -17,6 +17,9 @@ public enum JSON: Codable {
         }
         if var container = try? decoder.unkeyedContainer() {
             var array: [JSON] = []
+            if let count = container.count {
+                array.reserveCapacity(count)
+            }
             while !container.isAtEnd {
                 array.append(try container.decode(JSON.self))
             }
