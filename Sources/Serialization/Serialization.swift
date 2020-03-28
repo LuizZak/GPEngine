@@ -755,15 +755,13 @@ public struct SerializedPreset: Serializable {
             return value
         }
         
-        var json = json
-        
         // Traverse into the values...
         if let dictionary = json.dictionary {
-            json = try .dictionary(dictionary.mapValues {
+            return try .dictionary(dictionary.mapValues {
                 try expandPreset(recursiveOn: $0, withVariables: values)
             })
         } else if let array = json.array {
-            json = try .array(array.map {
+            return try .array(array.map {
                 try expandPreset(recursiveOn: $0, withVariables: values)
             })
         }
