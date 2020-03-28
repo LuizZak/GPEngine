@@ -731,12 +731,12 @@ public struct SerializedPreset: Serializable {
         }
         
         // Walk recursively, expanding within
-        try expandPreset(recursiveOn: &json, withVariables: values)
+        json = try expandPreset(recursiveOn: json, withVariables: values)
         
         return Serialized(typeName: data.typeName, contentType: data.contentType, data: json)
     }
     
-    private func expandPreset(recursiveOn json: inout JSON, withVariables values: [String: JSON]) throws {
+    private func expandPreset(recursiveOn json: JSON, withVariables values: [String: JSON]) throws -> JSON {
         // A preset replacement!
         if let varName = json["presetVariable"]?.string {
             guard let varDef = variables[varName] else {
@@ -744,32 +744,31 @@ public struct SerializedPreset: Serializable {
             }
             
             if let value = values[varName] {
-                json = value
-            } else {
-                // Search for default
-                guard let value = varDef.defaultValue else {
-                    throw VariableReplaceError.missingValue(valueName: varName)
-                }
-                
-                json = value
+                return value
             }
             
-            return
+            // Search for default
+            guard let value = varDef.defaultValue else {
+                throw VariableReplaceError.missingValue(valueName: varName)
+            }
+            
+            return value
         }
         
+        var json = json
+        
         // Traverse into the values...
-        if json.type == .dictionary {
-            for (key, var value) in json {
-                try expandPreset(recursiveOn: &value, withVariables: values)
-                json[key] = value
-            }
-        } else if json.type == .array {
-            for i in 0..<(json.array?.count ?? 0) {
-                var value = json[i]
-                try expandPreset(recursiveOn: &value, withVariables: values)
-                json[i] = value
-            }
+        if let dictionary = json.dictionary {
+            json = try .dictionary(dictionary.mapValues {
+                try expandPreset(recursiveOn: $0, withVariables: values)
+            })
+        } else if let array = json.array {
+            json = try .array(array.map {
+                try expandPreset(recursiveOn: $0, withVariables: values)
+            })
         }
+        
+        return json
     }
     
     /// Represents a preset variable
@@ -787,12 +786,14 @@ public struct SerializedPreset: Serializable {
     
     /// Allowed scalar values to expand a preset variable to.
     /// Must expand to a recognized JSON type.
-    ///
-    /// - number: 64-bit floating point number
-    /// - string: Unicode string
     public enum VariableType: String {
+        /// 64-bit floating point number
         case number
+        
+        /// Boolean value
         case bool
+        
+        /// Unicode string
         case string
         
         /// Fetches the equivalent SwiftyJSON.Type enumeration value for this
