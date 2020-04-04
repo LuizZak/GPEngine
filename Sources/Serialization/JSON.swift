@@ -8,7 +8,7 @@ public enum JSON: Codable {
 
     public init(from decoder: Decoder) throws {
         if let container = try? decoder.container(keyedBy: JSONKey.self) {
-            var dict: [String: JSON] = [:]
+            var dict: [String: JSON] = .init(minimumCapacity: container.allKeys.count)
             for key in container.allKeys {
                 dict[key.stringValue] = try container.decode(JSON.self, forKey: key)
             }
@@ -17,6 +17,9 @@ public enum JSON: Codable {
         }
         if var container = try? decoder.unkeyedContainer() {
             var array: [JSON] = []
+            if let count = container.count {
+                array.reserveCapacity(count)
+            }
             while !container.isAtEnd {
                 array.append(try container.decode(JSON.self))
             }
@@ -156,7 +159,7 @@ extension JSON: ExpressibleByArrayLiteral {
 
 extension JSON: ExpressibleByDictionaryLiteral {
     public init(dictionaryLiteral elements: (String, JSON)...) {
-        var dict: [String: JSON] = [:]
+        var dict: [String: JSON] = .init(minimumCapacity: elements.count)
         elements.forEach { dict[$0] = $1 }
         self = .dictionary(dict)
     }
@@ -341,7 +344,32 @@ extension JSON: Collection {
     }
 
     public subscript(path path: JSONIndexer...) -> JSONSubscriptAccess {
-        return JSONSubscriptAccess(base: self, accesses: path.map { $0.jsonIndex })
+        let accesses = path.map { $0.jsonIndex }
+        
+        var json: JSON = self
+        
+        for (i, access) in accesses.enumerated() {
+            switch access {
+            case .dictionary(let key):
+                if let value = json[key] {
+                    json = value
+                } else if json.type == .dictionary {
+                    return .keyNotFound(Array(accesses[...i]))
+                } else {
+                    return .notADictionary(Array(accesses[..<i]))
+                }
+            case .index(let index):
+                if let array = json.array, index < array.count {
+                    json = array[index]
+                } else if json.type == .array {
+                    return .keyNotFound(Array(accesses[...i]))
+                } else {
+                    return .notAnArray(Array(accesses[..<i]))
+                }
+            }
+        }
+        
+        return .value(json)
     }
 }
 
@@ -361,55 +389,144 @@ extension Int: JSONIndexer {
     }
 }
 
-public struct JSONSubscriptAccess {
-    var base: JSON
-    var accesses: [JSONAccess]
-
+public enum JSONSubscriptAccess: Equatable {
+    case value(JSON)
+    case notAnArray([JSONAccess])
+    case notADictionary([JSONAccess])
+    case keyNotFound([JSONAccess])
+    
     public var json: JSON? {
-        switch value {
+        switch self {
         case .value(let json):
             return json
         default:
             return nil
         }
     }
-
-    public var value: AccessResult {
-        var json: JSON = base
-
-        for (i, access) in accesses.enumerated() {
-            switch access {
-            case .dictionary(let key):
-                if let value = json[key] {
-                    json = value
-                } else if json.type == .dictionary {
-                    return .keyNotFound(Array(accesses[0...i]))
-                } else {
-                    return .notADictionary(Array(accesses[0..<i]))
-                }
-            case .index(let index):
-                if let array = json.array, index < array.count {
-                    json = array[index]
-                } else if json.type == .array {
-                    return .keyNotFound(Array(accesses[0...i]))
-                } else {
-                    return .notAnArray(Array(accesses[0..<i]))
-                }
+    
+    public func number() throws -> Double {
+        switch self {
+        case .value(let v):
+            if let double = v.double {
+                return double
             }
+            
+            throw Error.invalidValueType
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
         }
-
-        return .value(json)
+    }
+    
+    public func integer() throws -> Int {
+        switch self {
+        case .value(let v):
+            if let double = v.double {
+                return Int(double)
+            }
+            
+            throw Error.invalidValueType
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
+        }
+    }
+    
+    public func string() throws -> String {
+        switch self {
+        case .value(let v):
+            if let string = v.string {
+                return string
+            }
+            
+            throw Error.invalidValueType
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
+        }
+    }
+    
+    public func bool() throws -> Bool {
+        switch self {
+        case .value(let v):
+            if let bool = v.bool {
+                return bool
+            }
+            
+            throw Error.invalidValueType
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
+        }
+    }
+    
+    public func isNull() throws -> Bool {
+        switch self {
+        case .value(let v):
+            return v == .null
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
+        }
+    }
+    
+    public func array() throws -> [JSON] {
+        switch self {
+        case .value(let v):
+            if let array = v.array {
+                return array
+            }
+            
+            throw Error.invalidValueType
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
+        }
+    }
+    
+    public func dictionary() throws -> [String: JSON] {
+        switch self {
+        case .value(let v):
+            if let dictionary = v.dictionary {
+                return dictionary
+            }
+            
+            throw Error.invalidValueType
+            
+        case let .keyNotFound(path),
+             let .notADictionary(path),
+             let .notAnArray(path):
+            
+            throw Error.invalidPath(path)
+        }
     }
 
     public enum JSONAccess: Equatable {
         case index(Int)
         case dictionary(String)
     }
-    public enum AccessResult: Equatable {
-        case value(JSON)
-        case notAnArray([JSONAccess])
-        case notADictionary([JSONAccess])
-        case keyNotFound([JSONAccess])
+    
+    public enum Error: Swift.Error {
+        case invalidPath([JSONAccess])
+        case invalidValueType
     }
 }
 
@@ -433,10 +550,12 @@ extension Bool: JSONConvertible {
     public var json: JSON { .bool(self) }
 }
 extension Array: JSONConvertible where Element: JSONConvertible {
-    public var json: JSON { .array(self.map { $0.json }) }
+    public var json: JSON {
+        .array(self.map { $0.json })
+    }
 }
 extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertible {
     public var json: JSON {
-        .dictionary(self.mapValues { $0.json })
+        .dictionary(mapValues { $0.json })
     }
 }

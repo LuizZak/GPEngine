@@ -8,6 +8,7 @@
 
 /// Delegation for a game event dispatcher
 protocol GameEventDispatcherDelegate: class {
+    
     /// Called when an event dispatcher is about to dispatch an event.
     /// This delegate method is called regardless if there are any listeners
     /// to the event passed.
@@ -15,6 +16,7 @@ protocol GameEventDispatcherDelegate: class {
 }
 
 extension GameEventDispatcherDelegate {
+    
     func gameEventDispatcher(_ eventDispatcher: GameEventDispatcher, willDispatch event: GameEvent) {
         
     }
@@ -29,7 +31,7 @@ open class GameEventDispatcher: Equatable {
     
     weak var delegate: GameEventDispatcherDelegate?
     
-    /// Represents the dictionary of event receivers listening specific events
+    /// Represents the dictionary of event receivers listening to specific events
     fileprivate var events: [Int: [(listener: GameEventListener, key: EventListenerKey)]] = [:]
     
     /// Gets the number of events currently registered on this GameEventDispatcher
@@ -40,7 +42,7 @@ open class GameEventDispatcher: Equatable {
     }
     
     deinit {
-        removeAllEvents()
+        removeAllListeners()
     }
     
     /// Adds an event listener that will receive all events dispatched.
@@ -106,52 +108,25 @@ open class GameEventDispatcher: Equatable {
     
     /// Removes the given event listener from listening to a specific type of
     /// events
-    open func removeListener<T: GameEventListener>(_ listener: T, forEventType eventType: GameEvent.Type) where T: Equatable {
+    open func removeListener(_ listener: GameEventListener, forEventType eventType: GameEvent.Type) {
         let eventId = eventType.eventIdentifier
         
-        internalRemoveEventListener(listener, eventId)
-    }
-    
-    /// Removes a given event listener from all events it is currently 
-    /// listening to
-    open func removeListener<T: GameEventListener>(_ listener: T) where T: Equatable {
-        var i = 0
-        while i < events.keys.count {
-            let count = events.count
-            
-            internalRemoveEventListener(listener, Array(events.keys)[i])
-            
-            if count == events.count {
-                i += 1
-            }
-        }
-    }
-    
-    /// Removes the given event listener from listening to a specific type of
-    /// events
-    open func removeListener<T: GameEventListener>(_ listener: T, forEventType eventType: GameEvent.Type) where T: AnyObject {
-        let eventId = eventType.eventIdentifier
-        
-        internalRemoveEventListener(listener, eventId)
+        _ = internalRemoveEventListener(listener, eventId)
     }
     
     /// Removes a given event listener from all events it is currently
     /// listening to
-    open func removeListener<T: GameEventListener>(_ listener: T) where T: AnyObject {
+    open func removeListener(_ listener: GameEventListener) {
         var i = 0
         while i < events.keys.count {
-            let count = events.count
-            
-            internalRemoveEventListener(listener, Array(events.keys)[i])
-            
-            if count == events.count {
+            if !internalRemoveEventListener(listener, Array(events.keys)[i]) {
                 i += 1
             }
         }
     }
     
     /// Removes all the events currently registered on this event dispatcher
-    open func removeAllEvents() {
+    open func removeAllListeners() {
         // Invalidate all keys
         for (_, list) in events {
             for (_, key) in list {
@@ -164,21 +139,24 @@ open class GameEventDispatcher: Equatable {
     }
     
     fileprivate func uniqueKey(forEvent event: Int, forList keys: [(GameEventListener, EventListenerKey)]) -> EventListenerKey {
-        let maxKey = keys.map { $1.key }.max() ?? 0
+        let maxKey = keys.max(by: { $0.1.key < $1.1.key })?.1.key ?? 0
         
-        return EventListenerKey(valid: true, eventIdentifier: event, key: maxKey + 1)
+        return EventListenerKey(valid: true,
+                                dispatcher: self,
+                                eventIdentifier: event,
+                                key: maxKey + 1)
     }
     
     // Internal method that removes an event listener bounded to a given event
     // identifier
-    fileprivate func internalRemoveEventListener<T: GameEventListener>(_ listener: T, _ eventIdentifier: Int) where T: Equatable {
+    fileprivate func internalRemoveEventListener(_ listener: GameEventListener, _ eventIdentifier: Int) -> Bool {
         // Try to find the key bonded to the event
         guard var list = events[eventIdentifier] else {
-            return
+            return false
         }
         
-        guard let index = list.firstIndex(where: { lstnr, _ in lstnr as? T == listener }) else {
-            return
+        guard let index = list.firstIndex(where: { lstnr, _ in lstnr === listener }) else {
+            return false
         }
         
         list[index].key.valid.value = false
@@ -189,28 +167,8 @@ open class GameEventDispatcher: Equatable {
         if list.isEmpty {
             events.removeValue(forKey: eventIdentifier)
         }
-    }
-    
-    // Internal method that removes an event listener bounded to a given event
-    // identifier
-    fileprivate func internalRemoveEventListener<T: GameEventListener>(_ listener: T, _ eventIdentifier: Int) where T: AnyObject {
-        // Try to find the key bonded to the event
-        guard var list = events[eventIdentifier] else {
-            return
-        }
         
-        guard let index = list.firstIndex(where: { lstnr, _ in lstnr as? T === listener }) else {
-            return
-        }
-        
-        list[index].key.valid.value = false
-        list.remove(at: index)
-        
-        events[eventIdentifier] = list
-        
-        if list.isEmpty {
-            events.removeValue(forKey: eventIdentifier)
-        }
+        return true
     }
     
     /// Dispatches the given event in this event dispatcher
@@ -277,10 +235,14 @@ public struct EventListenerKey: Equatable {
     /// to removeListener(forKey:)
     internal var valid: InnerValid = true
     
+    weak var dispatcher: GameEventDispatcher?
     var eventIdentifier: Int
     var key: Int
     
     public static func == (lhs: EventListenerKey, rhs: EventListenerKey) -> Bool {
-        return lhs.valid.value == rhs.valid.value && lhs.key == rhs.key
+        return lhs.valid.value == rhs.valid.value
+            && lhs.dispatcher == rhs.dispatcher
+            && lhs.eventIdentifier == rhs.eventIdentifier
+            && lhs.key == rhs.key
     }
 }

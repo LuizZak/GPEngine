@@ -27,27 +27,4 @@ extension RangeReplaceableCollection {
         
         return nil
     }
-    
-    /// Removes all elements in this collection where the given closure
-    /// evaluates to true
-    mutating func removeAll(where closure: (Iterator.Element) throws -> Bool) rethrows {
-        var index = startIndex
-        
-        while index != endIndex {
-            if try closure(self[index]) {
-                remove(at: index)
-                continue
-            }
-            
-            index = self.index(after: index)
-        }
-    }
-}
-
-extension RangeReplaceableCollection where Iterator.Element: Equatable {
-    
-    /// Removes a given equatable instance from this collection
-    mutating func remove(_ object: Iterator.Element) {
-        _ = removeFirst { $0 == object }
-    }
 }

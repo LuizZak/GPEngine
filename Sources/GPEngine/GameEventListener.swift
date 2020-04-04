@@ -8,7 +8,7 @@
 
 /// A protocol to be implemented by classed that receive events fired by the
 /// game screen
-public protocol GameEventListener {
+public protocol GameEventListener: AnyObject {
     
     /// Receives an event fired by the game screen
     func receiveEvent(_ event: GameEvent)
@@ -16,7 +16,7 @@ public protocol GameEventListener {
 
 /// Basic event listener that fires a closure whenever an expected event type
 /// is received
-public struct ClosureEventListener<Event: GameEvent>: GameEventListener {
+public final class ClosureEventListener<Event: GameEvent>: GameEventListener {
     
     /// Closure to fire by this closure listener
     public var closure: (Event) -> Void
@@ -35,7 +35,7 @@ public struct ClosureEventListener<Event: GameEvent>: GameEventListener {
 
 /// A type-erased closure event listener.
 /// Can be used to subscribe to all events dispatched by an event dispatcher
-public struct ClosureAnyEventListener: GameEventListener {
+public final class ClosureAnyEventListener: GameEventListener {
     
     /// Closure to fire by this closure listener
     public var closure: (GameEvent) -> Void

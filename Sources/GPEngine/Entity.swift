@@ -8,6 +8,7 @@
 
 /// Describes a game entity
 public class Entity {
+    
     public typealias Id = Int
     
     /// The internal list of components for this entity

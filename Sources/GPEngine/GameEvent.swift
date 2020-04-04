@@ -15,6 +15,7 @@ public protocol GameEvent {
 }
 
 extension GameEvent {
+    
     public static var eventIdentifier: Int {
         return unsafeBitCast(self, to: Int.self)
     }

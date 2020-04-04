@@ -8,6 +8,7 @@
 
 /// A protocol for representing game systems with
 public protocol System: class {
+    
     init()
     
     /// Updates all spaces provided
@@ -30,6 +31,7 @@ public protocol System: class {
 }
 
 public extension System {
+    
     /// Updates all spaces provided
     func update(spaces: [Space], interval deltaTime: DeltaTimeInterval) {
         for space in spaces {
