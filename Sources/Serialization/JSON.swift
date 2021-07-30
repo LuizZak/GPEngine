@@ -1,9 +1,16 @@
+/// A JSON value.
 public enum JSON: Codable {
+    /// A dictionary of string-keyed JSON values
     case dictionary([String: JSON])
+    /// An array of JSON values
     case array([JSON])
+    /// A string of characters
     case string(String)
+    /// A Double number
     case number(Double)
+    /// A boolean value
     case bool(Bool)
+    /// The JSON `null` value
     case null
 
     public init(from decoder: Decoder) throws {
@@ -85,6 +92,8 @@ public enum JSON: Codable {
 extension JSON: Equatable { }
 
 public extension JSON {
+    /// Returns the dictionary of values for this `JSON` in case it is a dictionary,
+    /// `nil` otherwise.
     var dictionary: [String: JSON]? {
         switch self {
         case .dictionary(let dict):
@@ -93,6 +102,9 @@ public extension JSON {
             return nil
         }
     }
+    
+    /// Returns the array of subvalues for this `JSON` in case it is an array,
+    /// `nil` otherwise.
     var array: [JSON]? {
         switch self {
         case .array(let array):
@@ -101,6 +113,8 @@ public extension JSON {
             return nil
         }
     }
+    
+    /// Returns a string for this `JSON` in case it is a string, `nil` otherwise.
     var string: String? {
         switch self {
         case .string(let string):
@@ -109,6 +123,8 @@ public extension JSON {
             return nil
         }
     }
+    
+    /// Returns a `Double` for this `JSON` in case it is a number, `nil` otherwise.
     var double: Double? {
         switch self {
         case .number(let number):
@@ -117,6 +133,8 @@ public extension JSON {
             return nil
         }
     }
+    
+    /// Returns a boolean for this `JSON` in case it is a bool, `nil` otherwise.
     var bool: Bool? {
         switch self {
         case .bool(let bool):
@@ -125,6 +143,9 @@ public extension JSON {
             return nil
         }
     }
+    
+    /// Returns an integer for this `JSON` in case it is a number that is losslesly
+    /// convertible to `Int`, `nil` otherwise.
     var int: Int? {
         switch self {
         case .number(let number):
@@ -133,6 +154,8 @@ public extension JSON {
             return nil
         }
     }
+    
+    /// Returns this JSON value's type
     var type: JSONType {
         switch self {
         case .dictionary:
@@ -403,7 +426,9 @@ public enum JSONSubscriptAccess: Equatable {
             return nil
         }
     }
-    
+
+    /// Attempts to read this subscript access as a decimal value, throwing an
+    /// error if the keypath is invalid, or if the value is not a `Double`.
     public func number() throws -> Double {
         switch self {
         case .value(let v):
@@ -421,6 +446,8 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
+    /// Attempts to read this subscript access as an integer, throwing an
+    /// error if the keypath is invalid, or if the value is not a `Integer`.
     public func integer() throws -> Int {
         switch self {
         case .value(let v):
@@ -438,6 +465,8 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
+    /// Attempts to read this subscript access as a string, throwing an
+    /// error if the keypath is invalid, or if the value is not a `String`.
     public func string() throws -> String {
         switch self {
         case .value(let v):
@@ -455,6 +484,8 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
+    /// Attempts to read this subscript access as a boolean value, throwing an
+    /// error if the keypath is invalid, or if the value is not a `Bool`.
     public func bool() throws -> Bool {
         switch self {
         case .value(let v):
@@ -472,6 +503,8 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
+    /// Returns whether this keypath access points to a `null ` JSON value.
+    /// Throws an error if the keypath is invalid.
     public func isNull() throws -> Bool {
         switch self {
         case .value(let v):
@@ -485,6 +518,8 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
+    /// Attempts to read this subscript access as an array value, throwing an
+    /// error if the keypath is invalid, or if the value is not an array.
     public func array() throws -> [JSON] {
         switch self {
         case .value(let v):
@@ -502,6 +537,8 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
+    /// Attempts to read this subscript access as a dictionary value, throwing an
+    /// error if the keypath is invalid, or if the value is not a dictionary.
     public func dictionary() throws -> [String: JSON] {
         switch self {
         case .value(let v):
@@ -518,7 +555,7 @@ public enum JSONSubscriptAccess: Equatable {
             throw Error.invalidPath(path)
         }
     }
-
+    
     public enum JSONAccess: Equatable {
         case index(Int)
         case dictionary(String)
