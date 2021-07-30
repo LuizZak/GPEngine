@@ -9,7 +9,7 @@ iOS entity-base game framework written in Swift.
 
 The framework uses traditional Entity-component-system as well as the concept of spaces, which is described [in this article](http://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-containers--gamedev-14091)
 
-The pod also comes with a subpod `GPEngine/Serialization` which allows serialization of space/subspace/entity/components from and to JSON, using [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) (see [Serialization](#serialization)).
+The pod also comes with a subpod `GPEngine/Serialization` which allows serialization of space/subspace/entity/components from and to JSON (see [Serialization](#serialization)).
 
 
 ### Concepts
@@ -100,7 +100,7 @@ GPEngine is available under the MIT license. See the LICENSE file for more info.
 
 ### Serialization
 
-(this optional feature is available under `pod 'GPEngine/Serialization'`. At this point this is unsupported in SPM due to compatibility issues with SwiftyJSON's SPM package.)
+(this optional feature is available under `pod 'GPEngine/Serialization'`.)
 
 You can use the GameSerializer class to serialize an entity or entire spaces (along with subspaces/entities/components).
 

@@ -794,7 +794,7 @@ public struct SerializedPreset: Serializable {
         /// Unicode string
         case string
         
-        /// Fetches the equivalent SwiftyJSON.Type enumeration value for this
+        /// Fetches the equivalent `JSON.JSONType` enumeration value for this
         /// variable
         var jsonType: JSON.JSONType {
             switch self {
