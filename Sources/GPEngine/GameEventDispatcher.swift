@@ -7,7 +7,7 @@
 //
 
 /// Delegation for a game event dispatcher
-protocol GameEventDispatcherDelegate: class {
+protocol GameEventDispatcherDelegate: AnyObject {
     
     /// Called when an event dispatcher is about to dispatch an event.
     /// This delegate method is called regardless if there are any listeners

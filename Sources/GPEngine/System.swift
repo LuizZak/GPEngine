@@ -7,7 +7,7 @@
 //
 
 /// A protocol for representing game systems with
-public protocol System: class {
+public protocol System: AnyObject {
     
     init()
     
