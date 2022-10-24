@@ -18,7 +18,11 @@ class EntityTests: XCTestCase {
         space.addComponent(comp, to: entity)
         
         // Test component count after inclusion being < 1
-        XCTAssertEqual(entity.components(ofType: TestComponent.self).count, 1, "The components must be added to the entity after an addComponent() call")
+        XCTAssertEqual(
+            entity.components(ofType: TestComponent.self).count,
+            1,
+            "The components must be added to the entity after an addComponent() call"
+        )
     }
     
     func testComponentRemove() {
@@ -30,7 +34,11 @@ class EntityTests: XCTestCase {
         space.removeComponent(type: TestComponent.self, from: entity)
         
         // Test component count after removal being > 0
-        XCTAssertEqual(entity.components(ofType: TestComponent.self).count, 0, "Components must be removed after a removeComponent() call")
+        XCTAssertEqual(
+            entity.components(ofType: TestComponent.self).count,
+            0,
+            "Components must be removed after a removeComponent() call"
+        )
     }
     
     func testComponentGetType() {
@@ -43,10 +51,18 @@ class EntityTests: XCTestCase {
         space.addComponent(comp2, to: entity)
         
         // Test component get
-        XCTAssertEqual(entity.components(ofType: TestComponent.self).count, 1, "Calls to components(ofType: ) must return a component with that type, or derived from that type only")
+        XCTAssertEqual(
+            entity.components(ofType: TestComponent.self).count,
+            1,
+            "Calls to components(ofType: ) must return a component with that type, or derived from that type only"
+        )
         
         // Test complete component get
-        XCTAssertEqual(entity.getAllComponents().count, 2, "Calls to components(ofType: ) with a base Component class must return all components registered")
+        XCTAssertEqual(
+            entity.getAllComponents().count,
+            2,
+            "Calls to components(ofType: ) with a base Component class must return all components registered"
+        )
         
         space.removeComponent(type: TestComponent.self, from: entity)
         

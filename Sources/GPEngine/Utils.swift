@@ -12,7 +12,10 @@ extension RangeReplaceableCollection {
     /// evaluates to true.
     /// This method also returns the element that was removed, if any.
     @discardableResult
-    mutating func removeFirst(where closure: (Iterator.Element) throws -> Bool) rethrows -> Iterator.Element? {
+    mutating func removeFirst(
+        where closure: (Iterator.Element) throws -> Bool
+    ) rethrows -> Iterator.Element? {
+        
         var index = startIndex
         
         while index != endIndex {

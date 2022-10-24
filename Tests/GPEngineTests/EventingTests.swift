@@ -10,12 +10,12 @@ import XCTest
 @testable import GPEngine
 
 class EventingTests: XCTestCase {
-    var disp = GameEventDispatcher()
+    var sut = GameEventDispatcher()
     
     override func setUp() {
         super.setUp()
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        disp = GameEventDispatcher()
+        sut = GameEventDispatcher()
     }
 
     func testMultiEventAdd() { // TODO: This test may be misconstructed: The test doesn't perform the script it claims in the comments
@@ -29,17 +29,17 @@ class EventingTests: XCTestCase {
         // 4. Dispatch that event
         // -> The listener should only be called once!
         
-        let receiv = EventReceiverTestClass()
+        let receiver = EventReceiverTestClass()
         
-        let key1 = disp.addListener(receiv, forEventType: CustomEvent.self)
-        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
+        let key1 = sut.addListener(receiver, forEventType: CustomEvent.self)
+        _ = sut.addListener(receiver, forEventType: OtherCustomEvent.self)
         
-        XCTAssertEqual(disp.eventCount, 2)
+        XCTAssertEqual(sut.eventCount, 2)
         
-        disp.removeListener(forKey: key1)
-        disp.dispatchEvent(OtherCustomEvent())
+        sut.removeListener(forKey: key1)
+        sut.dispatchEvent(OtherCustomEvent())
         
-        XCTAssertEqual(receiv.hitCount, 1)
+        XCTAssertEqual(receiver.hitCount, 1)
     }
     
     func testEventRemove() {
@@ -58,28 +58,28 @@ class EventingTests: XCTestCase {
         // 5. Use the removeListener() with one of the listeners
         // -> The event count should still be 1!
         
-        let receiv1 = EventReceiverTestClass()
-        let receiv2 = EventReceiverTestClass()
+        let receiver1 = EventReceiverTestClass()
+        let receiver2 = EventReceiverTestClass()
         
-        var key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        var key2 = disp.addListener(receiv1, forEventType: OtherCustomEvent.self)
+        var key1 = sut.addListener(receiver1, forEventType: CustomEvent.self)
+        var key2 = sut.addListener(receiver1, forEventType: OtherCustomEvent.self)
         
-        disp.removeListener(forKey: key1)
+        sut.removeListener(forKey: key1)
         
-        XCTAssertEqual(disp.eventCount, 1)
+        XCTAssertEqual(sut.eventCount, 1)
         
-        disp.removeListener(forKey: key2)
+        sut.removeListener(forKey: key2)
         
-        XCTAssertEqual(disp.eventCount, 0)
+        XCTAssertEqual(sut.eventCount, 0)
         
-        key1 = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        key2 = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
+        key1 = sut.addListener(receiver1, forEventType: CustomEvent.self)
+        key2 = sut.addListener(receiver2, forEventType: OtherCustomEvent.self)
         
-        XCTAssert(disp.eventCount == 2)
+        XCTAssert(sut.eventCount == 2)
         
-        disp.removeListener(receiv1)
+        sut.removeListener(receiver1)
         
-        XCTAssertEqual(disp.eventCount, 1)
+        XCTAssertEqual(sut.eventCount, 1)
     }
     
     func testEventRemoveAll() {
@@ -89,13 +89,13 @@ class EventingTests: XCTestCase {
         // 2. Use the removeListener() with that listener
         // -> The event count should be 0!
         
-        let receiv = EventReceiverTestClass()
-        _ = disp.addListener(receiv, forEventType: CustomEvent.self)
-        _ = disp.addListener(receiv, forEventType: OtherCustomEvent.self)
+        let receiver = EventReceiverTestClass()
+        _ = sut.addListener(receiver, forEventType: CustomEvent.self)
+        _ = sut.addListener(receiver, forEventType: OtherCustomEvent.self)
         
-        disp.removeListener(receiv)
+        sut.removeListener(receiver)
         
-        XCTAssertEqual(disp.eventCount, 0, "The event count should reset to 0 once the receiver was removed as a sole listener to multiple events")
+        XCTAssertEqual(sut.eventCount, 0, "The event count should reset to 0 once the receiver was removed as a sole listener to multiple events")
     }
     
     func testEventDispatch() {
@@ -105,12 +105,12 @@ class EventingTests: XCTestCase {
         // 2. Dispatch that event
         // -> The listener should be called!
         
-        let receiv = EventReceiverTestClass()
-        _ = disp.addListener(receiv, forEventType: CustomEvent.self)
+        let receiver = EventReceiverTestClass()
+        _ = sut.addListener(receiver, forEventType: CustomEvent.self)
         
-        disp.dispatchEvent(CustomEvent())
+        sut.dispatchEvent(CustomEvent())
         
-        XCTAssert(receiv.received, "The entity should have received the event")
+        XCTAssert(receiver.received, "The entity should have received the event")
     }
     
     func testMultiListenersEventDispatch() {
@@ -120,41 +120,41 @@ class EventingTests: XCTestCase {
         // 2. Dispatch that event
         // -> Both listeners should be called!
         
-        let receiv1 = EventReceiverTestClass()
-        let receiv2 = EventReceiverTestClass()
-        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        _ = disp.addListener(receiv2, forEventType: CustomEvent.self)
+        let receiver1 = EventReceiverTestClass()
+        let receiver2 = EventReceiverTestClass()
+        _ = sut.addListener(receiver1, forEventType: CustomEvent.self)
+        _ = sut.addListener(receiver2, forEventType: CustomEvent.self)
         
-        disp.dispatchEvent(CustomEvent())
+        sut.dispatchEvent(CustomEvent())
         
-        XCTAssert(receiv1.received && receiv2.received, "All listeners must receive events dispatched from the dispatcher")
+        XCTAssert(receiver1.received && receiver2.received, "All listeners must receive events dispatched from the dispatcher")
     }
     
     func testRemoveAllListeners() {
         // Test the removeAllEvents() method on the dispatcher
         // 
-        // 1. Add two listeners to two distict events
+        // 1. Add two listeners to two distinct events
         // 2. Use the removeAllEvents() to clear the events
         // -> The event count should be 0!
         
-        let receiv1 = EventReceiverTestClass()
-        let receiv2 = EventReceiverTestClass()
-        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        _ = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
+        let receiver1 = EventReceiverTestClass()
+        let receiver2 = EventReceiverTestClass()
+        _ = sut.addListener(receiver1, forEventType: CustomEvent.self)
+        _ = sut.addListener(receiver2, forEventType: OtherCustomEvent.self)
         
-        disp.removeAllListeners()
+        sut.removeAllListeners()
         
-        XCTAssertEqual(disp.eventCount, 0, "The event dispatcher must be clear after a removeAllEvents() call")
+        XCTAssertEqual(sut.eventCount, 0, "The event dispatcher must be clear after a removeAllEvents() call")
     }
     
     func testRemoveListenerForKeyIgnoresInvalidatedKeys() {
-        let receiv = EventReceiverTestClass()
-        let key = disp.addListener(receiv, forEventType: CustomEvent.self)
+        let receiver = EventReceiverTestClass()
+        let key = sut.addListener(receiver, forEventType: CustomEvent.self)
         key.valid.value = false
         
-        disp.removeListener(forKey: key)
+        sut.removeListener(forKey: key)
         
-        XCTAssertEqual(disp.eventCount, 1)
+        XCTAssertEqual(sut.eventCount, 1)
     }
     
     func testKeyInvalidateOnRemoveAllEvents() {
@@ -162,9 +162,9 @@ class EventingTests: XCTestCase {
         // dispatcher.removeAllEvents
         
         let receiver = EventReceiverTestClass()
-        let key = disp.addListener(receiver, forEventType: CustomEvent.self)
+        let key = sut.addListener(receiver, forEventType: CustomEvent.self)
         
-        disp.removeAllListeners()
+        sut.removeAllListeners()
         
         XCTAssertFalse(key.valid.value)
     }
@@ -174,9 +174,9 @@ class EventingTests: XCTestCase {
         // dispatcher.removeListener(forKey:)
         
         let receiver = EventReceiverTestClass()
-        let key = disp.addListener(receiver, forEventType: CustomEvent.self)
+        let key = sut.addListener(receiver, forEventType: CustomEvent.self)
         
-        disp.removeListener(forKey: key)
+        sut.removeListener(forKey: key)
         
         XCTAssertFalse(key.valid.value)
     }
@@ -186,9 +186,9 @@ class EventingTests: XCTestCase {
         // dispatcher.removeListener(_:)
         
         let receiver = EventReceiverTestClass()
-        let key = disp.addListener(receiver, forEventType: CustomEvent.self)
+        let key = sut.addListener(receiver, forEventType: CustomEvent.self)
         
-        disp.removeListener(receiver)
+        sut.removeListener(receiver)
         
         XCTAssertFalse(key.valid.value)
     }
@@ -201,31 +201,31 @@ class EventingTests: XCTestCase {
         let receiver = EventReceiverTestClass()
         
         autoreleasepool {
-            let disp = GameEventDispatcher()
+            let sut = GameEventDispatcher()
             
-            key = disp.addListener(receiver, forEventType: CustomEvent.self)
+            key = sut.addListener(receiver, forEventType: CustomEvent.self)
             
-            _ = disp.addListener(receiver, forEventType: CustomEvent.self)
-        } // disp is invalidated here!
+            _ = sut.addListener(receiver, forEventType: CustomEvent.self)
+        } // sut is invalidated here!
         
         XCTAssertFalse(key.valid.value)
     }
     
     func testClosureEventListener() {
-        // Test the ClosureEventListener utlity struct, which filters event
+        // Test the ClosureEventListener utility struct, which filters event
         // types using a generic type
         
         let exp = expectation(description: "")
-        let receiv1 = ClosureEventListener<CustomEvent> { _ in
+        let receiver1 = ClosureEventListener<CustomEvent> { _ in
             exp.fulfill()
         }
-        let receiv2 = ClosureEventListener<OtherCustomEvent> { _ in
+        let receiver2 = ClosureEventListener<OtherCustomEvent> { _ in
             XCTFail("Should not have fired")
         }
-        _ = disp.addListener(receiv1, forEventType: CustomEvent.self)
-        _ = disp.addListener(receiv2, forEventType: OtherCustomEvent.self)
+        _ = sut.addListener(receiver1, forEventType: CustomEvent.self)
+        _ = sut.addListener(receiver2, forEventType: OtherCustomEvent.self)
         
-        disp.dispatchEvent(CustomEvent())
+        sut.dispatchEvent(CustomEvent())
         
         waitForExpectations(timeout: 0, handler: nil)
     }
@@ -233,17 +233,17 @@ class EventingTests: XCTestCase {
     func testGlobalEventNotifier() {
         
         let receiver = EventReceiverTestClass()
-        _ = disp.addListenerForAllEvents(receiver)
+        _ = sut.addListenerForAllEvents(receiver)
         
-        disp.dispatchEvent(CustomEvent())
-        disp.dispatchEvent(OtherCustomEvent())
+        sut.dispatchEvent(CustomEvent())
+        sut.dispatchEvent(OtherCustomEvent())
         
         XCTAssertEqual(receiver.hitCount, 2)
         
         // Make sure we're able to unsubscribe the event listener normally
-        disp.removeListener(receiver)
+        sut.removeListener(receiver)
         
-        disp.dispatchEvent(CustomEvent())
+        sut.dispatchEvent(CustomEvent())
         
         XCTAssertEqual(receiver.hitCount, 2)
     }
@@ -261,29 +261,29 @@ class EventingTests: XCTestCase {
             }
         }
         
-        let key = disp.addListenerForAllEvents(receiver)
+        let key = sut.addListenerForAllEvents(receiver)
         
-        disp.dispatchEvent(CustomEvent())
-        disp.dispatchEvent(OtherCustomEvent())
+        sut.dispatchEvent(CustomEvent())
+        sut.dispatchEvent(OtherCustomEvent())
         
         waitForExpectations(timeout: 0, handler: nil)
         
         // Make sure we're able to unsubscribe the event listener normally
-        disp.removeListener(forKey: key)
+        sut.removeListener(forKey: key)
         
-        disp.dispatchEvent(CustomEvent())
+        sut.dispatchEvent(CustomEvent())
         
         XCTAssertEqual(count, 2)
     }
     
     func testRemoveEventIgnoresEventKeysFromOtherDispatchers() {
-        let disp1 = GameEventDispatcher()
-        let disp2 = GameEventDispatcher()
-        let receiv = EventReceiverTestClass()
-        _ = disp1.addListener(receiv, forEventType: CustomEvent.self)
-        let key = disp2.addListener(receiv, forEventType: CustomEvent.self)
+        let dispatcher1 = GameEventDispatcher()
+        let dispatcher2 = GameEventDispatcher()
+        let receiver = EventReceiverTestClass()
+        _ = dispatcher1.addListener(receiver, forEventType: CustomEvent.self)
+        let key = dispatcher2.addListener(receiver, forEventType: CustomEvent.self)
         
-        disp1.removeListener(forKey: key)
+        dispatcher1.removeListener(forKey: key)
         
         XCTAssertTrue(key.valid.value)
     }

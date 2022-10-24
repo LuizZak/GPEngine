@@ -21,7 +21,7 @@ open class Space {
     /// The set of subspaces for the space
     open fileprivate(set) var subspaces: [Subspace]
     
-    /// The event dispatcher that handles event handling specificly on this
+    /// The event dispatcher that handles event handling specifically on this
     /// space
     open internal(set) var eventDispatcher = GameEventDispatcher()
     

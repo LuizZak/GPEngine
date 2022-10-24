@@ -195,7 +195,7 @@ class EntitySelectorTests: XCTestCase {
         let rule: EntitySelector = .and([.none, .typeFlag(0)])
         
         XCTAssertFalse(rule.evaluate(with: entity))
-        XCTAssertFalse(entity.didGetType, "Should have shortcircuited")
+        XCTAssertFalse(entity.didGetType, "Should have short-circuited")
     }
     
     func testOrShortcut() {
@@ -205,7 +205,7 @@ class EntitySelectorTests: XCTestCase {
         let rule: EntitySelector = .or([.any, .typeFlag(0)])
         
         XCTAssert(rule.evaluate(with: entity))
-        XCTAssertFalse(entity.didGetType, "Should have shortcircuited")
+        XCTAssertFalse(entity.didGetType, "Should have short-circuited")
     }
 }
 

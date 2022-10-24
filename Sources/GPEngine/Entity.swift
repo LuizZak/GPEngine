@@ -56,7 +56,11 @@ public class Entity {
     }
     
     /// Applies a given closure to each component of a given type on this entity
-    public func withComponents<C: Component>(ofType type: C.Type, do closure: (C) throws -> Void) rethrows {
+    public func withComponents<C: Component>(
+        ofType type: C.Type,
+        do closure: (C) throws -> Void
+    ) rethrows {
+        
         for comp in components {
             if let component = comp as? C {
                 try closure(component)
@@ -74,9 +78,12 @@ public class Entity {
     ///     // ...
     /// }
     /// ```
-    public func withComponents<C1, C2>(ofTypes type1: C1.Type,
-                                       _ type2: C2.Type,
-                                       do closure: (C1, C2) throws -> Void) rethrows where C1: Component, C2: Component {
+    public func withComponents<C1, C2>(
+        ofTypes type1: C1.Type,
+        _ type2: C2.Type,
+        do closure: (C1, C2) throws -> Void
+    ) rethrows where C1: Component, C2: Component {
+
         if let comp1 = component(ofType: C1.self), let comp2 = component(ofType: C2.self) {
             try closure(comp1, comp2)
         }
@@ -109,11 +116,18 @@ public class Entity {
     ///     // ...
     /// }
     /// ```
-    public func withComponents<C1, C2, C3>(ofTypes type1: C1.Type,
-                                           _ type2: C2.Type,
-                                           _ type3: C3.Type,
-                                           do closure: (C1, C2, C3) throws -> Void) rethrows where C1: Component, C2: Component, C3: Component {
-        if let comp1 = component(ofType: C1.self), let comp2 = component(ofType: C2.self), let comp3 = component(ofType: C3.self) {
+    public func withComponents<C1, C2, C3>(
+        ofTypes type1: C1.Type,
+        _ type2: C2.Type,
+        _ type3: C3.Type,
+        do closure: (C1, C2, C3) throws -> Void
+    ) rethrows where C1: Component, C2: Component, C3: Component {
+
+        if
+            let comp1 = component(ofType: C1.self),
+            let comp2 = component(ofType: C2.self),
+            let comp3 = component(ofType: C3.self)
+        {
             try closure(comp1, comp2, comp3)
         }
     }
@@ -131,7 +145,10 @@ public class Entity {
     ///     // ...
     /// }
     /// ```
-    public func withComponents<C1: Component, C2: Component, C3: Component>(do closure: (C1, C2, C3) throws -> Void) rethrows {
+    public func withComponents<C1: Component, C2: Component, C3: Component>(
+        do closure: (C1, C2, C3) throws -> Void
+    ) rethrows {
+
         try withComponents(ofTypes: C1.self, C2.self, C3.self, do: closure)
     }
     

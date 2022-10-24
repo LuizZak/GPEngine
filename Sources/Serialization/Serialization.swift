@@ -13,7 +13,7 @@ import GPEngine
 
 /// Errors that can be throwing during a serialization process.
 ///
-/// - cannotSerialize: An error ocurring during the serialization process
+/// - cannotSerialize: An error occurring during the serialization process
 public enum SerializationError: Error, CustomStringConvertible {
     case cannotSerialize(reason: String)
     
@@ -27,7 +27,7 @@ public enum SerializationError: Error, CustomStringConvertible {
 
 /// Errors that can be throwing during a deserialization process.
 ///
-/// - notImplemented: The current implementer has not overriden a default
+/// - notImplemented: The current implementer has not overridden a default
 /// implementation with a suitable body.
 /// Default error thrown when trying to call a serialization-related method on
 /// objects that have not implemented these methods.
@@ -398,7 +398,7 @@ public class GameSerializer {
             
             // Only remove if there's anything to remove
             if last != presets.count {
-                presets = Array(presets[last..<presets.count])
+                presets = Array(presets[last...])
             }
         }
         
@@ -605,7 +605,7 @@ public struct SerializedPreset: Serializable {
         self.data = data
     }
     
-    /// Deserializes a serialzied preset from a given JSON object
+    /// Deserializes a serialized preset from a given JSON object
     public init(json: JSON) throws {
         guard let name = json["presetName"]?.string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'presetName'")
@@ -657,7 +657,7 @@ public struct SerializedPreset: Serializable {
                 } else if value["default"]?.type == .number {
                     defaultValue = value["default"]
                 } else {
-                    throw DeserializationError.invalidSerialized(message: "Unsuported variable type '\(value["default"]?.type as Any)' in variable '\(name)' in preset '\(name)'")
+                    throw DeserializationError.invalidSerialized(message: "Unsupported variable type '\(value["default"]?.type as Any)' in variable '\(name)' in preset '\(name)'")
                 }
                 
                 typeString = tString
@@ -810,11 +810,11 @@ public struct SerializedPreset: Serializable {
     
     /// Possible errors returned by `.expandPreset(withVariables:)`
     ///
-    /// - unkownVariable: A variable reference within the preset data is not
+    /// - unknownVariable: A variable reference within the preset data is not
     /// listed within the preset's variable list
     /// - missingValue: A variable within the preset data has no matching value
     /// within the variables dictionary
-    /// - missmatchedType: A value that was fed to the variables dictionary
+    /// - mismatchedType: A value that was fed to the variables dictionary
     /// mismatches the expected type
     public enum VariableReplaceError: Error, CustomStringConvertible {
         case unknownVariable(variableName: String)
@@ -891,7 +891,7 @@ public protocol SerializationTypeProvider {
     /// - Parameter json: A JSON object describing the serialized object.
     /// - Returns: A deserialized object of the given type, with the given JSON
     /// data.
-    /// - Throws: Some error found durign the search for the serializable type.
+    /// - Throws: Some error found during the search for the serializable type.
     /// Errors must be thrown when the implementer does not recognize the serializable
     /// name passed in.
     func createDeserializable(from name: String, json: JSON) throws -> Serializable

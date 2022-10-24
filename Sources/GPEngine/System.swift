@@ -16,7 +16,7 @@ public protocol System: AnyObject {
     func update(spaces: [Space], interval deltaTime: DeltaTimeInterval)
     
     /// Updates a specific space with this system.
-    /// Called by update(spaces:interval:) individualy for every space passed in
+    /// Called by update(spaces:interval:) individually for every space passed in
     @inlinable
     func update(space: Space, interval deltaTime: DeltaTimeInterval)
     
@@ -25,7 +25,7 @@ public protocol System: AnyObject {
     func render(spaces: [Space], interval deltaTime: DeltaTimeInterval)
     
     /// Renders a specific space with this system
-    /// Called by render(spaces:interval:) individualy for every space passed in
+    /// Called by render(spaces:interval:) individually for every space passed in
     @inlinable
     func render(space: Space, interval deltaTime: DeltaTimeInterval)
 }
