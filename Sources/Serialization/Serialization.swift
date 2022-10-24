@@ -37,10 +37,13 @@ public enum SerializationError: Error, CustomStringConvertible {
 ///
 /// - invalidSerialized: A serialized object cannot be deserialized with a
 /// provided JSON
+///
+/// - presetNotFound: Error raised when a preset with a specific name is not found.
 public enum DeserializationError: Error, CustomStringConvertible {
     case notImplemented
     case unrecognizedSerializedName(name: String)
     case invalidSerialized(message: String)
+    case presetNotFound(presetName: String)
     
     public var description: String {
         switch self {
@@ -50,6 +53,8 @@ public enum DeserializationError: Error, CustomStringConvertible {
             return "Deserialization error: unrecognized serialized type name '\(name)'"
         case .invalidSerialized(let message):
             return "Deserialization error: \(message)"
+        case .presetNotFound(let presetName):
+            return "Deserialization error: preset '\(presetName)' not found"
         }
     }
 }
@@ -158,7 +163,7 @@ public class GameSerializer {
         }
         
         guard let preset = presetContext.preset(named: serialized.typeName) else {
-            throw DeserializationError.invalidSerialized(message: "Could not find preset named \(serialized.typeName)")
+            throw DeserializationError.presetNotFound(presetName: serialized.typeName)
         }
         
         return try preset.expandPreset(withVariables: vars)
@@ -213,8 +218,17 @@ public class GameSerializer {
             return try extract(from: deserializePreset(in: serialized))
         }
         
-        if serialized.typeName != "Space" || serialized.contentType != .space {
-            throw DeserializationError.invalidSerialized(message: "Does not represent a plain serialized Space instance")
+        if serialized.typeName != "Space" {
+            throw DeserializationError
+                .invalidSerialized(
+                    message: "Does not represent a plain serialized Space instance: Expected serialized.typeName to be 'Space', but found \(serialized.typeName)"
+                )
+        }
+        if serialized.contentType != .space {
+            throw DeserializationError
+                .invalidSerialized(
+                    message: "Does not represent a plain serialized Space instance: Expected serialized.contentType to be '.space', but found \(serialized.contentType)"
+                )
         }
 
         let serializedSpace = try SerializedSpace(json: serialized.data)
@@ -398,7 +412,7 @@ public class GameSerializer {
             
             // Only remove if there's anything to remove
             if last != presets.count {
-                presets = Array(presets[last...])
+                presets = Array(presets[..<last])
             }
         }
         
@@ -506,20 +520,27 @@ public struct Serialized: Serializable {
     /// - Returns: A deserialized instance of this component type
     /// - Throws: Any type of error during deserialization.
     public init(json: JSON) throws {
-        guard let name = json[CodingKeys.typeName.rawValue]?.string else {
+        guard let name = json[CodingKeys.typeName]?.string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'typeName'")
         }
-        guard let type = json[CodingKeys.contentType.rawValue]?.string else {
+        guard let type = json[CodingKeys.contentType]?.string else {
             throw DeserializationError.invalidSerialized(message: "Missing 'contentType'")
         }
         guard let contentType = ContentType(rawValue: type) else {
             throw DeserializationError.invalidSerialized(message: "Invalid content type \(type)")
         }
-        if json[CodingKeys.data.rawValue]?.type == .null {
+        if json[CodingKeys.data]?.type == .null {
             throw DeserializationError.invalidSerialized(message: "Missing 'data'")
         }
-        if let presets = json[CodingKeys.presets.rawValue]?.array {
-            self.presets = try presets.map { try SerializedPreset(json: $0) }
+        if let presets = json[CodingKeys.presets] {
+            if let array = presets.array {
+                self.presets = try array.map { try SerializedPreset(json: $0) }
+            } else {
+                throw DeserializationError
+                    .invalidSerialized(
+                        message: "Expected 'presets' to be an array, found '\(presets.type)'"
+                    )
+            }
         } else {
             self.presets = []
         }
@@ -919,5 +940,11 @@ public extension BasicSerializationTypeProvider {
         }
 
         throw DeserializationError.unrecognizedSerializedName(name: name)
+    }
+}
+
+extension JSON {
+    subscript<T: RawRepresentable & CodingKey>(key: T) -> JSON? where T.RawValue == String {
+        return self[key.rawValue]
     }
 }

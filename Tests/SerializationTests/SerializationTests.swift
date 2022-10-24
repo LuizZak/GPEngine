@@ -446,6 +446,80 @@ class SerializationTests: XCTestCase {
         XCTAssertEqual(preset.variables["var2"]?.name, "var2")
         XCTAssertEqual(preset.variables["var2"]?.type, .string)
     }
+
+    func testPresetDeserialization_presetsAreProperlyScoped() throws {
+        let json: JSON = [
+            "presetName": "Object",
+            "presetType": "space",
+            "presetVariables": [
+                "var1": [ "type": "number", "default": 0 ],
+                "var2": "string",
+            ],
+            "presetData": [
+                "contentType": "space",
+                "typeName": "Space",
+                "data": [
+                    "entities": [
+                        [
+                            "contentType": "entity",
+                            "typeName": "Entity",
+                            "presets": [
+                                [
+                                    "presetName": "Nested",
+                                    "presetType": "component",
+                                    "presetVariables": [
+                                        "var1": [ "type": "number", "default": 0 ],
+                                    ],
+                                    "presetData": [
+                                        "contentType": "component",
+                                        "typeName": "SerializableComponent",
+                                        "data": [
+                                            "field": [ "presetVariable": "var1" ],
+                                        ],
+                                    ],
+                                ]
+                            ],
+                            "data": [
+                                "id": 0,
+                                "type": 0,
+                                "components": [],
+                            ],
+                        ],
+                        [
+                            "contentType": "entity",
+                            "typeName": "Entity",
+                            "data": [
+                                "id": 0,
+                                "type": 0,
+                                "components": [
+                                    [
+                                        "contentType": "preset",
+                                        "typeName": "Nested",
+                                        "vars": [
+                                            "var1": 2,
+                                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    "subspaces": [],
+                ],
+            ],
+        ]
+        
+        do {
+            let preset = try SerializedPreset(json: json)
+            let serializer = GameSerializer(typeProvider: Provider())
+            let _: Space = try serializer.extract(from: preset.data)
+
+            XCTFail("Should have thrown error")
+        } catch DeserializationError.presetNotFound("Nested") {
+            
+        } catch {
+            XCTFail("Expected DeserializationError.presetNotFound error.")
+        }
+    }
     
     func testPresetSerializedDataDifferentTypeError() {
         // If the type specified in 'presetName' differs from the presetData's
@@ -483,6 +557,34 @@ class SerializationTests: XCTestCase {
             ]
             
             _ = try SerializedPreset(json: json)
+            
+            XCTFail("Should have thrown error")
+        } catch {
+            XCTAssert(error is DeserializationError)
+        }
+    }
+    
+    func testPresetsKeyNotArray() {
+        // 'presets' key in serialized objects need to be an array.
+        
+        do {
+            let json: JSON = [
+                "contentType": "entity",
+                "typeName": "Entity",
+                "presets": [
+                    "presetName": "Player",
+                    "presetType": "entity",
+                    "presetVariables": [:],
+                    "presetData": []
+                ],
+                "data": [
+                    "id": 0,
+                    "type": 0,
+                    "components": []
+                ]
+            ]
+            
+            _ = try Serialized(json: json)
             
             XCTFail("Should have thrown error")
         } catch {

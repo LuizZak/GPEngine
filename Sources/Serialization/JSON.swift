@@ -144,7 +144,7 @@ public extension JSON {
         }
     }
     
-    /// Returns an integer for this `JSON` in case it is a number that is losslesly
+    /// Returns an integer for this `JSON` in case it is a number that is losslessly
     /// convertible to `Int`, `nil` otherwise.
     var int: Int? {
         switch self {
