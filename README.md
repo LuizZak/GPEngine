@@ -89,7 +89,7 @@ import PackageDescription
 let package = Package(
     name: "project_name",
     dependencies: [
-        .package(url: "https://github.com/LuizZak/GPEngine.git", from: "3.0.0")
+        .package(url: "https://github.com/LuizZak/GPEngine.git", from: "4.0.0")
     ],
     targets: []
 )
