@@ -736,7 +736,7 @@ public struct Serialized: Serializable {
     
     /// Serializes the state of this component into a JSON object.
     ///
-    /// - Returns: The serialized state for this object.
+    /// - returns: The serialized state for this object.
     public func serialized() -> JSON {
         return [
             CodingKeys.typeName.rawValue: typeName.json,
@@ -1127,7 +1127,7 @@ public struct SerializedPreset: Serializable {
 public protocol Serializable {
     /// Serializes the state of this component into a JSON object.
     ///
-    /// - Returns: The serialized state for this object.
+    /// - returns: The serialized state for this object.
     func serialized() -> JSON
 }
 
@@ -1163,18 +1163,20 @@ public protocol SerializationTypeProvider {
     /// The default implementation of this method simply returns the name of the
     /// type passed in by the `serializable` parameter.
     ///
-    /// - Parameter serializable: The static type of a Serializable.
-    /// - Returns: A string that can uniquely identify the type of the serializable.
+    /// - parameter serializable: The static type of a Serializable.
+    /// - returns: A string that can uniquely identify the type of the serializable.
     func serializedName(for serializable: Serializable.Type) -> String
 
     /// Asks the implementer for a deserialized type with a given name, with the
     /// given JSON data.
     ///
-    /// - Parameter name: The name of the serialized object.
-    /// - Parameter json: A JSON object describing the serialized object.
-    /// - Returns: A deserialized object of the given type, with the given JSON
+    /// - parameter name: The name of the serialized object.
+    /// - parameter json: A JSON object describing the serialized object.
+    /// - parameter path: The full JSON path to the serialized object. Used for
+    /// diagnostics purposes.
+    /// - returns: A deserialized object of the given type, with the given JSON
     /// data.
-    /// - Throws: Some error found during the search for the serializable type.
+    /// - throws: Some error found during the search for the serializable type.
     /// Errors must be thrown when the implementer does not recognize the serializable
     /// name passed in.
     func createDeserializable(from name: String, json: JSON, path: JsonPath) throws -> Serializable
@@ -1201,7 +1203,7 @@ public extension BasicSerializationTypeProvider {
         json: JSON,
         path: JsonPath
     ) throws -> Serializable {
-        
+
         for (type, constructor) in serializableTypes {
             if String(describing: type) == name {
                 return try constructor(json, path)

@@ -436,7 +436,7 @@ public enum JSONSubscriptAccess: Equatable {
                 return double
             }
             
-            throw Error.invalidValueType(prefixPath)
+            throw Error.invalidValueType(prefixPath, expected: .number, found: v.type)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
@@ -447,7 +447,8 @@ public enum JSONSubscriptAccess: Equatable {
     }
     
     /// Attempts to read this subscript access as an integer, throwing an
-    /// error if the keypath is invalid, or if the value is not a `Integer`.
+    /// error if the keypath is invalid, or if the value is not a `Double` that
+    /// is convertible to an integer.
     public func integer(prefixPath: [JSONAccess] = []) throws -> Int {
         switch self {
         case .value(let v):
@@ -455,7 +456,7 @@ public enum JSONSubscriptAccess: Equatable {
                 return Int(double)
             }
             
-            throw Error.invalidValueType(prefixPath)
+            throw Error.invalidValueType(prefixPath, expected: .number, found: v.type)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
@@ -474,7 +475,7 @@ public enum JSONSubscriptAccess: Equatable {
                 return string
             }
             
-            throw Error.invalidValueType(prefixPath)
+            throw Error.invalidValueType(prefixPath, expected: .string, found: v.type)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
@@ -493,7 +494,7 @@ public enum JSONSubscriptAccess: Equatable {
                 return bool
             }
             
-            throw Error.invalidValueType(prefixPath)
+            throw Error.invalidValueType(prefixPath, expected: .bool, found: v.type)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
@@ -527,7 +528,7 @@ public enum JSONSubscriptAccess: Equatable {
                 return array
             }
             
-            throw Error.invalidValueType(prefixPath)
+            throw Error.invalidValueType(prefixPath, expected: .array, found: v.type)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
@@ -546,7 +547,7 @@ public enum JSONSubscriptAccess: Equatable {
                 return dictionary
             }
             
-            throw Error.invalidValueType(prefixPath)
+            throw Error.invalidValueType(prefixPath, expected: .dictionary, found: v.type)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
@@ -570,9 +571,18 @@ public enum JSONSubscriptAccess: Equatable {
         }
     }
     
-    public enum Error: Swift.Error {
+    public enum Error: Swift.Error, CustomStringConvertible {
         case invalidPath([JSONAccess])
-        case invalidValueType([JSONAccess])
+        case invalidValueType([JSONAccess], expected: JSON.JSONType, found: JSON.JSONType)
+
+        public var description: String {
+            switch self {
+            case .invalidPath(let path):
+                return "Invalid JSON path \(path.asJsonAccessString())"
+            case .invalidValueType(let path, let expected, let found):
+                return "Expected a value of type '\(expected)' but found a value of type '\(found)' @ \(path.asJsonAccessString())"
+            }
+        }
     }
 }
 
