@@ -11,6 +11,7 @@ The framework uses traditional Entity-component-system as well as the concept of
 
 The pod also comes with a subpod `GPEngine/Serialization` which allows serialization of space/subspace/entity/components from and to JSON (see [Serialization](#serialization)).
 
+A Swift Package for this library is also available.
 
 ### Concepts
 
