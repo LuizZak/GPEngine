@@ -25,8 +25,8 @@ class SerializationTests: XCTestCase {
             self.field = field
         }
         
-        init(json: JSON) throws {
-            field = try json[path: "field"].integer()
+        init(json: JSON, path: JsonPath) throws {
+            field = try json[path: "field"].integer(prefixPath: path)
         }
         
         func serialized() -> JSON {
@@ -41,8 +41,8 @@ class SerializationTests: XCTestCase {
             self.subspaceField = subspaceField
         }
         
-        init(json: JSON) throws {
-            subspaceField = try json[path: "subspaceField"].integer()
+        init(json: JSON, path: JsonPath) throws {
+            subspaceField = try json[path: "subspaceField"].integer(prefixPath: path)
         }
         
         func serialized() -> JSON {
@@ -59,7 +59,7 @@ class SerializationTests: XCTestCase {
     }
     
     class Provider: BasicSerializationTypeProvider {
-        var serializableTypes: [(Serializable.Type, (JSON) throws -> Serializable)] = [
+        var serializableTypes: [(Serializable.Type, (JSON, JsonPath) throws -> Serializable)] = [
             (SerializableCodableComponent.self, SerializableCodableComponent.init),
             (SerializableComponent.self, SerializableComponent.init),
             (SerializableSubspace.self, SerializableSubspace.init)
@@ -75,7 +75,7 @@ class SerializationTests: XCTestCase {
         let object = serializer.serialize(original)
         XCTAssertEqual(object.contentType, .component)
         
-        let ser: SerializableComponent = try serializer.extract(from: object)
+        let ser: SerializableComponent = try serializer.extract(from: object, path: .root)
         
         XCTAssertEqual(ser.field, original.field)
     }
@@ -87,7 +87,7 @@ class SerializationTests: XCTestCase {
         let object = serializer.serialize(original)
         XCTAssertEqual(object.contentType, .component)
         
-        let ser: SerializableCodableComponent = try serializer.extract(from: object)
+        let ser: SerializableCodableComponent = try serializer.extract(from: object, path: .root)
         
         XCTAssertEqual(ser.field1, original.field1)
         XCTAssertEqual(ser.field2, original.field2)
@@ -108,7 +108,7 @@ class SerializationTests: XCTestCase {
         
         let object = try serializer.serialize(original)
         
-        let deserialized: Entity = try serializer.extract(from: object)
+        let deserialized: Entity = try serializer.extract(from: object, path: .root)
         // Check basic deserialization
         XCTAssertEqual(object.contentType, .entity)
         XCTAssertEqual(deserialized.id, 20)
@@ -169,7 +169,7 @@ class SerializationTests: XCTestCase {
         
         XCTAssertEqual(object.contentType, .space)
         
-        let deserialized: Space = try serializer.extract(from: object)
+        let deserialized: Space = try serializer.extract(from: object, path: .root)
         
         XCTAssertEqual(1, deserialized.entities.count)
         XCTAssertEqual(1, deserialized.entities[0].components.count)
@@ -189,7 +189,7 @@ class SerializationTests: XCTestCase {
         
         do {
             _ = try serializer.serialize(original)
-            XCTFail("Should not have serialzied successfully")
+            XCTFail("Should not have serialized successfully")
         } catch {
             XCTAssert(error is SerializationError)
         }
@@ -206,7 +206,7 @@ class SerializationTests: XCTestCase {
         
         do {
             _ = try serializer.serialize(original)
-            XCTFail("Should not have serialzied successfully")
+            XCTFail("Should not have serialized successfully")
         } catch {
             XCTAssert(error is SerializationError)
         }
@@ -250,8 +250,8 @@ class SerializationTests: XCTestCase {
             ]
         ]
             
-        let serialized = try Serialized(json: json)
-        let space: Space = try serializer.extract(from: serialized)
+        let serialized = try Serialized(json: json, path: .root)
+        let space: Space = try serializer.extract(from: serialized, path: .root)
         
         XCTAssertEqual(space.subspaces.count, 1)
         XCTAssertEqual(space.subspace(SerializableSubspace.self)?.subspaceField, 10)
@@ -318,7 +318,7 @@ class SerializationTests: XCTestCase {
             ]
         ]
         
-        let preset = try SerializedPreset(json: json)
+        let preset = try SerializedPreset(json: json, path: .root)
         
         XCTAssertEqual("Player", preset.name)
         XCTAssertEqual(.entity, preset.type)
@@ -358,7 +358,7 @@ class SerializationTests: XCTestCase {
             ]
         ]
         
-        let preset = try SerializedPreset(json: json)
+        let preset = try SerializedPreset(json: json, path: .root)
         
         let expanded =
             try preset.expandPreset(withVariables:
@@ -405,15 +405,21 @@ class SerializationTests: XCTestCase {
                 "contentType": "entity"
             ]
         ]
-        let innerPreset = SerializedPreset(name: "Player",
-                                           type: .entity,
-                                           variables: [:],
-                                           data: Serialized(typeName: "Entity", contentType: .entity, data: [:]))
-        let preset = SerializedPreset(name: "PresetName",
-                                      type: .entity,
-                                      variables: ["var1": SerializedPreset.Variable(name: "var1", type: .number, defaultValue: 1),
-                                                  "var2": SerializedPreset.Variable(name: "var2", type: .number)],
-                                      data: Serialized(typeName: "TypeName", presets: [innerPreset], contentType: .entity, data: [:]))
+        let innerPreset = SerializedPreset(
+            name: "Player",
+            type: .entity,
+            variables: [:],
+            data: Serialized(typeName: "Entity", contentType: .entity, data: [:])
+        )
+        let preset = SerializedPreset(
+            name: "PresetName",
+            type: .entity,
+            variables: [
+                "var1": SerializedPreset.Variable(name: "var1", type: .number, defaultValue: 1),
+                "var2": SerializedPreset.Variable(name: "var2", type: .number)
+            ],
+            data: Serialized(typeName: "TypeName", presets: [innerPreset], contentType: .entity, data: [:])
+        )
 
         let result = preset.serialized()
 
@@ -435,7 +441,7 @@ class SerializationTests: XCTestCase {
             ]
         ]
         
-        let preset = try SerializedPreset(json: json)
+        let preset = try SerializedPreset(json: json, path: .root)
         
         XCTAssertEqual(preset.name, "Player")
         XCTAssertEqual(preset.type, .entity)
@@ -492,6 +498,8 @@ class SerializationTests: XCTestCase {
                                 "id": 0,
                                 "type": 0,
                                 "components": [
+                                    // Reference to preset created in previous
+                                    // entity should not be visible in this entity.
                                     [
                                         "contentType": "preset",
                                         "typeName": "Nested",
@@ -509,15 +517,23 @@ class SerializationTests: XCTestCase {
         ]
         
         do {
-            let preset = try SerializedPreset(json: json)
+            let preset = try SerializedPreset(json: json, path: .root)
             let serializer = GameSerializer(typeProvider: Provider())
-            let _: Space = try serializer.extract(from: preset.data)
+            let _: Space = try serializer.extract(
+                from: preset.data,
+                path: .root.dictionary("presetData").dictionary("data")
+            )
 
             XCTFail("Should have thrown error")
-        } catch DeserializationError.presetNotFound("Nested") {
-            
+        } catch
+            DeserializationError.presetNotFound(
+                "Nested",
+                let path
+            )
+        {
+            XCTAssertEqual(path.asJsonAccessString(), "<root>.presetData.data.entities[1].components[0].typeName")
         } catch {
-            XCTFail("Expected DeserializationError.presetNotFound error.")
+            XCTFail("Expected DeserializationError.presetNotFound error, found \(error).")
         }
     }
     
@@ -537,11 +553,16 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _ = try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json, path: .root)
             
             XCTFail("Should have thrown error")
+        } catch let error as DeserializationError {
+            XCTAssertEqual(
+                error.description,
+                "Deserialization error @ <root>.presetData.contentType: Expected preset data of type 'entity', but received preset with contentType 'custom' in preset 'Player'"
+            )
         } catch {
-            XCTAssert(error is DeserializationError)
+            XCTFail("Expected DeserializationError error, found \(error)")
         }
     }
     
@@ -556,22 +577,27 @@ class SerializationTests: XCTestCase {
                 "presetData": []
             ]
             
-            _ = try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json, path: .root)
             
             XCTFail("Should have thrown error")
+        } catch let error as DeserializationError {
+            XCTAssertEqual(
+                error.description,
+                "Deserialization error @ <root>.presetData: Expected 'presetData' to contain a dictionary in preset 'Player'"
+            )
         } catch {
-            XCTAssert(error is DeserializationError)
+            XCTFail("Expected DeserializationError error, found \(error)")
         }
     }
     
-    func testPresetsKeyNotArray() {
+    func testDeserializePresetsKeyNotArray() {
         // 'presets' key in serialized objects need to be an array.
         
         do {
             let json: JSON = [
                 "contentType": "entity",
                 "typeName": "Entity",
-                "presets": [
+                "presets": [ // Dictionary, not an array
                     "presetName": "Player",
                     "presetType": "entity",
                     "presetVariables": [:],
@@ -584,11 +610,16 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _ = try Serialized(json: json)
+            _ = try Serialized(json: json, path: .root)
             
             XCTFail("Should have thrown error")
+        } catch let error as DeserializationError {
+            XCTAssertEqual(
+                error.description,
+                "Deserialization error @ <root>.presets: Expected 'presets' to be an array, found 'dictionary'"
+            )
         } catch {
-            XCTAssert(error is DeserializationError)
+            XCTFail("Expected DeserializationError error, found \(error)")
         }
     }
     
@@ -607,11 +638,16 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _ = try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json, path: .root)
             
             XCTFail("Should have thrown error")
+        } catch let error as DeserializationError {
+            XCTAssertEqual(
+                error.description,
+                "Deserialization error @ <root>: Presets cannot represent preset types themselves in preset 'Player'"
+            )
         } catch {
-            XCTAssert(error is DeserializationError)
+            XCTFail("Expected DeserializationError error, found \(error)")
         }
     }
     
@@ -632,7 +668,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            let preset = try SerializedPreset(json: json)
+            let preset = try SerializedPreset(json: json, path: .root)
             
             _ = try preset.expandPreset(withVariables: [ "var": "but i'm a string!" ])
             
@@ -657,7 +693,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
 
-            let preset = try SerializedPreset(json: json)
+            let preset = try SerializedPreset(json: json, path: .root)
 
             _ = try preset.expandPreset(withVariables: ["var": "abc"])
 
@@ -684,7 +720,7 @@ class SerializationTests: XCTestCase {
                 ]
             ]
 
-            let preset = try SerializedPreset(json: json)
+            let preset = try SerializedPreset(json: json, path: .root)
 
             _ = try preset.expandPreset(withVariables: [:])
 
@@ -709,11 +745,16 @@ class SerializationTests: XCTestCase {
                 ]
             ]
             
-            _ = try SerializedPreset(json: json)
+            _ = try SerializedPreset(json: json, path: .root)
             
             XCTFail("Should have failed")
+        } catch let error as DeserializationError {
+            XCTAssertEqual(
+                error.description,
+                "Deserialization error @ <root>.presetVariables.broken: Default value for preset variable 'broken' has a different type (string) than declared (number) in preset 'Player'"
+            )
         } catch {
-            XCTAssert(error is DeserializationError)
+            XCTFail("Expected DeserializationError error, found \(error)")
         }
     }
     
@@ -791,8 +832,8 @@ class SerializationTests: XCTestCase {
             ]
         ]
         
-        let serialized = try Serialized(json: json)
-        let space: Space = try serializer.extract(from: serialized)
+        let serialized = try Serialized(json: json, path: .root)
+        let space: Space = try serializer.extract(from: serialized, path: .root)
         
         XCTAssertEqual(space.subspaces.count, 1)
         XCTAssertEqual(space.subspace(SerializableSubspace.self)?.subspaceField, 10)
@@ -862,7 +903,17 @@ class SerializationTests: XCTestCase {
             ]
         ]
         
-        let serialized = try Serialized(json: json)
-        XCTAssertThrowsError(try serializer.extract(from: serialized) as Space)
+        let serialized = try Serialized(json: json, path: .root)
+
+        do {
+            let _: Space = try serializer.extract(from: serialized, path: .root)
+        } catch let error as DeserializationError {
+            XCTAssertEqual(
+                error.description,
+                "Deserialization error @ <root>.entities[0].components[0].presetData.data.data: unrecognized serialized type name 'Entity'"
+            )
+        } catch {
+            XCTFail("Expected DeserializationError error, found \(error)")
+        }
     }
 }

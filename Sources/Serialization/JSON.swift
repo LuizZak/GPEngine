@@ -103,7 +103,7 @@ public extension JSON {
         }
     }
     
-    /// Returns the array of subvalues for this `JSON` in case it is an array,
+    /// Returns the array of sub values for this `JSON` in case it is an array,
     /// `nil` otherwise.
     var array: [JSON]? {
         switch self {
@@ -429,83 +429,83 @@ public enum JSONSubscriptAccess: Equatable {
 
     /// Attempts to read this subscript access as a decimal value, throwing an
     /// error if the keypath is invalid, or if the value is not a `Double`.
-    public func number() throws -> Double {
+    public func number(prefixPath: [JSONAccess] = []) throws -> Double {
         switch self {
         case .value(let v):
             if let double = v.double {
                 return double
             }
             
-            throw Error.invalidValueType
+            throw Error.invalidValueType(prefixPath)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
              let .notAnArray(path):
             
-            throw Error.invalidPath(path)
+            throw Error.invalidPath(prefixPath + path)
         }
     }
     
     /// Attempts to read this subscript access as an integer, throwing an
     /// error if the keypath is invalid, or if the value is not a `Integer`.
-    public func integer() throws -> Int {
+    public func integer(prefixPath: [JSONAccess] = []) throws -> Int {
         switch self {
         case .value(let v):
             if let double = v.double {
                 return Int(double)
             }
             
-            throw Error.invalidValueType
+            throw Error.invalidValueType(prefixPath)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
              let .notAnArray(path):
             
-            throw Error.invalidPath(path)
+            throw Error.invalidPath(prefixPath + path)
         }
     }
     
     /// Attempts to read this subscript access as a string, throwing an
     /// error if the keypath is invalid, or if the value is not a `String`.
-    public func string() throws -> String {
+    public func string(prefixPath: [JSONAccess] = []) throws -> String {
         switch self {
         case .value(let v):
             if let string = v.string {
                 return string
             }
             
-            throw Error.invalidValueType
+            throw Error.invalidValueType(prefixPath)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
              let .notAnArray(path):
             
-            throw Error.invalidPath(path)
+            throw Error.invalidPath(prefixPath + path)
         }
     }
     
     /// Attempts to read this subscript access as a boolean value, throwing an
     /// error if the keypath is invalid, or if the value is not a `Bool`.
-    public func bool() throws -> Bool {
+    public func bool(prefixPath: [JSONAccess] = []) throws -> Bool {
         switch self {
         case .value(let v):
             if let bool = v.bool {
                 return bool
             }
             
-            throw Error.invalidValueType
+            throw Error.invalidValueType(prefixPath)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
              let .notAnArray(path):
             
-            throw Error.invalidPath(path)
+            throw Error.invalidPath(prefixPath + path)
         }
     }
     
     /// Returns whether this keypath access points to a `null ` JSON value.
     /// Throws an error if the keypath is invalid.
-    public func isNull() throws -> Bool {
+    public func isNull(prefixPath: [JSONAccess] = []) throws -> Bool {
         switch self {
         case .value(let v):
             return v == .null
@@ -514,56 +514,88 @@ public enum JSONSubscriptAccess: Equatable {
              let .notADictionary(path),
              let .notAnArray(path):
             
-            throw Error.invalidPath(path)
+            throw Error.invalidPath(prefixPath + path)
         }
     }
     
     /// Attempts to read this subscript access as an array value, throwing an
     /// error if the keypath is invalid, or if the value is not an array.
-    public func array() throws -> [JSON] {
+    public func array(prefixPath: [JSONAccess] = []) throws -> [JSON] {
         switch self {
         case .value(let v):
             if let array = v.array {
                 return array
             }
             
-            throw Error.invalidValueType
+            throw Error.invalidValueType(prefixPath)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
              let .notAnArray(path):
             
-            throw Error.invalidPath(path)
+            throw Error.invalidPath(prefixPath + path)
         }
     }
     
     /// Attempts to read this subscript access as a dictionary value, throwing an
     /// error if the keypath is invalid, or if the value is not a dictionary.
-    public func dictionary() throws -> [String: JSON] {
+    public func dictionary(prefixPath: [JSONAccess] = []) throws -> [String: JSON] {
         switch self {
         case .value(let v):
             if let dictionary = v.dictionary {
                 return dictionary
             }
             
-            throw Error.invalidValueType
+            throw Error.invalidValueType(prefixPath)
             
         case let .keyNotFound(path),
              let .notADictionary(path),
              let .notAnArray(path):
             
-            throw Error.invalidPath(path)
+            throw Error.invalidPath(prefixPath + path)
         }
     }
     
-    public enum JSONAccess: Equatable {
+    public enum JSONAccess: Equatable, CustomStringConvertible {
         case index(Int)
         case dictionary(String)
+
+        public var description: String {
+            switch self {
+                case .index(let index):
+                    return "[\(index)]"
+                case .dictionary(let key):
+                    return ".\(key)"
+            }
+        }
     }
     
     public enum Error: Swift.Error {
         case invalidPath([JSONAccess])
-        case invalidValueType
+        case invalidValueType([JSONAccess])
+    }
+}
+
+public extension Array where Element == JSONSubscriptAccess.JSONAccess {
+    /// Gets the value representing a root access of a JSON object.
+    static var root: Self {
+        []
+    }
+
+    func asJsonAccessString() -> String {
+        "<root>\(map(\.description).joined())"
+    }
+
+    /// Returns a copy of this array with a `JSONSubscriptAccess.JSONAccess.index()`
+    /// appended to the end.
+    func index(_ index: Int) -> Self {
+        self + [.index(index)]
+    }
+
+    /// Returns a copy of this array with a `JSONSubscriptAccess.JSONAccess.dictionary()`
+    /// appended to the end.
+    func dictionary(_ key: String) -> Self {
+        self + [.dictionary(key)]
     }
 }
 

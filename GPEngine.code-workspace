@@ -116,7 +116,7 @@
                 "name": "Test GPEngine",
                 "program": "./.build/debug/GPEnginePackageTests.xctest",
                 "cwd": "${workspaceFolder:GPEngine}",
-                "preLaunchTask": "swift: Build All"
+                "preLaunchTask": "Build (debug)"
             }
         ]
     }
