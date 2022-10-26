@@ -45,8 +45,11 @@ public enum JSON: Codable {
         } else if singleValue.decodeNil() {
             self = .null
         } else {
-            throw DecodingError.dataCorruptedError(in: singleValue,
-                                                   debugDescription: "Not a valid JSON value")
+            throw DecodingError
+                .dataCorruptedError(
+                    in: singleValue,
+                    debugDescription: "Not a valid JSON value"
+                )
         }
     }
 
@@ -617,23 +620,29 @@ extension JSON: JSONConvertible {
     public var json: JSON { self }
 }
 extension String: JSONConvertible {
+    /// Returns `JSON.string(self)`.
     public var json: JSON { .string(self) }
 }
 extension Double: JSONConvertible {
+    /// Returns `JSON.number(self)`.
     public var json: JSON { .number(self) }
 }
 extension Int: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
     public var json: JSON { .number(Double(self)) }
 }
 extension Bool: JSONConvertible {
+    /// Returns `JSON.bool(self)`.
     public var json: JSON { .bool(self) }
 }
 extension Array: JSONConvertible where Element: JSONConvertible {
+    /// Returns `JSON.array(self.map { $0.json })`.
     public var json: JSON {
         .array(self.map { $0.json })
     }
 }
 extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertible {
+    /// Returns `JSON.dictionary(mapValues { $0.json })`.
     public var json: JSON {
         .dictionary(mapValues { $0.json })
     }

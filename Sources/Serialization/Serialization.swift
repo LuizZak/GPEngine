@@ -89,13 +89,16 @@ public class GameSerializer {
     /// Throws, if any of the components are non-serializable.
     public func serialize(_ entity: Entity) throws -> Serialized {
         let type = Serialized.ContentType.entity
-        let name = String(describing: Entity.self)
+        let name = SerializedEntity.serializedTypeName
 
         var serializedComps: [Serialized] = []
         
         for comp in entity.components {
             guard let ser = comp as? Serializable else {
-                throw SerializationError.cannotSerialize(reason: "Found component type \(Swift.type(of: comp)) is not serializable.")
+                throw SerializationError
+                    .cannotSerialize(
+                        reason: "Found component type \(Swift.type(of: comp)) is not serializable."
+                    )
             }
             
             serializedComps.append(serialize(ser))
@@ -111,7 +114,7 @@ public class GameSerializer {
     /// See `serialize(_:Entity)` for Entity serialization rules.
     public func serialize(_ space: Space) throws -> Serialized {
         let type = Serialized.ContentType.space
-        let name = String(describing: Space.self)
+        let name = SerializedSpace.serializedTypeName
 
         var serializedEntities: [Serialized] = []
         
@@ -123,7 +126,10 @@ public class GameSerializer {
         
         for subspace in space.subspaces {
             guard let ser = subspace as? Serializable else {
-                throw SerializationError.cannotSerialize(reason: "Found subspace type \(Swift.type(of: subspace)) is not serializable.")
+                throw SerializationError
+                    .cannotSerialize(
+                        reason: "Found subspace type \(Swift.type(of: subspace)) is not serializable."
+                    )
             }
             
             serializedSubspaces.append(serialize(ser))
@@ -183,7 +189,7 @@ public class GameSerializer {
             throw DeserializationError
                 .invalidSerialized(
                     message: "Data for a serialized preset must be a dictionary",
-                    path: path.dictionary("data")
+                    path: path.dictionary(Serialized.CodingKeys.data)
                 )
         }
         
@@ -191,7 +197,7 @@ public class GameSerializer {
             throw DeserializationError
                 .presetNotFound(
                     presetName: serialized.typeName,
-                    path: path.dictionary("typeName")
+                    path: path.dictionary(Serialized.CodingKeys.typeName)
                 )
         }
         
@@ -229,30 +235,30 @@ public class GameSerializer {
             )
         }
         
-        if serialized.typeName != "Entity" {
+        if serialized.typeName != SerializedEntity.serializedTypeName {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Does not represent a plain serialized Entity instance: Expected serialized.typeName to be 'Entity', but found \(serialized.typeName)",
-                    path: path.dictionary("typeName")
+                    message: "Does not represent a plain serialized Entity instance: Expected serialized.typeName to be '\(SerializedEntity.serializedTypeName)', but found \(serialized.typeName)",
+                    path: path.dictionary(Serialized.CodingKeys.typeName)
                 )
         }
         if serialized.contentType != .entity {
             throw DeserializationError
                 .invalidSerialized(
                     message: "Does not represent a plain serialized Space instance: Expected serialized.contentType to be '.entity', but found \(serialized.contentType)",
-                    path: path.dictionary("contentType")
+                    path: path.dictionary(Serialized.CodingKeys.contentType)
                 )
         }
 
 
         let serializedEntity = try SerializedEntity(
             json: serialized.data,
-            path: path.dictionary("data")
+            path: path.dictionary(Serialized.CodingKeys.data)
         )
         let comps: [Component] = try serializedEntity.components.enumerated().map {
             try extract(
                 from: $0.element,
-                path: path.dictionary("components").index($0.offset)
+                path: path.dictionary(SerializedEntity.CodingKeys.components).index($0.offset)
             )
         }
         
@@ -279,41 +285,43 @@ public class GameSerializer {
         if serialized.contentType == .preset {
             return try extract(
                 from: deserializePreset(in: serialized, path: path),
-                path: path.dictionary("presetData").dictionary("data")
+                path: path
+                    .dictionary(SerializedPreset.CodingKeys.data)
+                    .dictionary(Serialized.CodingKeys.data)
             )
         }
         
-        if serialized.typeName != "Space" {
+        if serialized.typeName != SerializedSpace.serializedTypeName {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Does not represent a plain serialized Space instance: Expected serialized.typeName to be 'Space', but found \(serialized.typeName)",
-                    path: path.dictionary("typeName")
+                    message: "Does not represent a plain serialized Space instance: Expected serialized.typeName to be '\(SerializedSpace.serializedTypeName)', but found \(serialized.typeName)",
+                    path: path.dictionary(Serialized.CodingKeys.typeName)
                 )
         }
         if serialized.contentType != .space {
             throw DeserializationError
                 .invalidSerialized(
                     message: "Does not represent a plain serialized Space instance: Expected serialized.contentType to be '.space', but found \(serialized.contentType)",
-                    path: path.dictionary("contentType")
+                    path: path.dictionary(Serialized.CodingKeys.contentType)
                 )
         }
 
         let serializedSpace = try SerializedSpace(
             json: serialized.data,
-            path: path.dictionary("data")
+            path: path.dictionary(Serialized.CodingKeys.data)
         )
 
         let entities: [Entity] = try serializedSpace.entities.enumerated().map {
             try extract(
                 from: $0.element,
-                path: path.dictionary("entities").index($0.offset)
+                path: path.dictionary(SerializedSpace.CodingKeys.entities).index($0.offset)
             )
         }
         
         let subspaces: [Subspace] = try serializedSpace.subspaces.enumerated().map {
             try extract(
                 from: $0.element,
-                path: path.dictionary("subspaces").index($0.offset)
+                path: path.dictionary(SerializedSpace.CodingKeys.subspaces).index($0.offset)
             )
         }
         
@@ -344,11 +352,17 @@ public class GameSerializer {
         if serialized.contentType == .preset {
             return try extract(
                 from: deserializePreset(in: serialized, path: path),
-                path: path.dictionary("presetData").dictionary("data")
+                path: path.dictionary(SerializedPreset.CodingKeys.data).dictionary(Serialized.CodingKeys.data)
             )
         }
 
-        if let value = try typeProvider.createDeserializable(from: serialized.typeName, json: serialized.data, path: path.dictionary("path")) as? T {
+        if
+            let value = try typeProvider.createDeserializable(
+                from: serialized.typeName,
+                json: serialized.data,
+                path: path.dictionary(Serialized.CodingKeys.data)
+            ) as? T
+        {
             return value
         }
 
@@ -375,11 +389,19 @@ public class GameSerializer {
         if serialized.contentType == .preset {
             return try extract(
                 from: deserializePreset(in: serialized, path: path),
-                path: path.dictionary("presetData").dictionary("data")
+                path: path
+                    .dictionary(SerializedPreset.CodingKeys.data)
+                    .dictionary(Serialized.CodingKeys.data)
             )
         }
 
-        if let value = try typeProvider.createDeserializable(from: serialized.typeName, json: serialized.data, path: path.dictionary("data")) as? Component {
+        if
+            let value = try typeProvider.createDeserializable(
+                from: serialized.typeName,
+                json: serialized.data,
+                path: path.dictionary(Serialized.CodingKeys.data)
+            ) as? Component
+        {
             return value
         }
 
@@ -406,11 +428,19 @@ public class GameSerializer {
         if serialized.contentType == .preset {
             return try extract(
                 from: deserializePreset(in: serialized, path: path),
-                path: path.dictionary("presetData").dictionary("data")
+                path: path
+                    .dictionary(SerializedPreset.CodingKeys.data)
+                    .dictionary(Serialized.CodingKeys.data)
             )
         }
         
-        if let value = try typeProvider.createDeserializable(from: serialized.typeName, json: serialized.data, path: path.dictionary("data")) as? Subspace {
+        if
+            let value = try typeProvider.createDeserializable(
+                from: serialized.typeName,
+                json: serialized.data,
+                path: path.dictionary(Serialized.CodingKeys.data)
+            ) as? Subspace
+        {
             return value
         }
 
@@ -534,29 +564,31 @@ public class GameSerializer {
 }
 
 private struct SerializedEntity: Serializable {
+    static let serializedTypeName: String = "Entity"
+
     var id: Int
     var type: Int
     var components: [Serialized]
 
     init(json: JSON, path: JsonPath) throws {
-        guard let id = json["id"]?.int else {
+        guard let id = json[CodingKeys.id]?.int else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'id' key",
+                    message: "Missing '\(CodingKeys.id.rawValue)' key",
                     path: path
                 )
         }
-        guard let type = json["type"]?.int else {
+        guard let type = json[CodingKeys.type]?.int else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'type' key",
+                    message: "Missing '\(CodingKeys.type.rawValue)' key",
                     path: path
                 )
         }
-        guard let components = json["components"]?.array else {
+        guard let components = json[CodingKeys.components]?.array else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'components' keys",
+                    message: "Missing '\(CodingKeys.components.rawValue)' keys",
                     path: path
                 )
         }
@@ -566,7 +598,7 @@ private struct SerializedEntity: Serializable {
         self.components = try components.enumerated().map {
             try Serialized(
                 json: $0.element,
-                path: path.dictionary("components").index($0.offset)
+                path: path.dictionary(CodingKeys.components).index($0.offset)
             )
         }
     }
@@ -579,43 +611,51 @@ private struct SerializedEntity: Serializable {
 
     func serialized() -> JSON {
         return [
-            "id": id.json,
-            "type": type.json,
-            "components": components.map { $0.serialized() }.json
+            CodingKeys.id.rawValue: id.json,
+            CodingKeys.type.rawValue: type.json,
+            CodingKeys.components.rawValue: components.map { $0.serialized() }.json
         ]
+    }
+
+    enum CodingKeys: String {
+        case id
+        case type
+        case components
     }
 }
 
 private struct SerializedSpace: Serializable {
+    static let serializedTypeName: String = "Space"
+
     var entities: [Serialized]
     var subspaces: [Serialized]
 
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
     init(json: JSON, path: JsonPath) throws {
-        guard let entitiesJson = json["entities"]?.array else {
+        guard let entitiesJson = json[CodingKeys.entities]?.array else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'entities' key",
+                    message: "Missing '\(CodingKeys.subspaces.rawValue)' key",
                     path: path
                 )
         }
-        guard let subspacesJson = json["subspaces"]?.array else {
+        guard let subspacesJson = json[CodingKeys.subspaces]?.array else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'subspaces' key",
+                    message: "Missing '\(CodingKeys.subspaces.rawValue)' key",
                     path: path
                 )
         }
         
-        let entitiesKey = path.dictionary("entities")
+        let entitiesKey = path.dictionary(CodingKeys.entities)
         entities = try entitiesJson.enumerated().map {
             try Serialized(
                 json: $0.element,
                 path: entitiesKey.index($0.offset)
             )
         }
-        let subspacesKey = path.dictionary("subspaces")
+        let subspacesKey = path.dictionary(CodingKeys.subspaces)
         subspaces = try subspacesJson.enumerated().map {
             try Serialized(
                 json: $0.element,
@@ -631,9 +671,14 @@ private struct SerializedSpace: Serializable {
 
     func serialized() -> JSON {
         return [
-            "entities": entities.map { $0.serialized() }.json,
-            "subspaces": subspaces.map { $0.serialized() }.json
+            CodingKeys.entities.rawValue: entities.map { $0.serialized() }.json,
+            CodingKeys.subspaces.rawValue: subspaces.map { $0.serialized() }.json
         ]
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case entities
+        case subspaces
     }
 }
 
@@ -676,14 +721,14 @@ public struct Serialized: Serializable {
         guard let name = json[CodingKeys.typeName]?.string else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'typeName'",
+                    message: "Missing '\(CodingKeys.typeName.rawValue)'",
                     path: path.dictionary(CodingKeys.typeName)
                 )
         }
         guard let type = json[CodingKeys.contentType]?.string else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'contentType'",
+                    message: "Missing '\(CodingKeys.contentType.rawValue)'",
                     path: path.dictionary(CodingKeys.contentType)
                 )
         }
@@ -697,7 +742,7 @@ public struct Serialized: Serializable {
         if json[CodingKeys.data]?.type == .null {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'data' key",
+                    message: "Missing '\(CodingKeys.data.rawValue)' key",
                     path: path
                 )
         }
@@ -714,7 +759,7 @@ public struct Serialized: Serializable {
             } else {
                 throw DeserializationError
                     .invalidSerialized(
-                        message: "Expected 'presets' to be an array, found '\(presets.type)'",
+                        message: "Expected '\(CodingKeys.presets.rawValue)' to be an array, found '\(presets.type)'",
                         path: presetsKey
                     )
             }
@@ -779,9 +824,12 @@ public struct Serialized: Serializable {
 /// Represents a reusable serializable object template that can be reference
 /// multiple times within a serialized instance.
 ///
-/// Supports variable fields using 'presetVariable'.
+/// Supports variable fields using a placeholder variable name.
 public struct SerializedPreset: Serializable {
-    
+    /// Default value for `SerializedPreset.variablesPlaceholder` in case it is
+    /// not specified at construction or in the serialized data.
+    public static let defaultVariablesPlaceholder = "presetVariable"
+
     /// The reference name for this preset
     public var name: String
     
@@ -792,6 +840,13 @@ public struct SerializedPreset: Serializable {
     /// A collection of variables that can be defined within the preset when its
     /// used to override values on the preset data.
     public var variables: [String: Variable]
+
+    /// The replacement placeholder variable name for this preset.
+    ///
+    /// Used to replace variables in the nested `data` serialized object.
+    ///
+    /// Defaults to `SerializedPreset.defaultVariablesPlaceholder` ("presetVariable").
+    public var variablesPlaceholder: String
     
     /// The contents of the serialized preset
     public var data: Serialized
@@ -800,12 +855,14 @@ public struct SerializedPreset: Serializable {
         name: String,
         type: Serialized.ContentType,
         variables: [String: Variable],
+        variablesPlaceholder: String = Self.defaultVariablesPlaceholder,
         data: Serialized
     ) {
 
         self.name = name
         self.type = type
         self.variables = variables
+        self.variablesPlaceholder = variablesPlaceholder
         self.data = data
     }
     
@@ -814,33 +871,39 @@ public struct SerializedPreset: Serializable {
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
     public init(json: JSON, path: JsonPath) throws {
-        guard let name = json["presetName"]?.string else {
+        guard let name = json[CodingKeys.name]?.string else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'presetName'",
-                    path: path.dictionary("presetName")
+                    message: "Missing '\(CodingKeys.name.rawValue)'",
+                    path: path.dictionary(CodingKeys.name)
                 )
         }
-        guard let type = json["presetType"]?.string else {
+        guard let type = json[CodingKeys.type]?.string else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'presetType' in preset '\(name)'",
-                    path: path.dictionary("presetType")
+                    message: "Missing '\(CodingKeys.type.rawValue)' in preset '\(name)'",
+                    path: path.dictionary(CodingKeys.type)
                 )
         }
         guard let presetType = Serialized.ContentType(rawValue: type) else {
             throw DeserializationError
                 .invalidSerialized(
                     message: "Invalid preset type '\(type)' in preset '\(name)'",
-                    path: path.dictionary("presetType")
+                    path: path.dictionary(CodingKeys.type)
                 )
         }
-        guard let vars = json["presetVariables"]?.dictionary else {
+        guard let vars = json[CodingKeys.variables]?.dictionary else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Missing 'presetVariables' in preset '\(name)'",
+                    message: "Missing '\(CodingKeys.variables.rawValue)' in preset '\(name)'",
                     path: path
                 )
+        }
+        
+        if let variablesPlaceholder = json[CodingKeys.variablesPlaceholder]?.string {
+            self.variablesPlaceholder = variablesPlaceholder
+        } else {
+            self.variablesPlaceholder = Self.defaultVariablesPlaceholder
         }
         
         if presetType == .preset {
@@ -851,18 +914,18 @@ public struct SerializedPreset: Serializable {
                 )
         }
         
-        guard let presetData = json["presetData"] else {
+        guard let presetData = json[CodingKeys.data] else {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Expected 'presetData' to contain a dictionary in preset '\(name)'",
-                    path: path.dictionary("presetData")
+                    message: "Expected '\(CodingKeys.data.rawValue)' to contain a dictionary in preset '\(name)'",
+                    path: path.dictionary(CodingKeys.data)
                 )
         }
         if presetData.type != .dictionary {
             throw DeserializationError
                 .invalidSerialized(
-                    message: "Expected 'presetData' to contain a dictionary in preset '\(name)'",
-                    path: path.dictionary("presetData")
+                    message: "Expected '\(CodingKeys.data.rawValue)' to contain a dictionary in preset '\(name)'",
+                    path: path.dictionary(CodingKeys.data)
                 )
         }
         
@@ -870,7 +933,7 @@ public struct SerializedPreset: Serializable {
         self.type = presetType
         self.data = try Serialized(
             json: presetData,
-            path: path.dictionary("presetData")
+            path: path.dictionary(CodingKeys.data)
         )
         
         // Match serialized content types
@@ -879,7 +942,7 @@ public struct SerializedPreset: Serializable {
             throw DeserializationError
                 .invalidSerialized(
                     message: "Expected preset data of type '\(type)', but received preset with contentType '\(self.data.contentType)' in preset '\(name)'",
-                    path: path.dictionary("presetData").dictionary("contentType")
+                    path: path.dictionary(CodingKeys.data).dictionary("contentType")
                 )
         }
         
@@ -890,27 +953,29 @@ public struct SerializedPreset: Serializable {
             var defaultValue: JSON?
 
             let varPath = path
-                .dictionary("presetVariables")
+                .dictionary(CodingKeys.variables)
                 .dictionary(key)
 
             if value.type == .dictionary {
-                guard let tString = value["type"]?.string else {
+                guard let tString = value[Variable.CodingKeys.type]?.string else {
                     throw DeserializationError
                         .invalidSerialized(
                             message: "Missing 'type' on variable '\(key)' in preset '\(name)'",
                             path: varPath
                         )
                 }
+
+                let jsonDefaultValue = value[Variable.CodingKeys.defaultValue]
                 
                 // Currently we only support default values of string and number
-                if value["default"]?.type == .string {
-                    defaultValue = value["default"]
-                } else if value["default"]?.type == .number {
-                    defaultValue = value["default"]
+                if jsonDefaultValue?.type == .string {
+                    defaultValue = jsonDefaultValue
+                } else if jsonDefaultValue?.type == .number {
+                    defaultValue = jsonDefaultValue
                 } else {
                     throw DeserializationError
                         .invalidSerialized(
-                            message: "Unsupported variable type '\(value["default"]?.type as Any)' in variable '\(name)' in preset '\(name)'",
+                            message: "Unsupported variable type '\(jsonDefaultValue?.type as Any)' in variable '\(name)' in preset '\(name)'",
                             path: varPath
                         )
                 }
@@ -962,20 +1027,24 @@ public struct SerializedPreset: Serializable {
         for (key, variable) in variables {
             if let defaultValue = variable.defaultValue {
                 vars[key] = [
-                    "type": variable.type.rawValue.json,
-                    "default": defaultValue
+                    Variable.CodingKeys.type.rawValue: variable.type.rawValue.json,
+                    Variable.CodingKeys.defaultValue.rawValue: defaultValue
                 ]
             } else {
                 vars[key] = .string(variable.type.rawValue)
             }
         }
         
-        let json: JSON = [
-            "presetName": name.json,
-            "presetType": type.rawValue.json,
-            "presetVariables": vars,
-            "presetData": data.serialized()
+        var json: JSON = [
+            CodingKeys.name.rawValue: name.json,
+            CodingKeys.type.rawValue: type.rawValue.json,
+            CodingKeys.variables.rawValue: vars,
+            CodingKeys.data.rawValue: data.serialized()
         ]
+
+        if self.variablesPlaceholder != Self.defaultVariablesPlaceholder {
+            json[CodingKeys.variablesPlaceholder] = variablesPlaceholder.json
+        }
         
         return json
     }
@@ -983,7 +1052,7 @@ public struct SerializedPreset: Serializable {
     /// Returns a copy of the Serialized data within this preset, using a given
     /// map of variables to expand any variable within the preset object.
     /// Preset variables are identified by being values with a 
-    /// `[ "presetVariable": {variableName} ]` for any key json within.
+    /// `[ self.variablesPlaceholder: {variableName} ]` for any key json within.
     /// The replacement is applied recursively.
     ///
     /// Throws an error, if encounters preset variables with incorrect values or
@@ -1008,7 +1077,11 @@ public struct SerializedPreset: Serializable {
         // Walk recursively, expanding within
         json = try expandPreset(recursiveOn: json, withVariables: values)
         
-        return Serialized(typeName: data.typeName, contentType: data.contentType, data: json)
+        return Serialized(
+            typeName: data.typeName,
+            contentType: data.contentType,
+            data: json
+        )
     }
     
     private func expandPreset(
@@ -1017,7 +1090,7 @@ public struct SerializedPreset: Serializable {
     ) throws -> JSON {
 
         // A preset replacement!
-        if let varName = json["presetVariable"]?.string {
+        if let varName = json[variablesPlaceholder]?.string {
             guard let varDef = variables[varName] else {
                 throw VariableReplaceError.unknownVariable(variableName: varName)
             }
@@ -1059,6 +1132,12 @@ public struct SerializedPreset: Serializable {
         /// The default value, if available.
         /// Must match type specified on `type` field above.
         public var defaultValue: JSON?
+
+        public enum CodingKeys: String {
+            case name
+            case type
+            case defaultValue = "default"
+        }
     }
     
     /// Allowed scalar values to expand a preset variable to.
@@ -1113,10 +1192,11 @@ public struct SerializedPreset: Serializable {
     }
 
     public enum CodingKeys: String, CodingKey {
-        case name
-        case type
-        case variables
-        case data
+        case name = "presetName"
+        case type = "presetType"
+        case variables = "presetVariables"
+        case data = "presetData"
+        case variablesPlaceholder = "variablesPlaceholder"
     }
 }
 
@@ -1219,13 +1299,18 @@ public extension BasicSerializationTypeProvider {
 }
 
 extension JSON {
-    subscript<T: RawRepresentable & CodingKey>(key: T) -> JSON? where T.RawValue == String {
-        return self[key.rawValue]
+    subscript<T: RawRepresentable>(key: T) -> JSON? where T.RawValue == String {
+        get {
+            return self[key.rawValue]
+        }
+        set {
+            self[key.rawValue] = newValue
+        }
     }
 }
 
 extension JsonPath {
-    func dictionary<T: RawRepresentable & CodingKey>(_ key: T) -> Self where T.RawValue == String {
+    func dictionary<T: RawRepresentable>(_ key: T) -> Self where T.RawValue == String {
         return dictionary(key.rawValue)
     }
 }

@@ -97,6 +97,48 @@ class SerializationTests: XCTestCase {
     
     func testSerializeEntity() throws {
         let serializer = GameSerializer(typeProvider: Provider())
+        let expected: JSON = [
+            "presets": [],
+            "typeName": "Entity",
+            "contentType": "entity",
+            "data": [
+                "id": 20.0,
+                "type": 3.0,
+                "components": [
+                    [
+                        "typeName": "SerializableComponent",
+                        "contentType": "component",
+                        "presets": [],
+                        "data": [
+                            "field": 10.0,
+                        ],
+                    ],
+                    [
+                        "typeName": "SerializableComponent",
+                        "contentType": "component",
+                        "presets": [],
+                        "data": [
+                            "field": 20.0,
+                        ],
+                    ],
+                ],
+            ],
+        ]
+        
+        let entity = Entity(components: [
+            SerializableComponent(field: 10),
+            SerializableComponent(field: 20)
+        ])
+        entity.id = 20
+        entity.type = 3
+        
+        let object = try serializer.serialize(entity)
+        
+        assertEquals(expected, object.serialized())
+    }
+    
+    func testSerializeEntity_roundtrip() throws {
+        let serializer = GameSerializer(typeProvider: Provider())
         
         let originalComponents = [
             SerializableComponent(field: 10),
@@ -158,6 +200,70 @@ class SerializationTests: XCTestCase {
     // MARK: Space
     
     func testSerializeSpace() throws {
+        let serializer = GameSerializer(typeProvider: Provider())
+        let expected: JSON = [
+            "presets": [],
+            "typeName": "Space",
+            "contentType": "space",
+            "data": [
+                "entities": [
+                    [
+                        "presets": [],
+                        "typeName": "Entity",
+                        "contentType": "entity",
+                        "data": [
+                            "id": 20.0,
+                            "type": 3.0,
+                            "components": [
+                                [
+                                    "typeName": "SerializableComponent",
+                                    "contentType": "component",
+                                    "presets": [],
+                                    "data": [
+                                        "field": 10.0,
+                                    ],
+                                ],
+                                [
+                                    "typeName": "SerializableComponent",
+                                    "contentType": "component",
+                                    "presets": [],
+                                    "data": [
+                                        "field": 20.0,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                "subspaces": [
+                    [
+                        "typeName": "SerializableSubspace",
+                        "contentType": "subspace",
+                        "presets": [],
+                        "data": [
+                            "subspaceField": 1.0,
+                        ],
+                    ],
+                ],
+            ],
+        ]
+        
+        let entity = Entity(components: [
+            SerializableComponent(field: 10),
+            SerializableComponent(field: 20)
+        ])
+        entity.id = 20
+        entity.type = 3
+        let space = Space()
+        space.addEntity(entity)
+        space.addSubspace(SerializableSubspace(subspaceField: 1))
+        
+        let object = try serializer.serialize(space)
+
+        assertEquals(expected, object.serialized())
+    }
+    
+    func testSerializeSpace_roundtrip() throws {
         
         let serializer = GameSerializer(typeProvider: Provider())
         
@@ -224,9 +330,9 @@ class SerializationTests: XCTestCase {
                         "contentType": "subspace",
                         "typeName": "SerializableSubspace",
                         "data": [
-                            "subspaceField": 10
-                        ]
-                    ]
+                            "subspaceField": 10,
+                        ],
+                    ],
                 ],
                 "entities": [
                     [
@@ -240,14 +346,14 @@ class SerializationTests: XCTestCase {
                                     "contentType": "component",
                                     "typeName": "SerializableComponent",
                                     "data": [
-                                        "field": 20
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                        "field": 20,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]
             
         let serialized = try Serialized(json: json, path: .root)
@@ -296,7 +402,7 @@ class SerializationTests: XCTestCase {
             "presetType": "entity",
             "presetVariables": [
                 "x": "number",
-                "y": [ "type": "number", "default": 20.2 ]
+                "y": [ "type": "number", "default": 20.2 ],
             ],
             "presetData": [
                 "contentType": "entity",
@@ -310,12 +416,12 @@ class SerializationTests: XCTestCase {
                             "typeName": "PositionComponent",
                             "data": [
                                 "x": [ "presetVariable": "x" ],
-                                "y": [ "presetVariable": "y" ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                "y": [ "presetVariable": "y" ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]
         
         let preset = try SerializedPreset(json: json, path: .root)
@@ -335,7 +441,7 @@ class SerializationTests: XCTestCase {
             "presetVariables": [
                 "x": "number",
                 "y": "bool",
-                "z": [ "type": "string", "default": "abc" ]
+                "z": [ "type": "string", "default": "abc" ],
             ],
             "presetData": [
                 "contentType": "entity",
@@ -350,12 +456,12 @@ class SerializationTests: XCTestCase {
                             "data": [
                                 "x": [ "presetVariable": "x" ],
                                 "y": [ "presetVariable": "y" ],
-                                "z": [ "presetVariable": "z" ]
-                            ]
-                        ]
-                    ]
-                ]
-            ]
+                                "z": [ "presetVariable": "z" ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
         ]
         
         let preset = try SerializedPreset(json: json, path: .root)
@@ -375,6 +481,104 @@ class SerializationTests: XCTestCase {
         XCTAssertEqual(data["components"]?[0]["data"]?["z"]?.string, "abc")
     }
 
+    func testReplacePresetVariables_respectsVariablesPlaceholderValue() throws {
+        let json: JSON = [
+            "presetName": "Player",
+            "presetType": "entity",
+            "presetVariables": [
+                "x": "number",
+                "y": "bool",
+                "z": [ "type": "string", "default": "abc" ]
+            ],
+            "variablesPlaceholder": "aCustomPlaceholder",
+            "presetData": [
+                "contentType": "entity",
+                "typeName": "Entity",
+                "data": [
+                    "id": 1,
+                    "type": 0xff,
+                    "components": [
+                        [
+                            "contentType": "component",
+                            "typeName": "PositionComponent",
+                            "data": [
+                                "x": [ "aCustomPlaceholder": "x" ],
+                                "y": [ "aCustomPlaceholder": "y" ],
+                                "z": [ "aCustomPlaceholder": "z" ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ]
+        
+        let preset = try SerializedPreset(json: json, path: .root)
+        
+        let expanded =
+            try preset.expandPreset(withVariables:
+                [
+                    "x": 10,
+                    "y": false
+                ])
+        
+        let data = expanded.data
+        
+        // Verify data
+        XCTAssertEqual(data["components"]?[0]["data"]?["x"]?.double, 10)
+        XCTAssertEqual(data["components"]?[0]["data"]?["y"]?.bool, false)
+        XCTAssertEqual(data["components"]?[0]["data"]?["z"]?.string, "abc")
+    }
+
+    func testEmptyPresetSerialization() {
+        let expected: JSON = [
+            "presetName": "PresetName",
+            "presetType": "entity",
+            "presetVariables": [:],
+            "presetData": [
+                "presets": [],
+                "contentType": "entity",
+                "data": [:],
+                "typeName": "Entity",
+            ]
+        ]
+        let preset = SerializedPreset(
+            name: "PresetName",
+            type: .entity,
+            variables: [:],
+            data: Serialized(typeName: "Entity", contentType: .entity, data: [:])
+        )
+
+        let result = preset.serialized()
+
+        assertEquals(expected, result)
+    }
+
+    func testPresetSerialization_emitsVariablesPlaceholder() {
+        let expected: JSON = [
+            "presetName": "PresetName",
+            "presetType": "entity",
+            "presetVariables": [:],
+            "variablesPlaceholder": "aCustomPlaceholder",
+            "presetData": [
+                "presets": [],
+                "contentType": "entity",
+                "data": [:],
+                "typeName": "Entity",
+            ]
+        ]
+        let preset = SerializedPreset(
+            name: "PresetName",
+            type: .entity,
+            variables: [:],
+            variablesPlaceholder: "aCustomPlaceholder",
+            data: Serialized(typeName: "Entity", contentType: .entity, data: [:])
+        )
+
+        let result = preset.serialized()
+
+        assertEquals(expected, result)
+    }
+
     func testPresetSerialization() {
         let expected: JSON = [
             "presetName": "PresetName",
@@ -382,9 +586,9 @@ class SerializationTests: XCTestCase {
             "presetVariables": [
                 "var1": [
                     "type": "number",
-                    "default": 1
+                    "default": 1,
                 ],
-                "var2": "number"
+                "var2": "number",
             ],
             "presetData": [
                 "typeName": "TypeName",
@@ -397,12 +601,12 @@ class SerializationTests: XCTestCase {
                             "presets": [],
                             "contentType": "entity",
                             "data": [:],
-                            "typeName": "Entity"
+                            "typeName": "Entity",
                         ]
                     ]
                 ],
                 "data": [:],
-                "contentType": "entity"
+                "contentType": "entity",
             ]
         ]
         let innerPreset = SerializedPreset(
@@ -423,7 +627,7 @@ class SerializationTests: XCTestCase {
 
         let result = preset.serialized()
 
-        XCTAssertEqual(expected, result)
+        assertEquals(expected, result)
     }
     
     func testSimplePresetDeserialization() throws {
@@ -432,13 +636,13 @@ class SerializationTests: XCTestCase {
             "presetType": "entity",
             "presetVariables": [
                 "var1": [ "type": "number", "default": 0 ],
-                "var2": "string"
+                "var2": "string",
             ],
             "presetData": [
                 "contentType": "entity",
                 "typeName": "Entity",
-                "data": []
-            ]
+                "data": [],
+            ],
         ]
         
         let preset = try SerializedPreset(json: json, path: .root)
@@ -483,7 +687,7 @@ class SerializationTests: XCTestCase {
                                             "field": [ "presetVariable": "var1" ],
                                         ],
                                     ],
-                                ]
+                                ],
                             ],
                             "data": [
                                 "id": 0,
@@ -505,7 +709,7 @@ class SerializationTests: XCTestCase {
                                         "typeName": "Nested",
                                         "vars": [
                                             "var1": 2,
-                                        ]
+                                        ],
                                     ],
                                 ],
                             ],
@@ -549,7 +753,7 @@ class SerializationTests: XCTestCase {
                 "presetData": [
                     "contentType": "custom",
                     "typeName": "MyType",
-                    "data": [:]
+                    "data": [:],
                 ]
             ]
             
@@ -574,7 +778,7 @@ class SerializationTests: XCTestCase {
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [:],
-                "presetData": []
+                "presetData": [],
             ]
             
             _ = try SerializedPreset(json: json, path: .root)
@@ -601,13 +805,13 @@ class SerializationTests: XCTestCase {
                     "presetName": "Player",
                     "presetType": "entity",
                     "presetVariables": [:],
-                    "presetData": []
+                    "presetData": [],
                 ],
                 "data": [
                     "id": 0,
                     "type": 0,
-                    "components": []
-                ]
+                    "components": [],
+                ],
             ]
             
             _ = try Serialized(json: json, path: .root)
@@ -634,8 +838,8 @@ class SerializationTests: XCTestCase {
                 "presetData": [
                     "contentType": "preset",
                     "typeName": "SerializedPreset",
-                    "data": [:]
-                ]
+                    "data": [:],
+                ],
             ]
             
             _ = try SerializedPreset(json: json, path: .root)
@@ -657,15 +861,15 @@ class SerializationTests: XCTestCase {
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
-                    "var": "number"
+                    "var": "number",
                 ],
                 "presetData": [
                     "contentType": "entity",
                     "typeName": "Entity",
                     "data": [
-                        "from-preset": [ "presetVariable": "var" ]
-                    ]
-                ]
+                        "from-preset": [ "presetVariable": "var" ],
+                    ],
+                ],
             ]
             
             let preset = try SerializedPreset(json: json, path: .root)
@@ -688,9 +892,9 @@ class SerializationTests: XCTestCase {
                     "contentType": "entity",
                     "typeName": "Entity",
                     "data": [
-                        "from-preset": [ "presetVariable": "var" ]
-                    ]
-                ]
+                        "from-preset": [ "presetVariable": "var" ],
+                    ],
+                ],
             ]
 
             let preset = try SerializedPreset(json: json, path: .root)
@@ -715,9 +919,9 @@ class SerializationTests: XCTestCase {
                     "contentType": "entity",
                     "typeName": "Entity",
                     "data": [
-                        "from-preset": [ "presetVariable": "var" ]
-                    ]
-                ]
+                        "from-preset": [ "presetVariable": "var" ],
+                    ],
+                ],
             ]
 
             let preset = try SerializedPreset(json: json, path: .root)
@@ -736,13 +940,13 @@ class SerializationTests: XCTestCase {
                 "presetName": "Player",
                 "presetType": "entity",
                 "presetVariables": [
-                    "broken": [ "type": "number", "default": "but i'm a string!" ]
+                    "broken": [ "type": "number", "default": "but i'm a string!" ],
                 ],
                 "presetData": [
                     "contentType": "entity",
                     "typeName": "Entity",
-                    "data": [:]
-                ]
+                    "data": [:],
+                ],
             ]
             
             _ = try SerializedPreset(json: json, path: .root)
@@ -773,7 +977,7 @@ class SerializationTests: XCTestCase {
                     "presetName": "Player",
                     "presetType": "entity",
                     "presetVariables": [
-                        "var": "number"
+                        "var": "number",
                     ],
                     "presetData": [
                         "contentType": "entity",
@@ -786,27 +990,27 @@ class SerializationTests: XCTestCase {
                                     "contentType": "component",
                                     "typeName": "SerializableComponent",
                                     "data": [
-                                        "field": [ "presetVariable": "var" ]
-                                    ]
-                                ]
-                            ]
-                        ]
-                    ]
+                                        "field": [ "presetVariable": "var" ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 [
                     "presetName": "ASubspace",
                     "presetType": "subspace",
                     "presetVariables": [
-                        "var": "number"
+                        "var": "number",
                     ],
                     "presetData": [
                         "contentType": "subspace",
                         "typeName": "SerializableSubspace",
                         "data": [
-                            "subspaceField": [ "presetVariable": "var" ]
-                        ]
-                    ]
-                ]
+                            "subspaceField": [ "presetVariable": "var" ],
+                        ],
+                    ],
+                ],
             ],
             
             // Presets are expanded here!
@@ -816,20 +1020,20 @@ class SerializationTests: XCTestCase {
                         "contentType": "preset",
                         "typeName": "ASubspace",
                         "data": [
-                            "var": 10
-                        ]
-                    ]
+                            "var": 10,
+                        ],
+                    ],
                 ],
                 "entities": [
                     [
                         "contentType": "preset",
                         "typeName": "Player",
                         "data": [
-                            "var": 20
-                        ]
-                    ]
-                ]
-            ]
+                            "var": 20,
+                        ],
+                    ],
+                ],
+            ],
         ]
         
         let serialized = try Serialized(json: json, path: .root)
@@ -858,7 +1062,7 @@ class SerializationTests: XCTestCase {
                     "presetName": "Player",
                     "presetType": "entity",
                     "presetVariables": [
-                        "var": "number"
+                        "var": "number",
                     ],
                     "presetData": [
                         "contentType": "entity",
@@ -871,9 +1075,9 @@ class SerializationTests: XCTestCase {
                                 "presetData": [
                                     "contentType": "entity",
                                     "typeName": "Entity",
-                                    "data": [:]
-                                ]
-                            ]
+                                    "data": [:],
+                                ],
+                            ],
                         ],
                         "data": [
                             "id": 1,
@@ -882,12 +1086,12 @@ class SerializationTests: XCTestCase {
                                 [
                                     "contentType": "preset",
                                     "typeName": "Player",
-                                    "data": [:]
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                    "data": [:],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ],
             "data": [
                 "subspaces": [ ],
@@ -896,11 +1100,11 @@ class SerializationTests: XCTestCase {
                         "contentType": "preset",
                         "typeName": "Player",
                         "data": [
-                            "var": 20
-                        ]
-                    ]
-                ]
-            ]
+                            "var": 20,
+                        ],
+                    ],
+                ],
+            ],
         ]
         
         let serialized = try Serialized(json: json, path: .root)
@@ -914,6 +1118,37 @@ class SerializationTests: XCTestCase {
             )
         } catch {
             XCTFail("Expected DeserializationError error, found \(error)")
+        }
+    }
+
+    private func assertEquals(_ expected: JSON, _ actual: JSON, line: UInt = #line) {
+        guard expected != actual else {
+            return
+        }
+
+        do {
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+
+            let expString = try XCTUnwrap(String(data: try encoder.encode(expected), encoding: .utf8))
+            let actString = try XCTUnwrap(String(data: try encoder.encode(actual), encoding: .utf8))
+
+            XCTFail(
+                """
+                (\(expected)) is not equal to (\(actual))
+
+                Expected JSON:
+
+                \(expString)
+
+                Actual JSON:
+
+                \(actString)
+                """,
+                line: line
+            )
+        } catch {
+            XCTFail("(\(expected)) is not equal to (\(actual))", line: line)
         }
     }
 }
