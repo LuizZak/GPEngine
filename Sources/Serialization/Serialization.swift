@@ -169,7 +169,7 @@ public class GameSerializer {
     ///
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
-    public func deserializePreset(in serialized: Serialized, path: JsonPath) throws -> Serialized {
+    public func deserializePreset(in serialized: Serialized, path: JsonPath = .root) throws -> Serialized {
         if serialized.contentType != .preset {
             throw DeserializationError
                 .invalidSerialized(
@@ -202,7 +202,7 @@ public class GameSerializer {
     ///
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
-    public func deserialize(from json: JSON, path: JsonPath) throws -> Serialized {
+    public func deserialize(from json: JSON, path: JsonPath = .root) throws -> Serialized {
         return try Serialized(json: json, path: path)
     }
     
@@ -210,7 +210,7 @@ public class GameSerializer {
     ///
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
-    public func extract(from serialized: Serialized, path: JsonPath) throws -> Entity {
+    public func extract(from serialized: Serialized, path: JsonPath = .root) throws -> Entity {
         // Push context for presets
         presetContext.push()
         presetContext.addPresets(presets: serialized.presets)
@@ -267,7 +267,7 @@ public class GameSerializer {
     ///
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
-    public func extract(from serialized: Serialized, path: JsonPath) throws -> Space {
+    public func extract(from serialized: Serialized, path: JsonPath = .root) throws -> Space {
         // Push context for presets
         presetContext.push()
         presetContext.addPresets(presets: serialized.presets)
@@ -332,7 +332,7 @@ public class GameSerializer {
     ///
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
-    public func extract<T: Serializable>(from serialized: Serialized, path: JsonPath) throws -> T {
+    public func extract<T: Serializable>(from serialized: Serialized, path: JsonPath = .root) throws -> T {
         // Push context for presets
         presetContext.push()
         presetContext.addPresets(presets: serialized.presets)
@@ -363,7 +363,7 @@ public class GameSerializer {
     ///
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
-    public func extract(from serialized: Serialized, path: JsonPath) throws -> Component {
+    public func extract(from serialized: Serialized, path: JsonPath = .root) throws -> Component {
         // Push context for presets
         presetContext.push()
         presetContext.addPresets(presets: serialized.presets)
@@ -394,7 +394,7 @@ public class GameSerializer {
     ///
     /// - parameter path: The full JSON path to the serialized object. Used for
     /// diagnostics purposes.
-    public func extract(from serialized: Serialized, path: JsonPath) throws -> Subspace {
+    public func extract(from serialized: Serialized, path: JsonPath = .root) throws -> Subspace {
         // Push context for presets
         presetContext.push()
         presetContext.addPresets(presets: serialized.presets)
