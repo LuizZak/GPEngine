@@ -98,7 +98,6 @@ class SerializationTests: XCTestCase {
     func testSerializeEntity() throws {
         let serializer = GameSerializer(typeProvider: Provider())
         let expected: JSON = [
-            "presets": [],
             "typeName": "Entity",
             "contentType": "entity",
             "data": [
@@ -108,7 +107,6 @@ class SerializationTests: XCTestCase {
                     [
                         "typeName": "SerializableComponent",
                         "contentType": "component",
-                        "presets": [],
                         "data": [
                             "field": 10.0,
                         ],
@@ -116,7 +114,6 @@ class SerializationTests: XCTestCase {
                     [
                         "typeName": "SerializableComponent",
                         "contentType": "component",
-                        "presets": [],
                         "data": [
                             "field": 20.0,
                         ],
@@ -127,7 +124,7 @@ class SerializationTests: XCTestCase {
         
         let entity = Entity(components: [
             SerializableComponent(field: 10),
-            SerializableComponent(field: 20)
+            SerializableComponent(field: 20),
         ])
         entity.id = 20
         entity.type = 3
@@ -142,7 +139,7 @@ class SerializationTests: XCTestCase {
         
         let originalComponents = [
             SerializableComponent(field: 10),
-            SerializableComponent(field: 20)
+            SerializableComponent(field: 20),
         ]
         let original = Entity(components: originalComponents)
         original.id = 20
@@ -202,13 +199,11 @@ class SerializationTests: XCTestCase {
     func testSerializeSpace() throws {
         let serializer = GameSerializer(typeProvider: Provider())
         let expected: JSON = [
-            "presets": [],
             "typeName": "Space",
             "contentType": "space",
             "data": [
                 "entities": [
                     [
-                        "presets": [],
                         "typeName": "Entity",
                         "contentType": "entity",
                         "data": [
@@ -218,7 +213,6 @@ class SerializationTests: XCTestCase {
                                 [
                                     "typeName": "SerializableComponent",
                                     "contentType": "component",
-                                    "presets": [],
                                     "data": [
                                         "field": 10.0,
                                     ],
@@ -226,7 +220,6 @@ class SerializationTests: XCTestCase {
                                 [
                                     "typeName": "SerializableComponent",
                                     "contentType": "component",
-                                    "presets": [],
                                     "data": [
                                         "field": 20.0,
                                     ],
@@ -239,7 +232,6 @@ class SerializationTests: XCTestCase {
                     [
                         "typeName": "SerializableSubspace",
                         "contentType": "subspace",
-                        "presets": [],
                         "data": [
                             "subspaceField": 1.0,
                         ],
@@ -250,7 +242,7 @@ class SerializationTests: XCTestCase {
         
         let entity = Entity(components: [
             SerializableComponent(field: 10),
-            SerializableComponent(field: 20)
+            SerializableComponent(field: 20),
         ])
         entity.id = 20
         entity.type = 3
@@ -338,15 +330,31 @@ class SerializationTests: XCTestCase {
                     [
                         "contentType": "entity",
                         "typeName": "Entity", // Must always be 'Entity' for entities
+                        "presets": [
+                            [
+                                "presetName": "Comp",
+                                "presetType": "component",
+                                "presetVariables": [
+                                    "x": "number",
+                                ],
+                                "presetData": [
+                                    "contentType": "component",
+                                    "typeName": "SerializableComponent",
+                                    "data": [
+                                        "field": [ "presetVariable": "x" ],
+                                    ],
+                                ],
+                            ]
+                        ],
                         "data": [
                             "id": 1,
                             "type": 2,
                             "components": [
                                 [
-                                    "contentType": "component",
-                                    "typeName": "SerializableComponent",
+                                    "contentType": "preset",
+                                    "typeName": "Comp",
                                     "data": [
-                                        "field": 20,
+                                        "x": 20,
                                     ],
                                 ],
                             ],
@@ -470,7 +478,7 @@ class SerializationTests: XCTestCase {
             try preset.expandPreset(withVariables:
                 [
                     "x": 10,
-                    "y": false
+                    "y": false,
                 ])
         
         let data = expanded.data
@@ -518,7 +526,7 @@ class SerializationTests: XCTestCase {
             try preset.expandPreset(withVariables:
                 [
                     "x": 10,
-                    "y": false
+                    "y": false,
                 ])
         
         let data = expanded.data
@@ -535,7 +543,6 @@ class SerializationTests: XCTestCase {
             "presetType": "entity",
             "presetVariables": [:],
             "presetData": [
-                "presets": [],
                 "contentType": "entity",
                 "data": [:],
                 "typeName": "Entity",
@@ -560,7 +567,6 @@ class SerializationTests: XCTestCase {
             "presetVariables": [:],
             "variablesPlaceholder": "aCustomPlaceholder",
             "presetData": [
-                "presets": [],
                 "contentType": "entity",
                 "data": [:],
                 "typeName": "Entity",
@@ -598,7 +604,6 @@ class SerializationTests: XCTestCase {
                         "presetType": "entity",
                         "presetVariables": [:],
                         "presetData": [
-                            "presets": [],
                             "contentType": "entity",
                             "data": [:],
                             "typeName": "Entity",
@@ -1094,7 +1099,102 @@ class SerializationTests: XCTestCase {
                 ],
             ],
             "data": [
-                "subspaces": [ ],
+                "subspaces": [],
+                "entities": [
+                    [
+                        "contentType": "preset",
+                        "typeName": "Player",
+                        "data": [
+                            "var": 20,
+                        ],
+                    ],
+                ],
+            ],
+        ]
+        
+        let serialized = try Serialized(json: json, path: .root)
+
+        do {
+            let _: Space = try serializer.extract(from: serialized, path: .root)
+        } catch let error as DeserializationError {
+            XCTAssertEqual(
+                error.description,
+                "Deserialization error @ <root>.entities[0].components[0].presetData.data.data: unrecognized serialized type name 'Entity'"
+            )
+        } catch {
+            XCTFail("Expected DeserializationError error, found \(error)")
+        }
+    }
+    
+    func testRecursivePresetExpansion_2() throws {
+        // Tests that a moderately recursive-looking preset does not explode
+        // during expansion, and results in an error during deserialization
+        
+        let serializer = GameSerializer(typeProvider: Provider())
+        
+        let json: JSON = [
+            "contentType": "space",
+            "typeName": "Space",
+            "presets": [
+                [
+                    "presetName": "Player",
+                    "presetType": "entity",
+                    "presetVariables": [
+                        "var": "number",
+                    ],
+                    "presets": [
+                        [
+                            "presetName": "Player",
+                            "presetType": "entity",
+                            "presetVariables": [:],
+                            "presetData": [
+                                "contentType": "entity",
+                                "typeName": "Entity",
+                                "data": [
+                                    "id": 1,
+                                    "type": 2,
+                                    "components": [
+                                        [
+                                            "contentType": "preset",
+                                            "typeName": "Player",
+                                            "data": [:],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                    "presetData": [
+                        "contentType": "entity",
+                        "typeName": "Entity",
+                        "presets": [
+                            [
+                                "presetName": "Player",
+                                "presetType": "entity",
+                                "presetVariables": [:],
+                                "presetData": [
+                                    "contentType": "entity",
+                                    "typeName": "Entity",
+                                    "data": [:],
+                                ],
+                            ],
+                        ],
+                        "data": [
+                            "id": 1,
+                            "type": 2,
+                            "components": [
+                                [
+                                    "contentType": "preset",
+                                    "typeName": "Player",
+                                    "data": [:],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+            "data": [
+                "subspaces": [],
                 "entities": [
                     [
                         "contentType": "preset",

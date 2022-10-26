@@ -783,12 +783,16 @@ public struct Serialized: Serializable {
     ///
     /// - returns: The serialized state for this object.
     public func serialized() -> JSON {
-        return [
+        var json: JSON = [
             CodingKeys.typeName.rawValue: typeName.json,
             CodingKeys.contentType.rawValue: contentType.rawValue.json,
-            CodingKeys.presets.rawValue: presets.map { $0.serialized() }.json,
             CodingKeys.data.rawValue: data
         ]
+        if !presets.isEmpty {
+            json[CodingKeys.presets] = presets.map { $0.serialized() }.json
+        }
+
+        return json
     }
     
     /// The type of content serialized within this serialized object.
