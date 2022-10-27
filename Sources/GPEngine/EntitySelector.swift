@@ -39,7 +39,7 @@ public indirect enum EntitySelector {
     
     /// Selects if the entity's type flag conforms to a given type.
     /// Does a binary & to filter.
-    case typeFlag(Int)
+    case typeFlag(Bitmask)
     
     /// Returns all entities from an array of entities that pass this selector
     @inlinable
@@ -89,7 +89,7 @@ public indirect enum EntitySelector {
             return entity.id == id
             
         case .typeFlag(let type):
-            return entity.type & type != 0
+            return (entity.type & type).isNonZero
         }
     }
     

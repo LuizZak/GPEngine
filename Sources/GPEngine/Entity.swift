@@ -8,7 +8,6 @@
 
 /// Describes a game entity
 public class Entity {
-    
     public typealias Id = Int
     
     /// The internal list of components for this entity
@@ -17,7 +16,7 @@ public class Entity {
     /// The unique identifier for this entity
     public var id: Id = 0
     /// A bitmask field used to quickly describe the type of this entity
-    public var type = 0
+    public var type: Bitmask = 0
     
     /// Initializes this entity
     public init(components: [Component] = []) {

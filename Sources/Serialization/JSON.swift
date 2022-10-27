@@ -623,14 +623,6 @@ extension String: JSONConvertible {
     /// Returns `JSON.string(self)`.
     public var json: JSON { .string(self) }
 }
-extension Double: JSONConvertible {
-    /// Returns `JSON.number(self)`.
-    public var json: JSON { .number(self) }
-}
-extension Int: JSONConvertible {
-    /// Returns `JSON.number(Double(self))`.
-    public var json: JSON { .number(Double(self)) }
-}
 extension Bool: JSONConvertible {
     /// Returns `JSON.bool(self)`.
     public var json: JSON { .bool(self) }
@@ -646,4 +638,57 @@ extension Dictionary: JSONConvertible where Key == String, Value: JSONConvertibl
     public var json: JSON {
         .dictionary(mapValues { $0.json })
     }
+}
+
+// MARK: Numeric types
+
+extension Double: JSONConvertible {
+    /// Returns `JSON.number(self)`.
+    public var json: JSON { .number(self) }
+}
+extension Float: JSONConvertible {
+    /// Returns `JSON.number(self)`.
+    public var json: JSON { .number(Double(self)) }
+}
+
+extension Int: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension Int64: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension Int32: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension Int16: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension Int8: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+
+extension UInt: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension UInt64: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension UInt32: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension UInt16: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
+}
+extension UInt8: JSONConvertible {
+    /// Returns `JSON.number(Double(self))`.
+    public var json: JSON { .number(Double(self)) }
 }

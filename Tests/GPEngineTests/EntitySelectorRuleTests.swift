@@ -212,7 +212,7 @@ class EntitySelectorTests: XCTestCase {
 private class SpyEntity: Entity {
     var didGetType = false
     
-    override var type: Int {
+    override var type: Bitmask {
         get {
             didGetType = true
             return super.type

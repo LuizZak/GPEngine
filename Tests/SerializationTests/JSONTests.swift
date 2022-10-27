@@ -9,8 +9,8 @@ class JSONTests: XCTestCase {
             "c": [
                 1,
                 "d",
-                .null
-            ]
+                .null,
+            ],
         ]
         
         let data = try JSONEncoder().encode(json)
@@ -24,8 +24,8 @@ class JSONTests: XCTestCase {
             "a": [1, 2, 3],
             "b": [
                 "c": [1, 2, 3],
-                "d": false
-            ]
+                "d": false,
+            ],
         ]
 
         XCTAssertEqual(json[path: "b", "d"], .value(false))
@@ -50,8 +50,8 @@ class JSONTests: XCTestCase {
             "a": [1, 2, 3],
             "b": [
                 "c": [1, 2, 3],
-                "d": false
-            ]
+                "d": false,
+            ],
         ]
 
         XCTAssertEqual(json[path: "a", "b"], .notADictionary([.dictionary("a")]))
@@ -74,8 +74,8 @@ class JSONTests: XCTestCase {
             "a": [1, 2, 3],
             "b": [
                 "c": [1, 2, 3],
-                "d": false
-            ]
+                "d": false,
+            ],
         ]
 
         XCTAssertEqual(json[path: "b", 0], .notAnArray([.dictionary("b")]))
@@ -305,5 +305,4 @@ class JSONTests: XCTestCase {
             )
         }
     }
-    
 }

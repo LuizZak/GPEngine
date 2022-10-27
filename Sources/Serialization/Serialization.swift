@@ -104,7 +104,11 @@ public class GameSerializer {
             serializedComps.append(serialize(ser))
         }
 
-        let serializedEntity = SerializedEntity(id: entity.id, type: entity.type, components: serializedComps)
+        let serializedEntity = SerializedEntity(
+            id: entity.id,
+            type: entity.type,
+            components: serializedComps
+        )
         
         return Serialized(typeName: name, contentType: type, data: serializedEntity.serialized())
     }
@@ -567,7 +571,7 @@ private struct SerializedEntity: Serializable {
     static let serializedTypeName: String = "Entity"
 
     var id: Int
-    var type: Int
+    var type: Bitmask
     var components: [Serialized]
 
     init(json: JSON, path: JsonPath) throws {
@@ -578,7 +582,7 @@ private struct SerializedEntity: Serializable {
                     path: path
                 )
         }
-        guard let type = json[CodingKeys.type]?.int else {
+        guard let type = json[CodingKeys.type] else {
             throw DeserializationError
                 .invalidSerialized(
                     message: "Missing '\(CodingKeys.type.rawValue)' key",
@@ -594,7 +598,7 @@ private struct SerializedEntity: Serializable {
         }
 
         self.id = id
-        self.type = type
+        self.type = try Bitmask(json: type, path: path.dictionary(CodingKeys.type))
         self.components = try components.enumerated().map {
             try Serialized(
                 json: $0.element,
@@ -603,7 +607,7 @@ private struct SerializedEntity: Serializable {
         }
     }
 
-    init(id: Int, type: Int, components: [Serialized]) {
+    init(id: Int, type: Bitmask, components: [Serialized]) {
         self.id = id
         self.type = type
         self.components = components
@@ -612,7 +616,7 @@ private struct SerializedEntity: Serializable {
     func serialized() -> JSON {
         return [
             CodingKeys.id.rawValue: id.json,
-            CodingKeys.type.rawValue: type.json,
+            CodingKeys.type.rawValue: type.serialized().json,
             CodingKeys.components.rawValue: components.map { $0.serialized() }.json
         ]
     }
@@ -1316,5 +1320,25 @@ extension JSON {
 extension JsonPath {
     func dictionary<T: RawRepresentable>(_ key: T) -> Self where T.RawValue == String {
         return dictionary(key.rawValue)
+    }
+}
+
+public extension Bitmask {
+    init(json: JSON, path: JsonPath) throws {
+        if let int = json.int {
+            self.init(integerLiteral: UInt64(int))
+        } else {
+            throw DeserializationError
+                .invalidSerialized(
+                    message: "Expected Bitmask to be encoded as a UInt64 integer value, found \(json.type).",
+                    path: path
+                )
+        }
+    }
+
+    func serialized() -> JSON {
+        return withStorage {
+            $0.json
+        }
     }
 }
