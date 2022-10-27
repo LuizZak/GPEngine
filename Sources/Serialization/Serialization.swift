@@ -1337,8 +1337,19 @@ public extension Bitmask {
     }
 
     func serialized() -> JSON {
-        return withStorage {
-            $0.json
+        if storageLength == 1 {
+            return withStorage {
+                $0.json
+            }
         }
+
+        var storage: [JSON] = []
+        storage.reserveCapacity(storageLength)
+
+        withStorage {
+            storage.append($0.json)
+        }
+
+        return storage.json
     }
 }

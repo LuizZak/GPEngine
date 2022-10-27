@@ -11,6 +11,15 @@ public struct Bitmask: Hashable {
         _storage.bitWidth
     }
 
+    /// Returns the length of the storage for this bitmask, as in the number of
+    /// individual machine-length numbers in the backing storage.
+    ///
+    /// When calling `withStorage`, the closure will be called `storageLength`
+    /// times with the individual machine-length numbers.
+    public var storageLength: Int {
+        return 1
+    }
+
     /// Returns whether all bits in this bitmask are zero.
     public var isAllZeroes: Bool {
         _storage == 0
