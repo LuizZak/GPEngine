@@ -22,12 +22,12 @@ public indirect enum EntitySelector {
     case not(EntitySelector)
     
     /// Selects if any of a set of selectors does.
-    /// This selector shortcircuits the operation, succeeding on the first
+    /// This selector short-circuits the operation, succeeding on the first
     /// rule that does.
     case or([EntitySelector])
     
     /// Selects only if all of a set of selectors do.
-    /// This selector shortcircuits the operation, failing on the first
+    /// This selector short-circuits the operation, failing on the first
     /// rule that does.
     case and([EntitySelector])
     
@@ -124,7 +124,7 @@ public indirect enum EntitySelector {
     /// Creates a .not selector based on the given selector
     @inlinable
     public static prefix func ! (rule: EntitySelector) -> EntitySelector {
-        // Shrotcut: If the rule is already a 'not' rule, just unwrap it
+        // Shortcut: If the rule is already a 'not' rule, just unwrap it
         switch rule {
         case .not(let rule):
             return rule

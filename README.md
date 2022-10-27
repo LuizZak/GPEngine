@@ -9,8 +9,9 @@ iOS entity-base game framework written in Swift.
 
 The framework uses traditional Entity-component-system as well as the concept of spaces, which is described [in this article](http://gamedevelopment.tutsplus.com/tutorials/spaces-useful-game-object-containers--gamedev-14091)
 
-The pod also comes with a subpod `GPEngine/Serialization` which allows serialization of space/subspace/entity/components from and to JSON, using [SwiftyJSON](https://github.com/SwiftyJSON/SwiftyJSON) (see [Serialization](#serialization)).
+The pod also comes with a subpod `GPEngine/Serialization` which allows serialization of space/subspace/entity/components from and to JSON (see [Serialization](#serialization)).
 
+A Swift Package for this library is also available.
 
 ### Concepts
 
@@ -88,7 +89,7 @@ import PackageDescription
 let package = Package(
     name: "project_name",
     dependencies: [
-        .package(url: "https://github.com/LuizZak/GPEngine.git", from: "3.0.0")
+        .package(url: "https://github.com/LuizZak/GPEngine.git", from: "4.0.0")
     ],
     targets: []
 )
@@ -100,7 +101,7 @@ GPEngine is available under the MIT license. See the LICENSE file for more info.
 
 ### Serialization
 
-(this optional feature is available under `pod 'GPEngine/Serialization'`. At this point this is unsupported in SPM due to compatibility issues with SwiftyJSON's SPM package.)
+(this optional feature is available under `pod 'GPEngine/Serialization'`.)
 
 You can use the GameSerializer class to serialize an entity or entire spaces (along with subspaces/entities/components).
 
@@ -162,9 +163,9 @@ A simple type provider can be implemented using an array to store every known se
 ```swift
 class Provider: BasicSerializationTypeProvider {
     // Requirement from `BasicSerializationTypeProvider`
-    var serializableTypes: [Serializable.Type] = [
-        MySerializableComponent.self,
-        MySerializableSubspace.self
+    var serializableTypes: [(Serializable.Type, (JSON, JsonPath) throws -> Serializable))] = [
+        (MySerializableComponent.self, MySerializableComponent.init),
+        (MySerializableSubspace.self, MySerializableSubspace.init),
     ]
 
     // Now `serializedName(for:)`/`deserialized(from:)` are automatically stubbed using `serializableTypes` array.
@@ -178,7 +179,7 @@ To serialize entities and spaces, you need to follow these requirements:
 - For entities, every `Component` added to the entity must implement the `Serializable` protocol.
 - For spaces, every entity must follow the above rule, as well as every subspace also implementing the `Serializable` protocol.
 
-`Serializable` is a basic protocol for encoding/decoding objects using JSON:
+`Serializable` is a basic protocol for encoding objects using JSON:
 
 ```swift
 /// Describes an object that can be serialized to and back from a JSON object.
@@ -186,18 +187,46 @@ To serialize entities and spaces, you need to follow these requirements:
 /// state of the object remains the same when deserializing from a previously
 /// serialized object.
 public protocol Serializable {
-    /// Initializes an instance of this type from a given serialized state.
-    ///
-    /// - Parameter json: A state that was previously serialized by an instance
-    /// of this type using `serialized()`
-    /// - Throws: Any type of error during deserialization.
-    init(json: JSON) throws
-    
     /// Serializes the state of this component into a JSON object.
     ///
-    /// - Returns: The serialized state for this object.
+    /// - returns: The serialized state for this object.
     func serialized() -> JSON
 }
+```
+
+For decoding, it is expected by `BasicSerializationTypeProvider` that `self.serializableTypes` is an array containing the type, along with a reference for the initializer function for that type that will be invoked with the following signature:
+
+```swift
+/// Initializes an instance of this type from a given serialized state.
+///
+/// - parameter json: A state that was previously serialized by an instance
+/// of this type using `serialized()`
+/// - parameter path: The full JSON path to the serialized object. Used for
+/// diagnostics purposes.
+/// - throws: Any type of error during deserialization.
+(_ json: JSON, _ path: JsonPath) throws -> Serializable
+```
+
+The `path` variable can be provided to various `JSON` decoding methods for providing context in case a deserialization error is found:
+
+```swift
+struct MyComponent {
+    let field: Int
+
+    init(json: JSON, path: JsonPath) throws {
+        field = try json[path: "field"].integer(prefixPath: path)
+    }
+}
+```
+
+If deserialization fails, an error is raised with the appropriate full JSON path:
+
+```swift
+try MyComponent(
+    json: ["field": true],
+    path: aPrefixPath
+)
+// Throws error: "Expected a value of type 'bool' but found a value of type 'int' @ <root>.aPrefixPath.field"
 ```
 
 To check your entities and spaces are fully serializable, use the `GameSerializer.canSerialize(_:)` & `GameSerializer.diagnoseSerialize(on:)` methods on your entities or spaces.

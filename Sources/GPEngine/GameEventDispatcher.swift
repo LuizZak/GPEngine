@@ -7,7 +7,7 @@
 //
 
 /// Delegation for a game event dispatcher
-protocol GameEventDispatcherDelegate: class {
+protocol GameEventDispatcherDelegate: AnyObject {
     
     /// Called when an event dispatcher is about to dispatch an event.
     /// This delegate method is called regardless if there are any listeners
@@ -155,7 +155,7 @@ open class GameEventDispatcher: Equatable {
             return false
         }
         
-        guard let index = list.firstIndex(where: { lstnr, _ in lstnr === listener }) else {
+        guard let index = list.firstIndex(where: { lst, _ in lst === listener }) else {
             return false
         }
         
@@ -176,7 +176,7 @@ open class GameEventDispatcher: Equatable {
         // Fire delegate
         delegate?.gameEventDispatcher(self, willDispatch: event)
         
-        // Find the lsit of listeners
+        // Find the list of listeners
         let eventId = type(of: event).eventIdentifier
         
         dispatchEvent(event, forKeys: eventId)
@@ -230,7 +230,7 @@ public struct EventListenerKey: Equatable {
         }
     }
     
-    /// Whether this listener key acually points to an event listener.
+    /// Whether this listener key actually points to an event listener.
     /// In case it doesn't, it won't affect dispatches after multiple calls
     /// to removeListener(forKey:)
     internal var valid: InnerValid = true
