@@ -1,8 +1,13 @@
+/// An observable describes a stateful value holder that notifies listeners
+/// whenever its state value has been changed.
 @propertyWrapper
 public final class Observable<T> {
     private var nextKey = 0
     private var listeners: [ListenerEntry] = []
     
+    /// Gets or sets the value being observed.
+    ///
+    /// When setting, triggers listeners updating them of the new value.
     public var wrappedValue: T {
         didSet {
             for listener in listeners {
@@ -17,6 +22,7 @@ public final class Observable<T> {
         }
     }
     
+    /// Returns this observable itself for creating listeners out of.
     public var projectedValue: Observable<T> {
         return self
     }
@@ -25,6 +31,9 @@ public final class Observable<T> {
         self.wrappedValue = wrappedValue
     }
     
+    /// Adds a strong listener closure that is retained along with the lifetime
+    /// of this observable object and will be notified whenever the state has
+    /// changed.
     public func addListener(_ listener: @escaping (T) -> Void) -> ListenerKey {
         let key = makeNextListenerKey()
         let listener = ListenerEntry(key: key, weakKey: nil, closure: listener)
@@ -33,6 +42,10 @@ public final class Observable<T> {
         return key
     }
     
+    /// Adds a weak listener closure that is retained along with the lifetime
+    /// of this observable object and will be notified whenever the state has
+    /// changed, but which will be discarded if the weak key provided is released
+    /// from memory.
     public func addListenerBorrowed(weakKey: WeakKey, _ listener: @escaping (T) -> Void) -> ListenerKey {
         let key = makeNextListenerKey()
         let listener = ListenerEntry(key: key, weakKey: weakKey, closure: listener)
@@ -41,6 +54,8 @@ public final class Observable<T> {
         return key
     }
     
+    /// Requests that a listener with a specified key be removed from this
+    /// observable object.
     public func removeListener(withKey key: ListenerKey) {
         listeners.removeAll(where: { $0.key == key })
     }
@@ -76,5 +91,11 @@ extension Observable: Decodable where T: Decodable {
 extension Observable: Equatable where T: Equatable {
     public static func == (lhs: Observable, rhs: Observable) -> Bool {
         return lhs.wrappedValue == rhs.wrappedValue
+    }
+}
+
+extension Observable: Hashable where T: Hashable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(wrappedValue)
     }
 }
